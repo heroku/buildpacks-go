@@ -1,0 +1,18 @@
+[package]
+name = "heroku-go-buildpack"
+version = "0.0.0"
+description = "Heroku Go Cloud Native Buildpack"
+edition = "2021"
+publish = false
+rust-version = "1.60"
+
+[dependencies]
+libcnb = "0.6"
+libherokubuildpack = "0.6"
+serde = "1.0"
+tempfile = "3.3"
+toml = "0.5"
+thiserror = "1.0"
+
+[dev-dependencies]
+libcnb-test = "0.3"
