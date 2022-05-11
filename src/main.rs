@@ -14,6 +14,7 @@ use libcnb::{buildpack_main, Buildpack};
 use libherokubuildpack::{log_error, log_header, log_info};
 use thiserror::Error;
 
+mod inv;
 mod layers;
 
 #[cfg(test)]
