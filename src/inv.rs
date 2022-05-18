@@ -23,11 +23,8 @@ pub struct Inventory {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Artifact {
     pub go_version: String,
-    #[serde(alias = "version")]
     pub semantic_version: Version,
-    #[serde(alias = "arch")]
     pub architecture: String,
-    #[serde(alias = "sha")]
     pub sha_checksum: String,
 }
 

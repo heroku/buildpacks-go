@@ -26,15 +26,6 @@ fn main() {
         process::exit(3);
     });
 
-    // Older inventories have invalid values for semantic_version that need fixing.
-    // TODO: remove this.
-    for art in &mut inventory.artifacts {
-        art.semantic_version = parse_go_semver(&art.go_version).unwrap_or_else(|e| {
-            eprintln!("Error parsing go version as semver: {e}");
-            process::exit(4);
-        });
-    }
-
     let local_versions: HashSet<&str> = inventory
         .artifacts
         .iter()
