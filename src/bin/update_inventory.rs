@@ -1,11 +1,8 @@
-#![warn(unused_crate_dependencies)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::cargo)]
 #![allow(clippy::module_name_repetitions)]
 
-use heroku_go_buildpack::inv::{
-    list_github_go_versions, parse_go_semver, Artifact, Inventory, GITHUB_API_URL, GO_REPO_NAME,
-};
+use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, Inventory};
 use heroku_go_buildpack::ArtifactError;
 use std::collections::HashSet;
 use std::{env, fs, process};
@@ -57,7 +54,7 @@ fn main() {
                     // Some older versions of go don't seem to have published sha256 files.
                     eprintln!("Error getting new go version checksum: {e}");
                 }
-                ArtifactError::SemVer(e) => {
+                ArtifactError::Version(e) => {
                     eprintln!("Error parsing new go version: {e}");
                     process::exit(5);
                 }

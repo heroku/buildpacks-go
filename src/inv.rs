@@ -36,17 +36,45 @@ impl Version {
     ///
     /// # Errors
     ///
-    /// Invalid semver strings will return a `VersionError`
-    pub fn parse(version: &str) -> Result<Self, VersionError> {
-        let trimmed = version.trim();
-        match semver::Version::parse(trimmed) {
-            Ok(v) => Ok(Version(v)),
-            Err(e) => Err(VersionError(format!("{}", e))),
-        }
+    /// Invalid semver strings will return an error
+    pub fn parse(version: &str) -> anyhow::Result<Version> {
+        let vrs = semver::Version::parse(version.trim()).map(Version)?;
+        Ok(vrs)
+    }
+
+    /// Parses a go version (like go1.1) as a `Version`
+    ///
+    /// # Errors
+    ///
+    /// Invalid go version strings will return an error
+    pub fn parse_go(go_version: &str) -> anyhow::Result<Version> {
+        let stripped_version = go_version
+            .strip_prefix("go")
+            .ok_or(anyhow!("missing go prefix for {go_version}"))?;
+
+        let re = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?;
+        let caps = re
+            .captures(stripped_version)
+            .context(format!("couldn't find version identifiers in {go_version}"))?;
+
+        let mut composed_version = vec![
+            caps.get(1).map(|major| major.as_str()).unwrap_or("0"),
+            caps.get(2).map(|minor| minor.as_str()).unwrap_or("0"),
+            caps.get(3).map(|patch| patch.as_str()).unwrap_or("0"),
+        ]
+        .join(".");
+
+        if let Some(pre) = caps.get(4) {
+            composed_version.push('-');
+            composed_version.push_str(pre.as_str());
+        };
+
+        Version::parse(&composed_version).context(format!("couldn't parse semver for {go_version}"))
     }
 }
+
 impl TryFrom<String> for Version {
-    type Error = VersionError;
+    type Error = anyhow::Error;
     fn try_from(val: String) -> Result<Self, Self::Error> {
         Version::parse(&val)
     }
@@ -68,13 +96,13 @@ pub struct VersionError(String);
 
 pub enum ArtifactError {
     Checksum(anyhow::Error),
-    SemVer(anyhow::Error),
+    Version(anyhow::Error),
 }
 
 impl Artifact {
     pub fn new<S: Into<String>>(goversion: S) -> Result<Artifact, ArtifactError> {
         let go_version: String = goversion.into();
-        let semantic_version = parse_go_semver(&go_version).map_err(ArtifactError::SemVer)?;
+        let semantic_version = Version::parse_go(&go_version).map_err(ArtifactError::Version)?;
         let sha_checksum = fetch_go_checksum(&go_version).map_err(ArtifactError::Checksum)?;
 
         Ok(Artifact {
@@ -84,31 +112,6 @@ impl Artifact {
             architecture: ARCH.to_string(),
         })
     }
-}
-
-pub fn parse_go_semver(goversion: &str) -> anyhow::Result<Version> {
-    let stripped_version = goversion
-        .strip_prefix("go")
-        .ok_or(anyhow!("missing go prefix for {goversion}"))?;
-
-    let re = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?;
-    let caps = re
-        .captures(stripped_version)
-        .context(format!("couldn't find version identifiers in {goversion}"))?;
-
-    let mut composed_version = vec![
-        caps.get(1).map(|major| major.as_str()).unwrap_or("0"),
-        caps.get(2).map(|minor| minor.as_str()).unwrap_or("0"),
-        caps.get(3).map(|patch| patch.as_str()).unwrap_or("0"),
-    ]
-    .join(".");
-
-    if let Some(pre) = caps.get(4) {
-        composed_version.push('-');
-        composed_version.push_str(pre.as_str());
-    };
-
-    Version::parse(&composed_version).context(format!("couldn't parse semver for {goversion}"))
 }
 
 fn fetch_go_checksum(goversion: &str) -> anyhow::Result<String> {
