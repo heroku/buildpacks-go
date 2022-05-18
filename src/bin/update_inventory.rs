@@ -8,10 +8,9 @@ use heroku_go_buildpack::inv::{
 };
 use heroku_go_buildpack::ArtifactError;
 use std::collections::HashSet;
-use std::env;
-use std::io::Error;
-use std::process;
+use std::{env, fs, process};
 
+/// Updates the local go inventory.toml with versions published on GitHub.
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -27,9 +26,11 @@ fn main() {
         process::exit(3);
     });
 
+    // Older inventories have invalid values for semantic_version that need fixing.
+    // TODO: remove this.
     for art in &mut inventory.artifacts {
-        art.version = parse_go_semver(&art.go_version).unwrap_or_else(|e| {
-            eprintln!("Error parsing goversion as semver: {e}");
+        art.semantic_version = parse_go_semver(&art.go_version).unwrap_or_else(|e| {
+            eprintln!("Error parsing go version as semver: {e}");
             process::exit(4);
         });
     }
@@ -40,18 +41,20 @@ fn main() {
         .map(|a| a.go_version.as_str())
         .collect();
 
-    let remote_versions =
-        list_github_go_versions(GITHUB_API_URL, GO_REPO_NAME).unwrap_or_else(|e| {
-            eprintln!("Error listing go versions: {}", e);
-            process::exit(4);
-        });
+    // List available versions published to GitHub.
+    let remote_versions = list_github_go_versions().unwrap_or_else(|e| {
+        eprintln!("Error listing go versions: {}", e);
+        process::exit(4);
+    });
 
+    // Find versions from GitHub that are not in the local inventory.
     let new_versions: Vec<&str> = remote_versions
         .iter()
         .map(|rv| rv.as_str())
         .filter(|rv| !local_versions.contains(rv))
         .collect();
 
+    // Build new artifacts for the GitHub releases we don't have yet.
     let mut new_artifacts = vec![];
     for nv in &new_versions {
         match Artifact::new(nv.to_string()) {
@@ -60,25 +63,33 @@ fn main() {
             }
             Err(err) => match err {
                 ArtifactError::Checksum(e) => {
+                    // Some older versions of go don't seem to have published sha256 files.
                     eprintln!("Error getting new go version checksum: {e}");
                 }
                 ArtifactError::SemVer(e) => {
                     eprintln!("Error parsing new go version: {e}");
+                    process::exit(5);
                 }
             },
         }
     }
 
+    // Concatenate the existing and new artifacts.
     inventory.artifacts.append(&mut new_artifacts);
 
+    // Sort artifacts in reverse semver order, to make it easier to resolve
+    // to the most recent version for a semver constraint.
     inventory
         .artifacts
-        .sort_by(|b, a| a.version.cmp(&b.version));
+        .sort_by(|b, a| a.semantic_version.cmp(&b.semantic_version));
 
     let toml = toml::to_string(&inventory).unwrap_or_else(|e| {
         eprintln!("Error serializing inventory as toml: {e}");
-        process::exit(5);
+        process::exit(6);
     });
 
-    println!("{toml}");
+    fs::write(filename, toml).unwrap_or_else(|e| {
+        eprintln!("Error writing inventory to file: {e}");
+        process::exit(7);
+    });
 }

@@ -2,7 +2,7 @@ use anyhow::{anyhow, Context};
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, fmt, fs};
+use std::{fmt, fs};
 use thiserror::Error;
 use toml;
 
@@ -23,9 +23,12 @@ pub struct Inventory {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Artifact {
     pub go_version: String,
-    pub version: Version,
-    pub arch: String,
-    pub sha: String,
+    #[serde(alias = "version")]
+    pub semantic_version: Version,
+    #[serde(alias = "arch")]
+    pub architecture: String,
+    #[serde(alias = "sha")]
+    pub sha_checksum: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -74,14 +77,14 @@ pub enum ArtifactError {
 impl Artifact {
     pub fn new<S: Into<String>>(goversion: S) -> Result<Artifact, ArtifactError> {
         let go_version: String = goversion.into();
-        let version = parse_go_semver(&go_version).map_err(ArtifactError::SemVer)?;
-        let sha = fetch_go_checksum(&go_version).map_err(ArtifactError::Checksum)?;
+        let semantic_version = parse_go_semver(&go_version).map_err(ArtifactError::SemVer)?;
+        let sha_checksum = fetch_go_checksum(&go_version).map_err(ArtifactError::Checksum)?;
 
         Ok(Artifact {
-            sha,
+            sha_checksum,
             go_version,
-            version,
-            arch: ARCH.to_string(),
+            semantic_version,
+            architecture: ARCH.to_string(),
         })
     }
 }
@@ -136,16 +139,18 @@ struct Tag {
 }
 
 /// List known go versions from tags on GitHub.
-pub fn list_github_go_versions(api_host: &str, repo: &str) -> Result<Vec<String>, String> {
-    let tag_names = ureq::get(&format!("{api_host}/repos/{repo}/git/refs/tags"))
-        .call()
-        .map_err(|e| e.to_string())?
-        .into_json::<Vec<Tag>>()
-        .map_err(|e| e.to_string())?
-        .iter()
-        .filter_map(|t| t.reference.strip_prefix("refs/tags/"))
-        .filter(|t| t.starts_with("go"))
-        .map(|v| v.to_string())
-        .collect();
+pub fn list_github_go_versions() -> Result<Vec<String>, String> {
+    let tag_names = ureq::get(&format!(
+        "{GITHUB_API_URL}/repos/{GO_REPO_NAME}/git/refs/tags"
+    ))
+    .call()
+    .map_err(|e| e.to_string())?
+    .into_json::<Vec<Tag>>()
+    .map_err(|e| e.to_string())?
+    .iter()
+    .filter_map(|t| t.reference.strip_prefix("refs/tags/"))
+    .filter(|t| t.starts_with("go"))
+    .map(|v| v.to_string())
+    .collect();
     Ok(tag_names)
 }

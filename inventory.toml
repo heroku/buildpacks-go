@@ -1,1290 +1,1289 @@
 [[artifacts]]
 go_version = "go1.18.2"
-version = "1.18.2"
-arch = "linux-amd64"
-sha = "e54bec97a1a5d230fc2f9ad0880fcbabb5888f30ed9666eca4a91c5a32e86cbc"
+semantic_version = "1.18.2"
+architecture = "linux-amd64"
+sha_checksum = "e54bec97a1a5d230fc2f9ad0880fcbabb5888f30ed9666eca4a91c5a32e86cbc"
 
 [[artifacts]]
 go_version = "go1.18.1"
-version = "1.18.1"
-arch = "linux-amd64"
-sha = "b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334"
+semantic_version = "1.18.1"
+architecture = "linux-amd64"
+sha_checksum = "b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334"
 
 [[artifacts]]
 go_version = "go1.18"
-version = "1.18.0"
-arch = "linux-amd64"
-sha = "e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f"
+semantic_version = "1.18.0"
+architecture = "linux-amd64"
+sha_checksum = "e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f"
 
 [[artifacts]]
 go_version = "go1.18rc1"
-version = "1.18.0-rc1"
-arch = "linux-amd64"
-sha = "9ea4e6adee711e06fa95546e1a9629b63de3aaae85fac9dc752fb533f3e5be23"
+semantic_version = "1.18.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "9ea4e6adee711e06fa95546e1a9629b63de3aaae85fac9dc752fb533f3e5be23"
 
 [[artifacts]]
 go_version = "go1.18beta2"
-version = "1.18.0-beta2"
-arch = "linux-amd64"
-sha = "b5dacafa59737cfb0d657902b70c2ad1b6bb4ed15e85ea2806f72ce3d4824688"
+semantic_version = "1.18.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "b5dacafa59737cfb0d657902b70c2ad1b6bb4ed15e85ea2806f72ce3d4824688"
 
 [[artifacts]]
 go_version = "go1.18beta1"
-version = "1.18.0-beta1"
-arch = "linux-amd64"
-sha = "128f72c5c22640085e4187cd1b540c587cf8fb280f941519bd2d1ae9fdab4f37"
+semantic_version = "1.18.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "128f72c5c22640085e4187cd1b540c587cf8fb280f941519bd2d1ae9fdab4f37"
 
 [[artifacts]]
 go_version = "go1.17.10"
-version = "1.17.10"
-arch = "linux-amd64"
-sha = "87fc728c9c731e2f74e4a999ef53cf07302d7ed3504b0839027bd9c10edaa3fd"
+semantic_version = "1.17.10"
+architecture = "linux-amd64"
+sha_checksum = "87fc728c9c731e2f74e4a999ef53cf07302d7ed3504b0839027bd9c10edaa3fd"
 
 [[artifacts]]
 go_version = "go1.17.9"
-version = "1.17.9"
-arch = "linux-amd64"
-sha = "9dacf782028fdfc79120576c872dee488b81257b1c48e9032d122cfdb379cca6"
+semantic_version = "1.17.9"
+architecture = "linux-amd64"
+sha_checksum = "9dacf782028fdfc79120576c872dee488b81257b1c48e9032d122cfdb379cca6"
 
 [[artifacts]]
 go_version = "go1.17.8"
-version = "1.17.8"
-arch = "linux-amd64"
-sha = "980e65a863377e69fd9b67df9d8395fd8e93858e7a24c9f55803421e453f4f99"
+semantic_version = "1.17.8"
+architecture = "linux-amd64"
+sha_checksum = "980e65a863377e69fd9b67df9d8395fd8e93858e7a24c9f55803421e453f4f99"
 
 [[artifacts]]
 go_version = "go1.17.7"
-version = "1.17.7"
-arch = "linux-amd64"
-sha = "02b111284bedbfa35a7e5b74a06082d18632eff824fd144312f6063943d49259"
+semantic_version = "1.17.7"
+architecture = "linux-amd64"
+sha_checksum = "02b111284bedbfa35a7e5b74a06082d18632eff824fd144312f6063943d49259"
 
 [[artifacts]]
 go_version = "go1.17.6"
-version = "1.17.6"
-arch = "linux-amd64"
-sha = "231654bbf2dab3d86c1619ce799e77b03d96f9b50770297c8f4dff8836fc8ca2"
+semantic_version = "1.17.6"
+architecture = "linux-amd64"
+sha_checksum = "231654bbf2dab3d86c1619ce799e77b03d96f9b50770297c8f4dff8836fc8ca2"
 
 [[artifacts]]
 go_version = "go1.17.5"
-version = "1.17.5"
-arch = "linux-amd64"
-sha = "bd78114b0d441b029c8fe0341f4910370925a4d270a6a590668840675b0c653e"
+semantic_version = "1.17.5"
+architecture = "linux-amd64"
+sha_checksum = "bd78114b0d441b029c8fe0341f4910370925a4d270a6a590668840675b0c653e"
 
 [[artifacts]]
 go_version = "go1.17.4"
-version = "1.17.4"
-arch = "linux-amd64"
-sha = "adab2483f644e2f8a10ae93122f0018cef525ca48d0b8764dae87cb5f4fd4206"
+semantic_version = "1.17.4"
+architecture = "linux-amd64"
+sha_checksum = "adab2483f644e2f8a10ae93122f0018cef525ca48d0b8764dae87cb5f4fd4206"
 
 [[artifacts]]
 go_version = "go1.17.3"
-version = "1.17.3"
-arch = "linux-amd64"
-sha = "550f9845451c0c94be679faf116291e7807a8d78b43149f9506c1b15eb89008c"
+semantic_version = "1.17.3"
+architecture = "linux-amd64"
+sha_checksum = "550f9845451c0c94be679faf116291e7807a8d78b43149f9506c1b15eb89008c"
 
 [[artifacts]]
 go_version = "go1.17.2"
-version = "1.17.2"
-arch = "linux-amd64"
-sha = "f242a9db6a0ad1846de7b6d94d507915d14062660616a61ef7c808a76e4f1676"
+semantic_version = "1.17.2"
+architecture = "linux-amd64"
+sha_checksum = "f242a9db6a0ad1846de7b6d94d507915d14062660616a61ef7c808a76e4f1676"
 
 [[artifacts]]
 go_version = "go1.17.1"
-version = "1.17.1"
-arch = "linux-amd64"
-sha = "dab7d9c34361dc21ec237d584590d72500652e7c909bf082758fb63064fca0ef"
+semantic_version = "1.17.1"
+architecture = "linux-amd64"
+sha_checksum = "dab7d9c34361dc21ec237d584590d72500652e7c909bf082758fb63064fca0ef"
 
 [[artifacts]]
 go_version = "go1.17"
-version = "1.17.0"
-arch = "linux-amd64"
-sha = "6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d"
+semantic_version = "1.17.0"
+architecture = "linux-amd64"
+sha_checksum = "6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d"
 
 [[artifacts]]
 go_version = "go1.17rc2"
-version = "1.17.0-rc2"
-arch = "linux-amd64"
-sha = "328235edc7c7d2a51d6c6cb4d7ff97e97357654ef9e1098b9a4603a9d278ad04"
+semantic_version = "1.17.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "328235edc7c7d2a51d6c6cb4d7ff97e97357654ef9e1098b9a4603a9d278ad04"
 
 [[artifacts]]
 go_version = "go1.17rc1"
-version = "1.17.0-rc1"
-arch = "linux-amd64"
-sha = "bfbd3881a01ca3826777b1c40f241acacd45b14730d373259cd673d74e15e534"
+semantic_version = "1.17.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "bfbd3881a01ca3826777b1c40f241acacd45b14730d373259cd673d74e15e534"
 
 [[artifacts]]
 go_version = "go1.17beta1"
-version = "1.17.0-beta1"
-arch = "linux-amd64"
-sha = "a479681705b65971f9db079bfce53c4393bfa241d952eb09de88fb40677d3c4c"
+semantic_version = "1.17.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "a479681705b65971f9db079bfce53c4393bfa241d952eb09de88fb40677d3c4c"
 
 [[artifacts]]
 go_version = "go1.16.15"
-version = "1.16.15"
-arch = "linux-amd64"
-sha = "77c782a633186d78c384f972fb113a43c24be0234c42fef22c2d8c4c4c8e7475"
+semantic_version = "1.16.15"
+architecture = "linux-amd64"
+sha_checksum = "77c782a633186d78c384f972fb113a43c24be0234c42fef22c2d8c4c4c8e7475"
 
 [[artifacts]]
 go_version = "go1.16.14"
-version = "1.16.14"
-arch = "linux-amd64"
-sha = "f4f5f02eb6809ac5bf19b5ad517b23504fd5fc036f6487651968ad36aa7a20e0"
+semantic_version = "1.16.14"
+architecture = "linux-amd64"
+sha_checksum = "f4f5f02eb6809ac5bf19b5ad517b23504fd5fc036f6487651968ad36aa7a20e0"
 
 [[artifacts]]
 go_version = "go1.16.13"
-version = "1.16.13"
-arch = "linux-amd64"
-sha = "275fc03c90c13b0bbff13125a43f1f7a9f9c00a0d5a9f2d5b16dbc2fa2c6e12a"
+semantic_version = "1.16.13"
+architecture = "linux-amd64"
+sha_checksum = "275fc03c90c13b0bbff13125a43f1f7a9f9c00a0d5a9f2d5b16dbc2fa2c6e12a"
 
 [[artifacts]]
 go_version = "go1.16.12"
-version = "1.16.12"
-arch = "linux-amd64"
-sha = "7d657e86493ac1d5892f340a7d88b862b12edb5ac6e73c099e8e0668a6c916b7"
+semantic_version = "1.16.12"
+architecture = "linux-amd64"
+sha_checksum = "7d657e86493ac1d5892f340a7d88b862b12edb5ac6e73c099e8e0668a6c916b7"
 
 [[artifacts]]
 go_version = "go1.16.11"
-version = "1.16.11"
-arch = "linux-amd64"
-sha = "aa22d0e2be68c0a7027a64e76cbb2869332fbc42ce14e3d10b69007b51030775"
+semantic_version = "1.16.11"
+architecture = "linux-amd64"
+sha_checksum = "aa22d0e2be68c0a7027a64e76cbb2869332fbc42ce14e3d10b69007b51030775"
 
 [[artifacts]]
 go_version = "go1.16.10"
-version = "1.16.10"
-arch = "linux-amd64"
-sha = "414cd18ce1d193769b9e97d2401ad718755ab47816e13b2a1cde203d263b55cf"
+semantic_version = "1.16.10"
+architecture = "linux-amd64"
+sha_checksum = "414cd18ce1d193769b9e97d2401ad718755ab47816e13b2a1cde203d263b55cf"
 
 [[artifacts]]
 go_version = "go1.16.9"
-version = "1.16.9"
-arch = "linux-amd64"
-sha = "d2c095c95f63c2a3ef961000e0ecb9d81d5c68b6ece176e2a8a2db82dc02931c"
+semantic_version = "1.16.9"
+architecture = "linux-amd64"
+sha_checksum = "d2c095c95f63c2a3ef961000e0ecb9d81d5c68b6ece176e2a8a2db82dc02931c"
 
 [[artifacts]]
 go_version = "go1.16.8"
-version = "1.16.8"
-arch = "linux-amd64"
-sha = "f32501aeb8b7b723bc7215f6c373abb6981bbc7e1c7b44e9f07317e1a300dce2"
+semantic_version = "1.16.8"
+architecture = "linux-amd64"
+sha_checksum = "f32501aeb8b7b723bc7215f6c373abb6981bbc7e1c7b44e9f07317e1a300dce2"
 
 [[artifacts]]
 go_version = "go1.16.7"
-version = "1.16.7"
-arch = "linux-amd64"
-sha = "7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04"
+semantic_version = "1.16.7"
+architecture = "linux-amd64"
+sha_checksum = "7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04"
 
 [[artifacts]]
 go_version = "go1.16.6"
-version = "1.16.6"
-arch = "linux-amd64"
-sha = "be333ef18b3016e9d7cb7b1ff1fdb0cac800ca0be4cf2290fe613b3d069dfe0d"
+semantic_version = "1.16.6"
+architecture = "linux-amd64"
+sha_checksum = "be333ef18b3016e9d7cb7b1ff1fdb0cac800ca0be4cf2290fe613b3d069dfe0d"
 
 [[artifacts]]
 go_version = "go1.16.5"
-version = "1.16.5"
-arch = "linux-amd64"
-sha = "b12c23023b68de22f74c0524f10b753e7b08b1504cb7e417eccebdd3fae49061"
+semantic_version = "1.16.5"
+architecture = "linux-amd64"
+sha_checksum = "b12c23023b68de22f74c0524f10b753e7b08b1504cb7e417eccebdd3fae49061"
 
 [[artifacts]]
 go_version = "go1.16.4"
-version = "1.16.4"
-arch = "linux-amd64"
-sha = "7154e88f5a8047aad4b80ebace58a059e36e7e2e4eb3b383127a28c711b4ff59"
+semantic_version = "1.16.4"
+architecture = "linux-amd64"
+sha_checksum = "7154e88f5a8047aad4b80ebace58a059e36e7e2e4eb3b383127a28c711b4ff59"
 
 [[artifacts]]
 go_version = "go1.16.3"
-version = "1.16.3"
-arch = "linux-amd64"
-sha = "951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2"
+semantic_version = "1.16.3"
+architecture = "linux-amd64"
+sha_checksum = "951a3c7c6ce4e56ad883f97d9db74d3d6d80d5fec77455c6ada6c1f7ac4776d2"
 
 [[artifacts]]
 go_version = "go1.16.2"
-version = "1.16.2"
-arch = "linux-amd64"
-sha = "542e936b19542e62679766194364f45141fde55169db2d8d01046555ca9eb4b8"
+semantic_version = "1.16.2"
+architecture = "linux-amd64"
+sha_checksum = "542e936b19542e62679766194364f45141fde55169db2d8d01046555ca9eb4b8"
 
 [[artifacts]]
 go_version = "go1.16.1"
-version = "1.16.1"
-arch = "linux-amd64"
-sha = "3edc22f8332231c3ba8be246f184b736b8d28f06ce24f08168d8ecf052549769"
+semantic_version = "1.16.1"
+architecture = "linux-amd64"
+sha_checksum = "3edc22f8332231c3ba8be246f184b736b8d28f06ce24f08168d8ecf052549769"
 
 [[artifacts]]
 go_version = "go1.16"
-version = "1.16.0"
-arch = "linux-amd64"
-sha = "013a489ebb3e24ef3d915abe5b94c3286c070dfe0818d5bca8108f1d6e8440d2"
+semantic_version = "1.16.0"
+architecture = "linux-amd64"
+sha_checksum = "013a489ebb3e24ef3d915abe5b94c3286c070dfe0818d5bca8108f1d6e8440d2"
 
 [[artifacts]]
 go_version = "go1.16rc1"
-version = "1.16.0-rc1"
-arch = "linux-amd64"
-sha = "6a62610f56a04bae8702cd2bd73bfea34645c1b89ded3f0b81a841393b6f1f14"
+semantic_version = "1.16.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "6a62610f56a04bae8702cd2bd73bfea34645c1b89ded3f0b81a841393b6f1f14"
 
 [[artifacts]]
 go_version = "go1.16beta1"
-version = "1.16.0-beta1"
-arch = "linux-amd64"
-sha = "3931a0d493d411d6c697df6f15d5292fdd8031fde7014fded399effdad4c12d8"
+semantic_version = "1.16.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "3931a0d493d411d6c697df6f15d5292fdd8031fde7014fded399effdad4c12d8"
 
 [[artifacts]]
 go_version = "go1.15.15"
-version = "1.15.15"
-arch = "linux-amd64"
-sha = "0885cf046a9f099e260d98d9ec5d19ea9328f34c8dc4956e1d3cd87daaddb345"
+semantic_version = "1.15.15"
+architecture = "linux-amd64"
+sha_checksum = "0885cf046a9f099e260d98d9ec5d19ea9328f34c8dc4956e1d3cd87daaddb345"
 
 [[artifacts]]
 go_version = "go1.15.14"
-version = "1.15.14"
-arch = "linux-amd64"
-sha = "6f5410c113b803f437d7a1ee6f8f124100e536cc7361920f7e640fedf7add72d"
+semantic_version = "1.15.14"
+architecture = "linux-amd64"
+sha_checksum = "6f5410c113b803f437d7a1ee6f8f124100e536cc7361920f7e640fedf7add72d"
 
 [[artifacts]]
 go_version = "go1.15.13"
-version = "1.15.13"
-arch = "linux-amd64"
-sha = "3d3beec5fc66659018e09f40abb7274b10794229ba7c1e8bdb7d8ca77b656a13"
+semantic_version = "1.15.13"
+architecture = "linux-amd64"
+sha_checksum = "3d3beec5fc66659018e09f40abb7274b10794229ba7c1e8bdb7d8ca77b656a13"
 
 [[artifacts]]
 go_version = "go1.15.12"
-version = "1.15.12"
-arch = "linux-amd64"
-sha = "bbdb935699e0b24d90e2451346da76121b2412d30930eabcd80907c230d098b7"
+semantic_version = "1.15.12"
+architecture = "linux-amd64"
+sha_checksum = "bbdb935699e0b24d90e2451346da76121b2412d30930eabcd80907c230d098b7"
 
 [[artifacts]]
 go_version = "go1.15.11"
-version = "1.15.11"
-arch = "linux-amd64"
-sha = "8825b72d74b14e82b54ba3697813772eb94add3abf70f021b6bdebe193ed01ec"
+semantic_version = "1.15.11"
+architecture = "linux-amd64"
+sha_checksum = "8825b72d74b14e82b54ba3697813772eb94add3abf70f021b6bdebe193ed01ec"
 
 [[artifacts]]
 go_version = "go1.15.10"
-version = "1.15.10"
-arch = "linux-amd64"
-sha = "4aa1267517df32f2bf1cc3d55dfc27d0c6b2c2b0989449c96dd19273ccca051d"
+semantic_version = "1.15.10"
+architecture = "linux-amd64"
+sha_checksum = "4aa1267517df32f2bf1cc3d55dfc27d0c6b2c2b0989449c96dd19273ccca051d"
 
 [[artifacts]]
 go_version = "go1.15.9"
-version = "1.15.9"
-arch = "linux-amd64"
-sha = "a55f3e75bc1098045851d40ea74f9d77efc7958e9af85131a96ca387d38b1834"
+semantic_version = "1.15.9"
+architecture = "linux-amd64"
+sha_checksum = "a55f3e75bc1098045851d40ea74f9d77efc7958e9af85131a96ca387d38b1834"
 
 [[artifacts]]
 go_version = "go1.15.8"
-version = "1.15.8"
-arch = "linux-amd64"
-sha = "d3379c32a90fdf9382166f8f48034c459a8cc433730bc9476d39d9082c94583b"
+semantic_version = "1.15.8"
+architecture = "linux-amd64"
+sha_checksum = "d3379c32a90fdf9382166f8f48034c459a8cc433730bc9476d39d9082c94583b"
 
 [[artifacts]]
 go_version = "go1.15.7"
-version = "1.15.7"
-arch = "linux-amd64"
-sha = "0d142143794721bb63ce6c8a6180c4062bcf8ef4715e7d6d6609f3a8282629b3"
+semantic_version = "1.15.7"
+architecture = "linux-amd64"
+sha_checksum = "0d142143794721bb63ce6c8a6180c4062bcf8ef4715e7d6d6609f3a8282629b3"
 
 [[artifacts]]
 go_version = "go1.15.6"
-version = "1.15.6"
-arch = "linux-amd64"
-sha = "3918e6cc85e7eaaa6f859f1bdbaac772e7a825b0eb423c63d3ae68b21f84b844"
+semantic_version = "1.15.6"
+architecture = "linux-amd64"
+sha_checksum = "3918e6cc85e7eaaa6f859f1bdbaac772e7a825b0eb423c63d3ae68b21f84b844"
 
 [[artifacts]]
 go_version = "go1.15.5"
-version = "1.15.5"
-arch = "linux-amd64"
-sha = "9a58494e8da722c3aef248c9227b0e9c528c7318309827780f16220998180a0d"
+semantic_version = "1.15.5"
+architecture = "linux-amd64"
+sha_checksum = "9a58494e8da722c3aef248c9227b0e9c528c7318309827780f16220998180a0d"
 
 [[artifacts]]
 go_version = "go1.15.4"
-version = "1.15.4"
-arch = "linux-amd64"
-sha = "eb61005f0b932c93b424a3a4eaa67d72196c79129d9a3ea8578047683e2c80d5"
+semantic_version = "1.15.4"
+architecture = "linux-amd64"
+sha_checksum = "eb61005f0b932c93b424a3a4eaa67d72196c79129d9a3ea8578047683e2c80d5"
 
 [[artifacts]]
 go_version = "go1.15.3"
-version = "1.15.3"
-arch = "linux-amd64"
-sha = "010a88df924a81ec21b293b5da8f9b11c176d27c0ee3962dc1738d2352d3c02d"
+semantic_version = "1.15.3"
+architecture = "linux-amd64"
+sha_checksum = "010a88df924a81ec21b293b5da8f9b11c176d27c0ee3962dc1738d2352d3c02d"
 
 [[artifacts]]
 go_version = "go1.15.2"
-version = "1.15.2"
-arch = "linux-amd64"
-sha = "b49fda1ca29a1946d6bb2a5a6982cf07ccd2aba849289508ee0f9918f6bb4552"
+semantic_version = "1.15.2"
+architecture = "linux-amd64"
+sha_checksum = "b49fda1ca29a1946d6bb2a5a6982cf07ccd2aba849289508ee0f9918f6bb4552"
 
 [[artifacts]]
 go_version = "go1.15.1"
-version = "1.15.1"
-arch = "linux-amd64"
-sha = "70ac0dbf60a8ee9236f337ed0daa7a4c3b98f6186d4497826f68e97c0c0413f6"
+semantic_version = "1.15.1"
+architecture = "linux-amd64"
+sha_checksum = "70ac0dbf60a8ee9236f337ed0daa7a4c3b98f6186d4497826f68e97c0c0413f6"
 
 [[artifacts]]
 go_version = "go1.15"
-version = "1.15.0"
-arch = "linux-amd64"
-sha = "2d75848ac606061efe52a8068d0e647b35ce487a15bb52272c427df485193602"
+semantic_version = "1.15.0"
+architecture = "linux-amd64"
+sha_checksum = "2d75848ac606061efe52a8068d0e647b35ce487a15bb52272c427df485193602"
 
 [[artifacts]]
 go_version = "go1.15rc2"
-version = "1.15.0-rc2"
-arch = "linux-amd64"
-sha = "f41a08f630f018bc5d9fd100bd9899516e4965356c78165157eb0eda9a17ac09"
+semantic_version = "1.15.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "f41a08f630f018bc5d9fd100bd9899516e4965356c78165157eb0eda9a17ac09"
 
 [[artifacts]]
 go_version = "go1.15rc1"
-version = "1.15.0-rc1"
-arch = "linux-amd64"
-sha = "ac092ebb92f88366786063e68a9531d5eccac51371f9becb128f064721731b2e"
+semantic_version = "1.15.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "ac092ebb92f88366786063e68a9531d5eccac51371f9becb128f064721731b2e"
 
 [[artifacts]]
 go_version = "go1.15beta1"
-version = "1.15.0-beta1"
-arch = "linux-amd64"
-sha = "11814b7475680a09720f3de32c66bca135289c8d528b2e1132b0ce56b3d9d6d7"
+semantic_version = "1.15.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "11814b7475680a09720f3de32c66bca135289c8d528b2e1132b0ce56b3d9d6d7"
 
 [[artifacts]]
 go_version = "go1.14.15"
-version = "1.14.15"
-arch = "linux-amd64"
-sha = "c64a57b374a81f7cf1408d2c410a28c6f142414f1ffa9d1062de1d653b0ae0d6"
+semantic_version = "1.14.15"
+architecture = "linux-amd64"
+sha_checksum = "c64a57b374a81f7cf1408d2c410a28c6f142414f1ffa9d1062de1d653b0ae0d6"
 
 [[artifacts]]
 go_version = "go1.14.14"
-version = "1.14.14"
-arch = "linux-amd64"
-sha = "6f1354c9040d65d1622b451f43c324c1e5197aa9242d00c5a117d0e2625f3e0d"
+semantic_version = "1.14.14"
+architecture = "linux-amd64"
+sha_checksum = "6f1354c9040d65d1622b451f43c324c1e5197aa9242d00c5a117d0e2625f3e0d"
 
 [[artifacts]]
 go_version = "go1.14.13"
-version = "1.14.13"
-arch = "linux-amd64"
-sha = "bfea0c8d7b70c1ad99b0266b321608db57df75820e8f4333efa448a43da01992"
+semantic_version = "1.14.13"
+architecture = "linux-amd64"
+sha_checksum = "bfea0c8d7b70c1ad99b0266b321608db57df75820e8f4333efa448a43da01992"
 
 [[artifacts]]
 go_version = "go1.14.12"
-version = "1.14.12"
-arch = "linux-amd64"
-sha = "fb26f951c88c0685d7df393611189c58e6eabd3c17bdaef37df11355ab8db9d3"
+semantic_version = "1.14.12"
+architecture = "linux-amd64"
+sha_checksum = "fb26f951c88c0685d7df393611189c58e6eabd3c17bdaef37df11355ab8db9d3"
 
 [[artifacts]]
 go_version = "go1.14.11"
-version = "1.14.11"
-arch = "linux-amd64"
-sha = "ef150041e1af0890ecdd98ebdd6c759096884052a584c09ce50b2b5bb9bab2cd"
+semantic_version = "1.14.11"
+architecture = "linux-amd64"
+sha_checksum = "ef150041e1af0890ecdd98ebdd6c759096884052a584c09ce50b2b5bb9bab2cd"
 
 [[artifacts]]
 go_version = "go1.14.10"
-version = "1.14.10"
-arch = "linux-amd64"
-sha = "66eb6858f375731ba07b0b33f5c813b141a81253e7e74071eec3ae85e9b37098"
+semantic_version = "1.14.10"
+architecture = "linux-amd64"
+sha_checksum = "66eb6858f375731ba07b0b33f5c813b141a81253e7e74071eec3ae85e9b37098"
 
 [[artifacts]]
 go_version = "go1.14.9"
-version = "1.14.9"
-arch = "linux-amd64"
-sha = "f0d26ff572c72c9823ae752d3c81819a81a60c753201f51f89637482531c110a"
+semantic_version = "1.14.9"
+architecture = "linux-amd64"
+sha_checksum = "f0d26ff572c72c9823ae752d3c81819a81a60c753201f51f89637482531c110a"
 
 [[artifacts]]
 go_version = "go1.14.8"
-version = "1.14.8"
-arch = "linux-amd64"
-sha = "5504e077a29d0bd6649ca7b66e317f1a4b264e960f74115d6f0f405c49a8e738"
+semantic_version = "1.14.8"
+architecture = "linux-amd64"
+sha_checksum = "5504e077a29d0bd6649ca7b66e317f1a4b264e960f74115d6f0f405c49a8e738"
 
 [[artifacts]]
 go_version = "go1.14.7"
-version = "1.14.7"
-arch = "linux-amd64"
-sha = "4a7fa60f323ee1416a4b1425aefc37ea359e9d64df19c326a58953a97ad41ea5"
+semantic_version = "1.14.7"
+architecture = "linux-amd64"
+sha_checksum = "4a7fa60f323ee1416a4b1425aefc37ea359e9d64df19c326a58953a97ad41ea5"
 
 [[artifacts]]
 go_version = "go1.14.6"
-version = "1.14.6"
-arch = "linux-amd64"
-sha = "5c566ddc2e0bcfc25c26a5dc44a440fcc0177f7350c1f01952b34d5989a0d287"
+semantic_version = "1.14.6"
+architecture = "linux-amd64"
+sha_checksum = "5c566ddc2e0bcfc25c26a5dc44a440fcc0177f7350c1f01952b34d5989a0d287"
 
 [[artifacts]]
 go_version = "go1.14.5"
-version = "1.14.5"
-arch = "linux-amd64"
-sha = "82a1b84f16858db03231eb201f90cce2a991078dda543879b87e738e2586854b"
+semantic_version = "1.14.5"
+architecture = "linux-amd64"
+sha_checksum = "82a1b84f16858db03231eb201f90cce2a991078dda543879b87e738e2586854b"
 
 [[artifacts]]
 go_version = "go1.14.4"
-version = "1.14.4"
-arch = "linux-amd64"
-sha = "aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067"
+semantic_version = "1.14.4"
+architecture = "linux-amd64"
+sha_checksum = "aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067"
 
 [[artifacts]]
 go_version = "go1.14.3"
-version = "1.14.3"
-arch = "linux-amd64"
-sha = "1c39eac4ae95781b066c144c58e45d6859652247f7515f0d2cba7be7d57d2226"
+semantic_version = "1.14.3"
+architecture = "linux-amd64"
+sha_checksum = "1c39eac4ae95781b066c144c58e45d6859652247f7515f0d2cba7be7d57d2226"
 
 [[artifacts]]
 go_version = "go1.14.2"
-version = "1.14.2"
-arch = "linux-amd64"
-sha = "6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3"
+semantic_version = "1.14.2"
+architecture = "linux-amd64"
+sha_checksum = "6272d6e940ecb71ea5636ddb5fab3933e087c1356173c61f4a803895e947ebb3"
 
 [[artifacts]]
 go_version = "go1.14.1"
-version = "1.14.1"
-arch = "linux-amd64"
-sha = "2f49eb17ce8b48c680cdb166ffd7389702c0dec6effa090c324804a5cac8a7f8"
+semantic_version = "1.14.1"
+architecture = "linux-amd64"
+sha_checksum = "2f49eb17ce8b48c680cdb166ffd7389702c0dec6effa090c324804a5cac8a7f8"
 
 [[artifacts]]
 go_version = "go1.14"
-version = "1.14.0"
-arch = "linux-amd64"
-sha = "08df79b46b0adf498ea9f320a0f23d6ec59e9003660b4c9c1ce8e5e2c6f823ca"
+semantic_version = "1.14.0"
+architecture = "linux-amd64"
+sha_checksum = "08df79b46b0adf498ea9f320a0f23d6ec59e9003660b4c9c1ce8e5e2c6f823ca"
 
 [[artifacts]]
 go_version = "go1.14rc1"
-version = "1.14.0-rc1"
-arch = "linux-amd64"
-sha = "69398d41e5f6b87cdf3969aae665be4dfd3cc2ef36a61ab47a261f96130ed788"
+semantic_version = "1.14.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "69398d41e5f6b87cdf3969aae665be4dfd3cc2ef36a61ab47a261f96130ed788"
 
 [[artifacts]]
 go_version = "go1.14beta1"
-version = "1.14.0-beta1"
-arch = "linux-amd64"
-sha = "ebe68aa4219b673dbd060b8a6d9a339b6b6b0383772aa4349c8183f0a8f339e4"
+semantic_version = "1.14.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "ebe68aa4219b673dbd060b8a6d9a339b6b6b0383772aa4349c8183f0a8f339e4"
 
 [[artifacts]]
 go_version = "go1.13.15"
-version = "1.13.15"
-arch = "linux-amd64"
-sha = "01cc3ddf6273900eba3e2bf311238828b7168b822bb57a9ccab4d7aa2acd6028"
+semantic_version = "1.13.15"
+architecture = "linux-amd64"
+sha_checksum = "01cc3ddf6273900eba3e2bf311238828b7168b822bb57a9ccab4d7aa2acd6028"
 
 [[artifacts]]
 go_version = "go1.13.14"
-version = "1.13.14"
-arch = "linux-amd64"
-sha = "32617db984b18308f2b00279c763bff060d2739229cb8037217a49c9e691b46a"
+semantic_version = "1.13.14"
+architecture = "linux-amd64"
+sha_checksum = "32617db984b18308f2b00279c763bff060d2739229cb8037217a49c9e691b46a"
 
 [[artifacts]]
 go_version = "go1.13.13"
-version = "1.13.13"
-arch = "linux-amd64"
-sha = "0b8573c2335bebef53e819ab8d323456dc2b94838bebdbd8cc6623bb8a6d77b7"
+semantic_version = "1.13.13"
+architecture = "linux-amd64"
+sha_checksum = "0b8573c2335bebef53e819ab8d323456dc2b94838bebdbd8cc6623bb8a6d77b7"
 
 [[artifacts]]
 go_version = "go1.13.12"
-version = "1.13.12"
-arch = "linux-amd64"
-sha = "9cacc6653563771b458c13056265aa0c21b8a23ca9408278484e4efde4160618"
+semantic_version = "1.13.12"
+architecture = "linux-amd64"
+sha_checksum = "9cacc6653563771b458c13056265aa0c21b8a23ca9408278484e4efde4160618"
 
 [[artifacts]]
 go_version = "go1.13.11"
-version = "1.13.11"
-arch = "linux-amd64"
-sha = "a4d71ca9e02923fa96669a4b5faf78ee8331b18e7209b09dd87fe763b4838ada"
+semantic_version = "1.13.11"
+architecture = "linux-amd64"
+sha_checksum = "a4d71ca9e02923fa96669a4b5faf78ee8331b18e7209b09dd87fe763b4838ada"
 
 [[artifacts]]
 go_version = "go1.13.10"
-version = "1.13.10"
-arch = "linux-amd64"
-sha = "8a4cbc9f2b95d114c38f6cbe94a45372d48c604b707db2057c787398dfbf8e7f"
+semantic_version = "1.13.10"
+architecture = "linux-amd64"
+sha_checksum = "8a4cbc9f2b95d114c38f6cbe94a45372d48c604b707db2057c787398dfbf8e7f"
 
 [[artifacts]]
 go_version = "go1.13.9"
-version = "1.13.9"
-arch = "linux-amd64"
-sha = "f4ad8180dd0aaf7d7cda7e2b0a2bf27e84131320896d376549a7d849ecf237d7"
+semantic_version = "1.13.9"
+architecture = "linux-amd64"
+sha_checksum = "f4ad8180dd0aaf7d7cda7e2b0a2bf27e84131320896d376549a7d849ecf237d7"
 
 [[artifacts]]
 go_version = "go1.13.8"
-version = "1.13.8"
-arch = "linux-amd64"
-sha = "0567734d558aef19112f2b2873caa0c600f1b4a5827930eb5a7f35235219e9d8"
+semantic_version = "1.13.8"
+architecture = "linux-amd64"
+sha_checksum = "0567734d558aef19112f2b2873caa0c600f1b4a5827930eb5a7f35235219e9d8"
 
 [[artifacts]]
 go_version = "go1.13.7"
-version = "1.13.7"
-arch = "linux-amd64"
-sha = "b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3"
+semantic_version = "1.13.7"
+architecture = "linux-amd64"
+sha_checksum = "b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3"
 
 [[artifacts]]
 go_version = "go1.13.6"
-version = "1.13.6"
-arch = "linux-amd64"
-sha = "a1bc06deb070155c4f67c579f896a45eeda5a8fa54f35ba233304074c4abbbbd"
+semantic_version = "1.13.6"
+architecture = "linux-amd64"
+sha_checksum = "a1bc06deb070155c4f67c579f896a45eeda5a8fa54f35ba233304074c4abbbbd"
 
 [[artifacts]]
 go_version = "go1.13.5"
-version = "1.13.5"
-arch = "linux-amd64"
-sha = "512103d7ad296467814a6e3f635631bd35574cab3369a97a323c9a585ccaa569"
+semantic_version = "1.13.5"
+architecture = "linux-amd64"
+sha_checksum = "512103d7ad296467814a6e3f635631bd35574cab3369a97a323c9a585ccaa569"
 
 [[artifacts]]
 go_version = "go1.13.4"
-version = "1.13.4"
-arch = "linux-amd64"
-sha = "692d17071736f74be04a72a06dab9cac1cd759377bd85316e52b2227604c004c"
+semantic_version = "1.13.4"
+architecture = "linux-amd64"
+sha_checksum = "692d17071736f74be04a72a06dab9cac1cd759377bd85316e52b2227604c004c"
 
 [[artifacts]]
 go_version = "go1.13.3"
-version = "1.13.3"
-arch = "linux-amd64"
-sha = "0804bf02020dceaa8a7d7275ee79f7a142f1996bfd0c39216ccb405f93f994c0"
+semantic_version = "1.13.3"
+architecture = "linux-amd64"
+sha_checksum = "0804bf02020dceaa8a7d7275ee79f7a142f1996bfd0c39216ccb405f93f994c0"
 
 [[artifacts]]
 go_version = "go1.13.2"
-version = "1.13.2"
-arch = "linux-amd64"
-sha = "293b41a6ccd735eebcfb4094b6931bfd187595555cecf3e4386e9e119220c0b7"
+semantic_version = "1.13.2"
+architecture = "linux-amd64"
+sha_checksum = "293b41a6ccd735eebcfb4094b6931bfd187595555cecf3e4386e9e119220c0b7"
 
 [[artifacts]]
 go_version = "go1.13.1"
-version = "1.13.1"
-arch = "linux-amd64"
-sha = "94f874037b82ea5353f4061e543681a0e79657f787437974214629af8407d124"
+semantic_version = "1.13.1"
+architecture = "linux-amd64"
+sha_checksum = "94f874037b82ea5353f4061e543681a0e79657f787437974214629af8407d124"
 
 [[artifacts]]
 go_version = "go1.13"
-version = "1.13.0"
-arch = "linux-amd64"
-sha = "68a2297eb099d1a76097905a2ce334e3155004ec08cdea85f24527be3c48e856"
+semantic_version = "1.13.0"
+architecture = "linux-amd64"
+sha_checksum = "68a2297eb099d1a76097905a2ce334e3155004ec08cdea85f24527be3c48e856"
 
 [[artifacts]]
 go_version = "go1.13rc2"
-version = "1.13.0-rc2"
-arch = "linux-amd64"
-sha = "3cd4490021a5f1f25a7440edca03910e40a38e587b578cf52ab7143a81db1861"
+semantic_version = "1.13.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "3cd4490021a5f1f25a7440edca03910e40a38e587b578cf52ab7143a81db1861"
 
 [[artifacts]]
 go_version = "go1.13rc1"
-version = "1.13.0-rc1"
-arch = "linux-amd64"
-sha = "0b45d086aefcfb9d0ebe7fc9ffbe470e45f9c104a6a97ea275512152cdbfead1"
+semantic_version = "1.13.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "0b45d086aefcfb9d0ebe7fc9ffbe470e45f9c104a6a97ea275512152cdbfead1"
 
 [[artifacts]]
 go_version = "go1.13beta1"
-version = "1.13.0-beta1"
-arch = "linux-amd64"
-sha = "dbd131c92f381a5bc5ca1f0cfd942cb8be7d537007b6f412b5be41ff38a7d0d9"
+semantic_version = "1.13.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "dbd131c92f381a5bc5ca1f0cfd942cb8be7d537007b6f412b5be41ff38a7d0d9"
 
 [[artifacts]]
 go_version = "go1.12.17"
-version = "1.12.17"
-arch = "linux-amd64"
-sha = "a53dd476129d496047487bfd53d021dd17e0c96895865a0e7d0469ce3db8c8d2"
+semantic_version = "1.12.17"
+architecture = "linux-amd64"
+sha_checksum = "a53dd476129d496047487bfd53d021dd17e0c96895865a0e7d0469ce3db8c8d2"
 
 [[artifacts]]
 go_version = "go1.12.16"
-version = "1.12.16"
-arch = "linux-amd64"
-sha = "bf3a85d75658144c06ce986ba05e07ef08af4320089b74b1d41de3b0f340ea7e"
+semantic_version = "1.12.16"
+architecture = "linux-amd64"
+sha_checksum = "bf3a85d75658144c06ce986ba05e07ef08af4320089b74b1d41de3b0f340ea7e"
 
 [[artifacts]]
 go_version = "go1.12.15"
-version = "1.12.15"
-arch = "linux-amd64"
-sha = "61068419f3d3fcd3cc415c352c4a93d6ae0e723ac18a22ac572b4904d78b5a4c"
+semantic_version = "1.12.15"
+architecture = "linux-amd64"
+sha_checksum = "61068419f3d3fcd3cc415c352c4a93d6ae0e723ac18a22ac572b4904d78b5a4c"
 
 [[artifacts]]
 go_version = "go1.12.14"
-version = "1.12.14"
-arch = "linux-amd64"
-sha = "925a1a9d8b31c2425d7313fe73d3342288968a66e26cd8bf1b6b5656f4603fcb"
+semantic_version = "1.12.14"
+architecture = "linux-amd64"
+sha_checksum = "925a1a9d8b31c2425d7313fe73d3342288968a66e26cd8bf1b6b5656f4603fcb"
 
 [[artifacts]]
 go_version = "go1.12.13"
-version = "1.12.13"
-arch = "linux-amd64"
-sha = "da036454cb3353f9f507f0ceed4048feac611065e4e1818b434365eb32ac9bdc"
+semantic_version = "1.12.13"
+architecture = "linux-amd64"
+sha_checksum = "da036454cb3353f9f507f0ceed4048feac611065e4e1818b434365eb32ac9bdc"
 
 [[artifacts]]
 go_version = "go1.12.12"
-version = "1.12.12"
-arch = "linux-amd64"
-sha = "4cf11ac6a8fa42d26ab85e27a5d916ee171900a87745d9f7d4a29a21587d78fc"
+semantic_version = "1.12.12"
+architecture = "linux-amd64"
+sha_checksum = "4cf11ac6a8fa42d26ab85e27a5d916ee171900a87745d9f7d4a29a21587d78fc"
 
 [[artifacts]]
 go_version = "go1.12.11"
-version = "1.12.11"
-arch = "linux-amd64"
-sha = "2c5960292da8b747d83f171a28a04116b2977e809169c344268c893e4cf0a857"
+semantic_version = "1.12.11"
+architecture = "linux-amd64"
+sha_checksum = "2c5960292da8b747d83f171a28a04116b2977e809169c344268c893e4cf0a857"
 
 [[artifacts]]
 go_version = "go1.12.10"
-version = "1.12.10"
-arch = "linux-amd64"
-sha = "aaa84147433aed24e70b31da369bb6ca2859464a45de47c2a5023d8573412f6b"
+semantic_version = "1.12.10"
+architecture = "linux-amd64"
+sha_checksum = "aaa84147433aed24e70b31da369bb6ca2859464a45de47c2a5023d8573412f6b"
 
 [[artifacts]]
 go_version = "go1.12.9"
-version = "1.12.9"
-arch = "linux-amd64"
-sha = "ac2a6efcc1f5ec8bdc0db0a988bb1d301d64b6d61b7e8d9e42f662fbb75a2b9b"
+semantic_version = "1.12.9"
+architecture = "linux-amd64"
+sha_checksum = "ac2a6efcc1f5ec8bdc0db0a988bb1d301d64b6d61b7e8d9e42f662fbb75a2b9b"
 
 [[artifacts]]
 go_version = "go1.12.8"
-version = "1.12.8"
-arch = "linux-amd64"
-sha = "bd26cd4962a362ed3c11835bca32c2e131c2ae050304f2c4df9fa6ded8db85d2"
+semantic_version = "1.12.8"
+architecture = "linux-amd64"
+sha_checksum = "bd26cd4962a362ed3c11835bca32c2e131c2ae050304f2c4df9fa6ded8db85d2"
 
 [[artifacts]]
 go_version = "go1.12.7"
-version = "1.12.7"
-arch = "linux-amd64"
-sha = "66d83bfb5a9ede000e33c6579a91a29e6b101829ad41fffb5c5bb6c900e109d9"
+semantic_version = "1.12.7"
+architecture = "linux-amd64"
+sha_checksum = "66d83bfb5a9ede000e33c6579a91a29e6b101829ad41fffb5c5bb6c900e109d9"
 
 [[artifacts]]
 go_version = "go1.12.6"
-version = "1.12.6"
-arch = "linux-amd64"
-sha = "dbcf71a3c1ea53b8d54ef1b48c85a39a6c9a935d01fc8291ff2b92028e59913c"
+semantic_version = "1.12.6"
+architecture = "linux-amd64"
+sha_checksum = "dbcf71a3c1ea53b8d54ef1b48c85a39a6c9a935d01fc8291ff2b92028e59913c"
 
 [[artifacts]]
 go_version = "go1.12.5"
-version = "1.12.5"
-arch = "linux-amd64"
-sha = "aea86e3c73495f205929cfebba0d63f1382c8ac59be081b6351681415f4063cf"
+semantic_version = "1.12.5"
+architecture = "linux-amd64"
+sha_checksum = "aea86e3c73495f205929cfebba0d63f1382c8ac59be081b6351681415f4063cf"
 
 [[artifacts]]
 go_version = "go1.12.4"
-version = "1.12.4"
-arch = "linux-amd64"
-sha = "d7d1f1f88ddfe55840712dc1747f37a790cbcaa448f6c9cf51bbe10aa65442f5"
+semantic_version = "1.12.4"
+architecture = "linux-amd64"
+sha_checksum = "d7d1f1f88ddfe55840712dc1747f37a790cbcaa448f6c9cf51bbe10aa65442f5"
 
 [[artifacts]]
 go_version = "go1.12.3"
-version = "1.12.3"
-arch = "linux-amd64"
-sha = "3924819eed16e55114f02d25d03e77c916ec40b7fd15c8acb5838b63135b03df"
+semantic_version = "1.12.3"
+architecture = "linux-amd64"
+sha_checksum = "3924819eed16e55114f02d25d03e77c916ec40b7fd15c8acb5838b63135b03df"
 
 [[artifacts]]
 go_version = "go1.12.2"
-version = "1.12.2"
-arch = "linux-amd64"
-sha = "f28c1fde8f293cc5c83ae8de76373cf76ae9306909564f54e0edcf140ce8fe3f"
+semantic_version = "1.12.2"
+architecture = "linux-amd64"
+sha_checksum = "f28c1fde8f293cc5c83ae8de76373cf76ae9306909564f54e0edcf140ce8fe3f"
 
 [[artifacts]]
 go_version = "go1.12.1"
-version = "1.12.1"
-arch = "linux-amd64"
-sha = "2a3fdabf665496a0db5f41ec6af7a9b15a49fbe71a85a50ca38b1f13a103aeec"
+semantic_version = "1.12.1"
+architecture = "linux-amd64"
+sha_checksum = "2a3fdabf665496a0db5f41ec6af7a9b15a49fbe71a85a50ca38b1f13a103aeec"
 
 [[artifacts]]
 go_version = "go1.12"
-version = "1.12.0"
-arch = "linux-amd64"
-sha = "750a07fef8579ae4839458701f4df690e0b20b8bcce33b437e4df89c451b6f13"
+semantic_version = "1.12.0"
+architecture = "linux-amd64"
+sha_checksum = "750a07fef8579ae4839458701f4df690e0b20b8bcce33b437e4df89c451b6f13"
 
 [[artifacts]]
 go_version = "go1.12rc1"
-version = "1.12.0-rc1"
-arch = "linux-amd64"
-sha = "e5a03e1f2e065b17b2fbbd3429f18a6f51fe2848e0120586652b9f14ada72c9a"
+semantic_version = "1.12.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "e5a03e1f2e065b17b2fbbd3429f18a6f51fe2848e0120586652b9f14ada72c9a"
 
 [[artifacts]]
 go_version = "go1.12beta2"
-version = "1.12.0-beta2"
-arch = "linux-amd64"
-sha = "9e4884b46a72e0558187a8af6e8733e039432df1b755f14b361f18b63fa5a63e"
+semantic_version = "1.12.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "9e4884b46a72e0558187a8af6e8733e039432df1b755f14b361f18b63fa5a63e"
 
 [[artifacts]]
 go_version = "go1.12beta1"
-version = "1.12.0-beta1"
-arch = "linux-amd64"
-sha = "65bfd4a99925f1f85d712f4c1109977aa24ee4c6e198162bf8e819fdde19e875"
+semantic_version = "1.12.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "65bfd4a99925f1f85d712f4c1109977aa24ee4c6e198162bf8e819fdde19e875"
 
 [[artifacts]]
 go_version = "go1.11.13"
-version = "1.11.13"
-arch = "linux-amd64"
-sha = "50fe8e13592f8cf22304b9c4adfc11849a2c3d281b1d7e09c924ae24874c6daa"
+semantic_version = "1.11.13"
+architecture = "linux-amd64"
+sha_checksum = "50fe8e13592f8cf22304b9c4adfc11849a2c3d281b1d7e09c924ae24874c6daa"
 
 [[artifacts]]
 go_version = "go1.11.12"
-version = "1.11.12"
-arch = "linux-amd64"
-sha = "14ec881815eb9e6618f95df5eb385d961283efc196d97912595ba6484a56180d"
+semantic_version = "1.11.12"
+architecture = "linux-amd64"
+sha_checksum = "14ec881815eb9e6618f95df5eb385d961283efc196d97912595ba6484a56180d"
 
 [[artifacts]]
 go_version = "go1.11.11"
-version = "1.11.11"
-arch = "linux-amd64"
-sha = "2fd47b824d6e32154b0f6c8742d066d816667715763e06cebb710304b195c775"
+semantic_version = "1.11.11"
+architecture = "linux-amd64"
+sha_checksum = "2fd47b824d6e32154b0f6c8742d066d816667715763e06cebb710304b195c775"
 
 [[artifacts]]
 go_version = "go1.11.10"
-version = "1.11.10"
-arch = "linux-amd64"
-sha = "aefaa228b68641e266d1f23f1d95dba33f17552ba132878b65bb798ffa37e6d0"
+semantic_version = "1.11.10"
+architecture = "linux-amd64"
+sha_checksum = "aefaa228b68641e266d1f23f1d95dba33f17552ba132878b65bb798ffa37e6d0"
 
 [[artifacts]]
 go_version = "go1.11.9"
-version = "1.11.9"
-arch = "linux-amd64"
-sha = "e88aa3e39104e3ba6a95a4e05629348b4a1ec82791fb3c941a493ca349730608"
+semantic_version = "1.11.9"
+architecture = "linux-amd64"
+sha_checksum = "e88aa3e39104e3ba6a95a4e05629348b4a1ec82791fb3c941a493ca349730608"
 
 [[artifacts]]
 go_version = "go1.11.8"
-version = "1.11.8"
-arch = "linux-amd64"
-sha = "e32ab1c934b747999d04e8a550b97f4647f8b1b43e152de5650d4476bfd1d2e1"
+semantic_version = "1.11.8"
+architecture = "linux-amd64"
+sha_checksum = "e32ab1c934b747999d04e8a550b97f4647f8b1b43e152de5650d4476bfd1d2e1"
 
 [[artifacts]]
 go_version = "go1.11.7"
-version = "1.11.7"
-arch = "linux-amd64"
-sha = "db687814288b3b541c1754dfd4ecc2b8fd0d5e7995624945e3054a350ca573d8"
+semantic_version = "1.11.7"
+architecture = "linux-amd64"
+sha_checksum = "db687814288b3b541c1754dfd4ecc2b8fd0d5e7995624945e3054a350ca573d8"
 
 [[artifacts]]
 go_version = "go1.11.6"
-version = "1.11.6"
-arch = "linux-amd64"
-sha = "4e1864282d8d20010d6385a12a1e35641783a380a7c57907bfb46a5499c5eb49"
+semantic_version = "1.11.6"
+architecture = "linux-amd64"
+sha_checksum = "4e1864282d8d20010d6385a12a1e35641783a380a7c57907bfb46a5499c5eb49"
 
 [[artifacts]]
 go_version = "go1.11.5"
-version = "1.11.5"
-arch = "linux-amd64"
-sha = "ff54aafedff961eb94792487e827515da683d61a5f9482f668008832631e5d25"
+semantic_version = "1.11.5"
+architecture = "linux-amd64"
+sha_checksum = "ff54aafedff961eb94792487e827515da683d61a5f9482f668008832631e5d25"
 
 [[artifacts]]
 go_version = "go1.11.4"
-version = "1.11.4"
-arch = "linux-amd64"
-sha = "fb26c30e6a04ad937bbc657a1b5bba92f80096af1e8ee6da6430c045a8db3a5b"
+semantic_version = "1.11.4"
+architecture = "linux-amd64"
+sha_checksum = "fb26c30e6a04ad937bbc657a1b5bba92f80096af1e8ee6da6430c045a8db3a5b"
 
 [[artifacts]]
 go_version = "go1.11.3"
-version = "1.11.3"
-arch = "linux-amd64"
-sha = "d20a4869ffb13cee0f7ee777bf18c7b9b67ef0375f93fac1298519e0c227a07f"
+semantic_version = "1.11.3"
+architecture = "linux-amd64"
+sha_checksum = "d20a4869ffb13cee0f7ee777bf18c7b9b67ef0375f93fac1298519e0c227a07f"
 
 [[artifacts]]
 go_version = "go1.11.2"
-version = "1.11.2"
-arch = "linux-amd64"
-sha = "1dfe664fa3d8ad714bbd15a36627992effd150ddabd7523931f077b3926d736d"
+semantic_version = "1.11.2"
+architecture = "linux-amd64"
+sha_checksum = "1dfe664fa3d8ad714bbd15a36627992effd150ddabd7523931f077b3926d736d"
 
 [[artifacts]]
 go_version = "go1.11.1"
-version = "1.11.1"
-arch = "linux-amd64"
-sha = "2871270d8ff0c8c69f161aaae42f9f28739855ff5c5204752a8d92a1c9f63993"
+semantic_version = "1.11.1"
+architecture = "linux-amd64"
+sha_checksum = "2871270d8ff0c8c69f161aaae42f9f28739855ff5c5204752a8d92a1c9f63993"
 
 [[artifacts]]
 go_version = "go1.11"
-version = "1.11.0"
-arch = "linux-amd64"
-sha = "b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499"
+semantic_version = "1.11.0"
+architecture = "linux-amd64"
+sha_checksum = "b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499"
 
 [[artifacts]]
 go_version = "go1.11rc2"
-version = "1.11.0-rc2"
-arch = "linux-amd64"
-sha = "7d3fc1dec64b056cbd22ffd80bb9733725c1296aabfd58cc92bab8a5c6560e03"
+semantic_version = "1.11.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "7d3fc1dec64b056cbd22ffd80bb9733725c1296aabfd58cc92bab8a5c6560e03"
 
 [[artifacts]]
 go_version = "go1.11rc1"
-version = "1.11.0-rc1"
-arch = "linux-amd64"
-sha = "1a071f069982427b245aea736d3174e065a12e8481c34051c672d62a5ca59ca9"
+semantic_version = "1.11.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "1a071f069982427b245aea736d3174e065a12e8481c34051c672d62a5ca59ca9"
 
 [[artifacts]]
 go_version = "go1.11beta3"
-version = "1.11.0-beta3"
-arch = "linux-amd64"
-sha = "674c1091f4712c1cfdcd77ecddafe6aef81cbda740af64a6e3f893ddf3dfb11c"
+semantic_version = "1.11.0-beta3"
+architecture = "linux-amd64"
+sha_checksum = "674c1091f4712c1cfdcd77ecddafe6aef81cbda740af64a6e3f893ddf3dfb11c"
 
 [[artifacts]]
 go_version = "go1.11beta2"
-version = "1.11.0-beta2"
-arch = "linux-amd64"
-sha = "ccb60f1ae6efe4fcef115db8143eb7f9ba134c63486f47b2c5176706ede35af5"
+semantic_version = "1.11.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "ccb60f1ae6efe4fcef115db8143eb7f9ba134c63486f47b2c5176706ede35af5"
 
 [[artifacts]]
 go_version = "go1.11beta1"
-version = "1.11.0-beta1"
-arch = "linux-amd64"
-sha = "df7fe096ffab5d331d35c6d038d2ec0426b45ce17f55a93037e371d3af9d4e6d"
+semantic_version = "1.11.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "df7fe096ffab5d331d35c6d038d2ec0426b45ce17f55a93037e371d3af9d4e6d"
 
 [[artifacts]]
 go_version = "go1.10.8"
-version = "1.10.8"
-arch = "linux-amd64"
-sha = "d8626fb6f9a3ab397d88c483b576be41fa81eefcec2fd18562c87626dbb3c39e"
+semantic_version = "1.10.8"
+architecture = "linux-amd64"
+sha_checksum = "d8626fb6f9a3ab397d88c483b576be41fa81eefcec2fd18562c87626dbb3c39e"
 
 [[artifacts]]
 go_version = "go1.10.7"
-version = "1.10.7"
-arch = "linux-amd64"
-sha = "1aabe10919048822f3bb1865f7a22f8b78387a12c03cd573101594bc8fb33579"
+semantic_version = "1.10.7"
+architecture = "linux-amd64"
+sha_checksum = "1aabe10919048822f3bb1865f7a22f8b78387a12c03cd573101594bc8fb33579"
 
 [[artifacts]]
 go_version = "go1.10.6"
-version = "1.10.6"
-arch = "linux-amd64"
-sha = "acbdedf28b55b38d2db6f06209a25a869a36d31bdcf09fd2ec3d40e1279e0592"
+semantic_version = "1.10.6"
+architecture = "linux-amd64"
+sha_checksum = "acbdedf28b55b38d2db6f06209a25a869a36d31bdcf09fd2ec3d40e1279e0592"
 
 [[artifacts]]
 go_version = "go1.10.5"
-version = "1.10.5"
-arch = "linux-amd64"
-sha = "a035d9beda8341b645d3f45a1b620cf2d8fb0c5eb409be36b389c0fd384ecc3a"
+semantic_version = "1.10.5"
+architecture = "linux-amd64"
+sha_checksum = "a035d9beda8341b645d3f45a1b620cf2d8fb0c5eb409be36b389c0fd384ecc3a"
 
 [[artifacts]]
 go_version = "go1.10.4"
-version = "1.10.4"
-arch = "linux-amd64"
-sha = "fa04efdb17a275a0c6e137f969a1c4eb878939e91e1da16060ce42f02c2ec5ec"
+semantic_version = "1.10.4"
+architecture = "linux-amd64"
+sha_checksum = "fa04efdb17a275a0c6e137f969a1c4eb878939e91e1da16060ce42f02c2ec5ec"
 
 [[artifacts]]
 go_version = "go1.10.3"
-version = "1.10.3"
-arch = "linux-amd64"
-sha = "fa1b0e45d3b647c252f51f5e1204aba049cde4af177ef9f2181f43004f901035"
+semantic_version = "1.10.3"
+architecture = "linux-amd64"
+sha_checksum = "fa1b0e45d3b647c252f51f5e1204aba049cde4af177ef9f2181f43004f901035"
 
 [[artifacts]]
 go_version = "go1.10.2"
-version = "1.10.2"
-arch = "linux-amd64"
-sha = "4b677d698c65370afa33757b6954ade60347aaca310ea92a63ed717d7cb0c2ff"
+semantic_version = "1.10.2"
+architecture = "linux-amd64"
+sha_checksum = "4b677d698c65370afa33757b6954ade60347aaca310ea92a63ed717d7cb0c2ff"
 
 [[artifacts]]
 go_version = "go1.10.1"
-version = "1.10.1"
-arch = "linux-amd64"
-sha = "72d820dec546752e5a8303b33b009079c15c2390ce76d67cf514991646c6127b"
+semantic_version = "1.10.1"
+architecture = "linux-amd64"
+sha_checksum = "72d820dec546752e5a8303b33b009079c15c2390ce76d67cf514991646c6127b"
 
 [[artifacts]]
 go_version = "go1.10"
-version = "1.10.0"
-arch = "linux-amd64"
-sha = "b5a64335f1490277b585832d1f6c7f8c6c11206cba5cd3f771dcb87b98ad1a33"
+semantic_version = "1.10.0"
+architecture = "linux-amd64"
+sha_checksum = "b5a64335f1490277b585832d1f6c7f8c6c11206cba5cd3f771dcb87b98ad1a33"
 
 [[artifacts]]
 go_version = "go1.10rc2"
-version = "1.10.0-rc2"
-arch = "linux-amd64"
-sha = "6a6a4c0654bc603bcfee4d6ac34a479c260ac61b3edcc8d6773384eb0bda512e"
+semantic_version = "1.10.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "6a6a4c0654bc603bcfee4d6ac34a479c260ac61b3edcc8d6773384eb0bda512e"
 
 [[artifacts]]
 go_version = "go1.10rc1"
-version = "1.10.0-rc1"
-arch = "linux-amd64"
-sha = "c10d3cc7760bf3799037bd39027bbffdc568aea21d6fe60fe833373289c7b7c6"
+semantic_version = "1.10.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "c10d3cc7760bf3799037bd39027bbffdc568aea21d6fe60fe833373289c7b7c6"
 
 [[artifacts]]
 go_version = "go1.10beta2"
-version = "1.10.0-beta2"
-arch = "linux-amd64"
-sha = "ab3abb7d731dd5ac7a06d5d5e64ef19946f57d4ce34555d262a87b8899901a93"
+semantic_version = "1.10.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "ab3abb7d731dd5ac7a06d5d5e64ef19946f57d4ce34555d262a87b8899901a93"
 
 [[artifacts]]
 go_version = "go1.10beta1"
-version = "1.10.0-beta1"
-arch = "linux-amd64"
-sha = "ec7a10b5bf147a8e06cf64e27384ff3c6d065c74ebd8fdd31f572714f74a1055"
+semantic_version = "1.10.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "ec7a10b5bf147a8e06cf64e27384ff3c6d065c74ebd8fdd31f572714f74a1055"
 
 [[artifacts]]
 go_version = "go1.9.7"
-version = "1.9.7"
-arch = "linux-amd64"
-sha = "88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee"
+semantic_version = "1.9.7"
+architecture = "linux-amd64"
+sha_checksum = "88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee"
 
 [[artifacts]]
 go_version = "go1.9.6"
-version = "1.9.6"
-arch = "linux-amd64"
-sha = "d1eb07f99ac06906225ac2b296503f06cc257b472e7d7817b8f822fe3766ebfe"
+semantic_version = "1.9.6"
+architecture = "linux-amd64"
+sha_checksum = "d1eb07f99ac06906225ac2b296503f06cc257b472e7d7817b8f822fe3766ebfe"
 
 [[artifacts]]
 go_version = "go1.9.5"
-version = "1.9.5"
-arch = "linux-amd64"
-sha = "d21bdabf4272c2248c41b45cec606844bdc5c7c04240899bde36c01a28c51ee7"
+semantic_version = "1.9.5"
+architecture = "linux-amd64"
+sha_checksum = "d21bdabf4272c2248c41b45cec606844bdc5c7c04240899bde36c01a28c51ee7"
 
 [[artifacts]]
 go_version = "go1.9.4"
-version = "1.9.4"
-arch = "linux-amd64"
-sha = "15b0937615809f87321a457bb1265f946f9f6e736c563d6c5e0bd2c22e44f779"
+semantic_version = "1.9.4"
+architecture = "linux-amd64"
+sha_checksum = "15b0937615809f87321a457bb1265f946f9f6e736c563d6c5e0bd2c22e44f779"
 
 [[artifacts]]
 go_version = "go1.9.3"
-version = "1.9.3"
-arch = "linux-amd64"
-sha = "a4da5f4c07dfda8194c4621611aeb7ceaab98af0b38bfb29e1be2ebb04c3556c"
+semantic_version = "1.9.3"
+architecture = "linux-amd64"
+sha_checksum = "a4da5f4c07dfda8194c4621611aeb7ceaab98af0b38bfb29e1be2ebb04c3556c"
 
 [[artifacts]]
 go_version = "go1.9.2"
-version = "1.9.2"
-arch = "linux-amd64"
-sha = "de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b"
+semantic_version = "1.9.2"
+architecture = "linux-amd64"
+sha_checksum = "de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b"
 
 [[artifacts]]
 go_version = "go1.9.1"
-version = "1.9.1"
-arch = "linux-amd64"
-sha = "07d81c6b6b4c2dcf1b5ef7c27aaebd3691cdb40548500941f92b221147c5d9c7"
+semantic_version = "1.9.1"
+architecture = "linux-amd64"
+sha_checksum = "07d81c6b6b4c2dcf1b5ef7c27aaebd3691cdb40548500941f92b221147c5d9c7"
 
 [[artifacts]]
 go_version = "go1.9"
-version = "1.9.0"
-arch = "linux-amd64"
-sha = "d70eadefce8e160638a9a6db97f7192d8463069ab33138893ad3bf31b0650a79"
+semantic_version = "1.9.0"
+architecture = "linux-amd64"
+sha_checksum = "d70eadefce8e160638a9a6db97f7192d8463069ab33138893ad3bf31b0650a79"
 
 [[artifacts]]
 go_version = "go1.9rc2"
-version = "1.9.0-rc2"
-arch = "linux-amd64"
-sha = "0d17d440f02505d8fbf6becb777175c242486c1d71046705876dcd20e0574002"
+semantic_version = "1.9.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "0d17d440f02505d8fbf6becb777175c242486c1d71046705876dcd20e0574002"
 
 [[artifacts]]
 go_version = "go1.9rc1"
-version = "1.9.0-rc1"
-arch = "linux-amd64"
-sha = "a8ea2ac09878b7a5ac04fe52f144cdc64ab637230638af6975c0f1facbba3ec2"
+semantic_version = "1.9.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "a8ea2ac09878b7a5ac04fe52f144cdc64ab637230638af6975c0f1facbba3ec2"
 
 [[artifacts]]
 go_version = "go1.9beta2"
-version = "1.9.0-beta2"
-arch = "linux-amd64"
-sha = "023f778f063d2234e7c95f572a92298b307807693f7e045a88c90ecd7a08f29d"
+semantic_version = "1.9.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "023f778f063d2234e7c95f572a92298b307807693f7e045a88c90ecd7a08f29d"
 
 [[artifacts]]
 go_version = "go1.9beta1"
-version = "1.9.0-beta1"
-arch = "linux-amd64"
-sha = "85719a2c704ad1352052e185c760d7c65b9d8a18b491287a7e5f6775ccc27d3b"
+semantic_version = "1.9.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "85719a2c704ad1352052e185c760d7c65b9d8a18b491287a7e5f6775ccc27d3b"
 
 [[artifacts]]
 go_version = "go1.8.7"
-version = "1.8.7"
-arch = "linux-amd64"
-sha = "de32e8db3dc030e1448a6ca52d87a1e04ad31c6b212007616cfcc87beb0e4d60"
+semantic_version = "1.8.7"
+architecture = "linux-amd64"
+sha_checksum = "de32e8db3dc030e1448a6ca52d87a1e04ad31c6b212007616cfcc87beb0e4d60"
 
 [[artifacts]]
 go_version = "go1.8.6"
-version = "1.8.6"
-arch = "linux-amd64"
-sha = "f558c91c2f6aac7222e0bd83e6dd595b8fac85aaa96e55d15229542eb4aaa1ff"
+semantic_version = "1.8.6"
+architecture = "linux-amd64"
+sha_checksum = "f558c91c2f6aac7222e0bd83e6dd595b8fac85aaa96e55d15229542eb4aaa1ff"
 
 [[artifacts]]
 go_version = "go1.8.5"
-version = "1.8.5"
-arch = "linux-amd64"
-sha = "4f8aeea2033a2d731f2f75c4d0a4995b357b22af56ed69b3015f4291fca4d42d"
+semantic_version = "1.8.5"
+architecture = "linux-amd64"
+sha_checksum = "4f8aeea2033a2d731f2f75c4d0a4995b357b22af56ed69b3015f4291fca4d42d"
 
 [[artifacts]]
 go_version = "go1.8.5rc4"
-version = "1.8.5-rc4"
-arch = "linux-amd64"
-sha = "1c26da1515641d127d2d30e13f9264e92b68e5b6353fc770e1aea402bf1eb899"
+semantic_version = "1.8.5-rc4"
+architecture = "linux-amd64"
+sha_checksum = "1c26da1515641d127d2d30e13f9264e92b68e5b6353fc770e1aea402bf1eb899"
 
 [[artifacts]]
 go_version = "go1.8.4"
-version = "1.8.4"
-arch = "linux-amd64"
-sha = "0ef737a0aff9742af0f63ac13c97ce36f0bbc8b67385169e41e395f34170944f"
+semantic_version = "1.8.4"
+architecture = "linux-amd64"
+sha_checksum = "0ef737a0aff9742af0f63ac13c97ce36f0bbc8b67385169e41e395f34170944f"
 
 [[artifacts]]
 go_version = "go1.8.3"
-version = "1.8.3"
-arch = "linux-amd64"
-sha = "1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772"
+semantic_version = "1.8.3"
+architecture = "linux-amd64"
+sha_checksum = "1862f4c3d3907e59b04a757cfda0ea7aa9ef39274af99a784f5be843c80c6772"
 
 [[artifacts]]
 go_version = "go1.8.2"
-version = "1.8.2"
-arch = "linux-amd64"
-sha = "5477d6c9a4f96fa120847fafa88319d7b56b5d5068e41c3587eebe248b939be7"
+semantic_version = "1.8.2"
+architecture = "linux-amd64"
+sha_checksum = "5477d6c9a4f96fa120847fafa88319d7b56b5d5068e41c3587eebe248b939be7"
 
 [[artifacts]]
 go_version = "go1.8.1"
-version = "1.8.1"
-arch = "linux-amd64"
-sha = "a579ab19d5237e263254f1eac5352efcf1d70b9dacadb6d6bb12b0911ede8994"
+semantic_version = "1.8.1"
+architecture = "linux-amd64"
+sha_checksum = "a579ab19d5237e263254f1eac5352efcf1d70b9dacadb6d6bb12b0911ede8994"
 
 [[artifacts]]
 go_version = "go1.8"
-version = "1.8.0"
-arch = "linux-amd64"
-sha = "53ab94104ee3923e228a2cb2116e5e462ad3ebaeea06ff04463479d7f12d27ca"
+semantic_version = "1.8.0"
+architecture = "linux-amd64"
+sha_checksum = "53ab94104ee3923e228a2cb2116e5e462ad3ebaeea06ff04463479d7f12d27ca"
 
 [[artifacts]]
 go_version = "go1.8rc3"
-version = "1.8.0-rc3"
-arch = "linux-amd64"
-sha = "0ff3faba02ac83920a65b453785771e75f128fbf9ba4ad1d5e72c044103f9c7a"
+semantic_version = "1.8.0-rc3"
+architecture = "linux-amd64"
+sha_checksum = "0ff3faba02ac83920a65b453785771e75f128fbf9ba4ad1d5e72c044103f9c7a"
 
 [[artifacts]]
 go_version = "go1.8rc2"
-version = "1.8.0-rc2"
-arch = "linux-amd64"
-sha = "d62c2d44d0c6b434e3cda12505f3c9fb880757e3396af1e9ba861f7b547cc864"
+semantic_version = "1.8.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "d62c2d44d0c6b434e3cda12505f3c9fb880757e3396af1e9ba861f7b547cc864"
 
 [[artifacts]]
 go_version = "go1.8rc1"
-version = "1.8.0-rc1"
-arch = "linux-amd64"
-sha = "bb8fe0d81161e4a8b0a8b2145ee5f8a60370baf5d48c07a83f6f09e1ad253bec"
+semantic_version = "1.8.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "bb8fe0d81161e4a8b0a8b2145ee5f8a60370baf5d48c07a83f6f09e1ad253bec"
 
 [[artifacts]]
 go_version = "go1.8beta2"
-version = "1.8.0-beta2"
-arch = "linux-amd64"
-sha = "4cb9bfb0e82d665871b84070929d6eeb4d51af6bedbc8fdd3df5766e937ef84c"
+semantic_version = "1.8.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "4cb9bfb0e82d665871b84070929d6eeb4d51af6bedbc8fdd3df5766e937ef84c"
 
 [[artifacts]]
 go_version = "go1.8beta1"
-version = "1.8.0-beta1"
-arch = "linux-amd64"
-sha = "768d8d73ccea69c9a0941f9ef2333b1ff8c82120abfcdedd4e91af039c674a8d"
+semantic_version = "1.8.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "768d8d73ccea69c9a0941f9ef2333b1ff8c82120abfcdedd4e91af039c674a8d"
 
 [[artifacts]]
 go_version = "go1.7.6"
-version = "1.7.6"
-arch = "linux-amd64"
-sha = "ad5808bf42b014c22dd7646458f631385003049ded0bb6af2efc7f1f79fa29ea"
+semantic_version = "1.7.6"
+architecture = "linux-amd64"
+sha_checksum = "ad5808bf42b014c22dd7646458f631385003049ded0bb6af2efc7f1f79fa29ea"
 
 [[artifacts]]
 go_version = "go1.7.5"
-version = "1.7.5"
-arch = "linux-amd64"
-sha = "2e4dd6c44f0693bef4e7b46cc701513d74c3cc44f2419bf519d7868b12931ac3"
+semantic_version = "1.7.5"
+architecture = "linux-amd64"
+sha_checksum = "2e4dd6c44f0693bef4e7b46cc701513d74c3cc44f2419bf519d7868b12931ac3"
 
 [[artifacts]]
 go_version = "go1.7.4"
-version = "1.7.4"
-arch = "linux-amd64"
-sha = "47fda42e46b4c3ec93fa5d4d4cc6a748aa3f9411a2a2b7e08e3a6d80d753ec8b"
+semantic_version = "1.7.4"
+architecture = "linux-amd64"
+sha_checksum = "47fda42e46b4c3ec93fa5d4d4cc6a748aa3f9411a2a2b7e08e3a6d80d753ec8b"
 
 [[artifacts]]
 go_version = "go1.7.3"
-version = "1.7.3"
-arch = "linux-amd64"
-sha = "508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e"
+semantic_version = "1.7.3"
+architecture = "linux-amd64"
+sha_checksum = "508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e"
 
 [[artifacts]]
 go_version = "go1.7.2"
-version = "1.7.2"
-arch = "linux-amd64"
-sha = "9985da3f056093ff7a7e0814e14168112ac66c3585c56969c1d1ab2b72c36fdd"
+semantic_version = "1.7.2"
+architecture = "linux-amd64"
+sha_checksum = "9985da3f056093ff7a7e0814e14168112ac66c3585c56969c1d1ab2b72c36fdd"
 
 [[artifacts]]
 go_version = "go1.7.1"
-version = "1.7.1"
-arch = "linux-amd64"
-sha = "43ad621c9b014cde8db17393dc108378d37bc853aa351a6c74bf6432c1bbd182"
+semantic_version = "1.7.1"
+architecture = "linux-amd64"
+sha_checksum = "43ad621c9b014cde8db17393dc108378d37bc853aa351a6c74bf6432c1bbd182"
 
 [[artifacts]]
 go_version = "go1.7"
-version = "1.7.0"
-arch = "linux-amd64"
-sha = "702ad90f705365227e902b42d91dd1a40e48ca7f67a2f4b2fd052aaa4295cd95"
+semantic_version = "1.7.0"
+architecture = "linux-amd64"
+sha_checksum = "702ad90f705365227e902b42d91dd1a40e48ca7f67a2f4b2fd052aaa4295cd95"
 
 [[artifacts]]
 go_version = "go1.7rc6"
-version = "1.7.0-rc6"
-arch = "linux-amd64"
-sha = "45e3dfba542927ea58146a5d47a983feb36401ccafeea28a9e0a79534738b154"
+semantic_version = "1.7.0-rc6"
+architecture = "linux-amd64"
+sha_checksum = "45e3dfba542927ea58146a5d47a983feb36401ccafeea28a9e0a79534738b154"
 
 [[artifacts]]
 go_version = "go1.7rc5"
-version = "1.7.0-rc5"
-arch = "linux-amd64"
-sha = "2ddf9f553aefe91d96dd3f13be55159869a221fd0111cd211dccf2cab3ee5e4a"
+semantic_version = "1.7.0-rc5"
+architecture = "linux-amd64"
+sha_checksum = "2ddf9f553aefe91d96dd3f13be55159869a221fd0111cd211dccf2cab3ee5e4a"
 
 [[artifacts]]
 go_version = "go1.7rc4"
-version = "1.7.0-rc4"
-arch = "linux-amd64"
-sha = "b75fa3bd2159754c404e3c83ba333d1ea80cb74de382b409afa6996abf0cc48a"
+semantic_version = "1.7.0-rc4"
+architecture = "linux-amd64"
+sha_checksum = "b75fa3bd2159754c404e3c83ba333d1ea80cb74de382b409afa6996abf0cc48a"
 
 [[artifacts]]
 go_version = "go1.7rc3"
-version = "1.7.0-rc3"
-arch = "linux-amd64"
-sha = "53393c132223415c30ef877cb5c900d989f8a953e864e1119aeaedbca1918144"
+semantic_version = "1.7.0-rc3"
+architecture = "linux-amd64"
+sha_checksum = "53393c132223415c30ef877cb5c900d989f8a953e864e1119aeaedbca1918144"
 
 [[artifacts]]
 go_version = "go1.7rc2"
-version = "1.7.0-rc2"
-arch = "linux-amd64"
-sha = "145e486499d349757cbb7ae8dfeeea5d7a76f146f6c8880173fe3d0aacc5dd42"
+semantic_version = "1.7.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "145e486499d349757cbb7ae8dfeeea5d7a76f146f6c8880173fe3d0aacc5dd42"
 
 [[artifacts]]
 go_version = "go1.7rc1"
-version = "1.7.0-rc1"
-arch = "linux-amd64"
-sha = "afe956b6d323c68fbd851f4e962f26f16dde61d7caa1de1a8408c7de0b6034aa"
+semantic_version = "1.7.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "afe956b6d323c68fbd851f4e962f26f16dde61d7caa1de1a8408c7de0b6034aa"
 
 [[artifacts]]
 go_version = "go1.7beta2"
-version = "1.7.0-beta2"
-arch = "linux-amd64"
-sha = "688f895b51def9e065fb2610ff91afcb2b0d9637233b74130c8ca331d35d5ca5"
+semantic_version = "1.7.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "688f895b51def9e065fb2610ff91afcb2b0d9637233b74130c8ca331d35d5ca5"
 
 [[artifacts]]
 go_version = "go1.7beta1"
-version = "1.7.0-beta1"
-arch = "linux-amd64"
-sha = "a55e718935e2be1d5b920ed262fd06885d2d7fc4eab7722aa02c205d80532e3b"
+semantic_version = "1.7.0-beta1"
+architecture = "linux-amd64"
+sha_checksum = "a55e718935e2be1d5b920ed262fd06885d2d7fc4eab7722aa02c205d80532e3b"
 
 [[artifacts]]
 go_version = "go1.6.4"
-version = "1.6.4"
-arch = "linux-amd64"
-sha = "b58bf5cede40b21812dfa031258db18fc39746cc0972bc26dae0393acc377aaf"
+semantic_version = "1.6.4"
+architecture = "linux-amd64"
+sha_checksum = "b58bf5cede40b21812dfa031258db18fc39746cc0972bc26dae0393acc377aaf"
 
 [[artifacts]]
 go_version = "go1.6.3"
-version = "1.6.3"
-arch = "linux-amd64"
-sha = "cdde5e08530c0579255d6153b08fdb3b8e47caabbe717bc7bcd7561275a87aeb"
+semantic_version = "1.6.3"
+architecture = "linux-amd64"
+sha_checksum = "cdde5e08530c0579255d6153b08fdb3b8e47caabbe717bc7bcd7561275a87aeb"
 
 [[artifacts]]
 go_version = "go1.6.2"
-version = "1.6.2"
-arch = "linux-amd64"
-sha = "e40c36ae71756198478624ed1bb4ce17597b3c19d243f3f0899bb5740d56212a"
+semantic_version = "1.6.2"
+architecture = "linux-amd64"
+sha_checksum = "e40c36ae71756198478624ed1bb4ce17597b3c19d243f3f0899bb5740d56212a"
 
 [[artifacts]]
 go_version = "go1.6.1"
-version = "1.6.1"
-arch = "linux-amd64"
-sha = "6d894da8b4ad3f7f6c295db0d73ccc3646bce630e1c43e662a0120681d47e988"
+semantic_version = "1.6.1"
+architecture = "linux-amd64"
+sha_checksum = "6d894da8b4ad3f7f6c295db0d73ccc3646bce630e1c43e662a0120681d47e988"
 
 [[artifacts]]
 go_version = "go1.6"
-version = "1.6.0"
-arch = "linux-amd64"
-sha = "5470eac05d273c74ff8bac7bef5bad0b5abbd1c4052efbdbc8db45332e836b0b"
+semantic_version = "1.6.0"
+architecture = "linux-amd64"
+sha_checksum = "5470eac05d273c74ff8bac7bef5bad0b5abbd1c4052efbdbc8db45332e836b0b"
 
 [[artifacts]]
 go_version = "go1.5.4"
-version = "1.5.4"
-arch = "linux-amd64"
-sha = "a3358721210787dc1e06f5ea1460ae0564f22a0fbd91be9dcd947fb1d19b9560"
+semantic_version = "1.5.4"
+architecture = "linux-amd64"
+sha_checksum = "a3358721210787dc1e06f5ea1460ae0564f22a0fbd91be9dcd947fb1d19b9560"
 
 [[artifacts]]
 go_version = "go1.5.3"
-version = "1.5.3"
-arch = "linux-amd64"
-sha = "43afe0c5017e502630b1aea4d44b8a7f059bf60d7f29dfd58db454d4e4e0ae53"
+semantic_version = "1.5.3"
+architecture = "linux-amd64"
+sha_checksum = "43afe0c5017e502630b1aea4d44b8a7f059bf60d7f29dfd58db454d4e4e0ae53"
 
 [[artifacts]]
 go_version = "go1.5.2"
-version = "1.5.2"
-arch = "linux-amd64"
-sha = "cae87ed095e8d94a81871281d35da7829bd1234e"
+semantic_version = "1.5.2"
+architecture = "linux-amd64"
+sha_checksum = "cae87ed095e8d94a81871281d35da7829bd1234e"
 
 [[artifacts]]
 go_version = "go1.5.1"
-version = "1.5.1"
-arch = "linux-amd64"
-sha = "46eecd290d8803887dec718c691cc243f2175fe0"
+semantic_version = "1.5.1"
+architecture = "linux-amd64"
+sha_checksum = "46eecd290d8803887dec718c691cc243f2175fe0"
 
 [[artifacts]]
 go_version = "go1.5"
-version = "1.5.0"
-arch = "linux-amd64"
-sha = "5817fa4b2252afdb02e11e8b9dc1d9173ef3bd5a"
+semantic_version = "1.5.0"
+architecture = "linux-amd64"
+sha_checksum = "5817fa4b2252afdb02e11e8b9dc1d9173ef3bd5a"
 
 [[artifacts]]
 go_version = "go1.4.3"
-version = "1.4.3"
-arch = "linux-amd64"
-sha = "332b64236d30a8805fc8dd8b3a269915b4c507fe"
+semantic_version = "1.4.3"
+architecture = "linux-amd64"
+sha_checksum = "332b64236d30a8805fc8dd8b3a269915b4c507fe"
 
 [[artifacts]]
 go_version = "go1.4.2"
-version = "1.4.2"
-arch = "linux-amd64"
-sha = "5020af94b52b65cc9b6f11d50a67e4bae07b0aff"
+semantic_version = "1.4.2"
+architecture = "linux-amd64"
+sha_checksum = "5020af94b52b65cc9b6f11d50a67e4bae07b0aff"
 
 [[artifacts]]
 go_version = "go1.4.1"
-version = "1.4.1"
-arch = "linux-amd64"
-sha = "3e871200e13c0b059b14866d428910de0a4c51ed"
+semantic_version = "1.4.1"
+architecture = "linux-amd64"
+sha_checksum = "3e871200e13c0b059b14866d428910de0a4c51ed"
 
 [[artifacts]]
 go_version = "go1.4"
-version = "1.4.0"
-arch = "linux-amd64"
-sha = "cd82abcb0734f82f7cf2d576c9528cebdafac4c6"
+semantic_version = "1.4.0"
+architecture = "linux-amd64"
+sha_checksum = "cd82abcb0734f82f7cf2d576c9528cebdafac4c6"
 
 [[artifacts]]
 go_version = "go1.3.3"
-version = "1.3.3"
-arch = "linux-amd64"
-sha = "14068fbe349db34b838853a7878621bbd2b24646"
+semantic_version = "1.3.3"
+architecture = "linux-amd64"
+sha_checksum = "14068fbe349db34b838853a7878621bbd2b24646"
 
 [[artifacts]]
 go_version = "go1.3.2"
-version = "1.3.2"
-arch = "linux-amd64"
-sha = "0e4b6120eee6d45e2e4374dac4fe7607df4cbe42"
+semantic_version = "1.3.2"
+architecture = "linux-amd64"
+sha_checksum = "0e4b6120eee6d45e2e4374dac4fe7607df4cbe42"
 
 [[artifacts]]
 go_version = "go1.3.1"
-version = "1.3.1"
-arch = "linux-amd64"
-sha = "3af011cc19b21c7180f2604fd85fbc4ddde97143"
+semantic_version = "1.3.1"
+architecture = "linux-amd64"
+sha_checksum = "3af011cc19b21c7180f2604fd85fbc4ddde97143"
 
 [[artifacts]]
 go_version = "go1.3"
-version = "1.3.0"
-arch = "linux-amd64"
-sha = "b6b154933039987056ac307e20c25fa508a06ba6"
+semantic_version = "1.3.0"
+architecture = "linux-amd64"
+sha_checksum = "b6b154933039987056ac307e20c25fa508a06ba6"
 
 [[artifacts]]
 go_version = "go1.2.2"
-version = "1.2.2"
-arch = "linux-amd64"
-sha = "6bd151ca49c435462c8bf019477a6244b958ebb5"
+semantic_version = "1.2.2"
+architecture = "linux-amd64"
+sha_checksum = "6bd151ca49c435462c8bf019477a6244b958ebb5"
 
 [[artifacts]]
 go_version = "go1.2.1"
-version = "1.2.1"
-arch = "linux-amd64"
-sha = "d6e9623b8cf566599003dac6c402d03a62f48d98158bfcfc3b0c743b51ad4be6"
+semantic_version = "1.2.1"
+architecture = "linux-amd64"
+sha_checksum = "d6e9623b8cf566599003dac6c402d03a62f48d98158bfcfc3b0c743b51ad4be6"
 
 [[artifacts]]
 go_version = "go1.2"
-version = "1.2.0"
-arch = "linux-amd64"
-sha = "1252ca0aa0a96d53c0592fbc4ea9c9ff5c6b588169c92e08d06da9d89d9d91f2"
+semantic_version = "1.2.0"
+architecture = "linux-amd64"
+sha_checksum = "1252ca0aa0a96d53c0592fbc4ea9c9ff5c6b588169c92e08d06da9d89d9d91f2"
 
 [[artifacts]]
 go_version = "go1.1.2"
-version = "1.1.2"
-arch = "linux-amd64"
-sha = "ad583ff91bd2955fc48d24001785587e3c3b5ce5c09e4971a37028db4c3f6a98"
+semantic_version = "1.1.2"
+architecture = "linux-amd64"
+sha_checksum = "ad583ff91bd2955fc48d24001785587e3c3b5ce5c09e4971a37028db4c3f6a98"
 
 [[artifacts]]
 go_version = "go1.1.1"
-version = "1.1.1"
-arch = "linux-amd64"
-sha = "71ff6e7bfd8f59a12f2fc7b7abf5d006fad24664e11e39bec61c2ac84d2e573f"
+semantic_version = "1.1.1"
+architecture = "linux-amd64"
+sha_checksum = "71ff6e7bfd8f59a12f2fc7b7abf5d006fad24664e11e39bec61c2ac84d2e573f"
 
 [[artifacts]]
 go_version = "go1.1"
-version = "1.1.0"
-arch = "linux-amd64"
-sha = "2ed0548bc9f9071c24d253f945dd8354bdaa8a9925e48ad5eef586afbf6cfe8a"
+semantic_version = "1.1.0"
+architecture = "linux-amd64"
+sha_checksum = "2ed0548bc9f9071c24d253f945dd8354bdaa8a9925e48ad5eef586afbf6cfe8a"
 
 [[artifacts]]
 go_version = "go1.0.3"
-version = "1.0.3"
-arch = "linux-amd64"
-sha = "c3389f7069369950bb196d169100d10c5d4eb4ecd5ab5c848d79c3d072244ab6"
+semantic_version = "1.0.3"
+architecture = "linux-amd64"
+sha_checksum = "c3389f7069369950bb196d169100d10c5d4eb4ecd5ab5c848d79c3d072244ab6"
 
 [[artifacts]]
 go_version = "go1.0.2"
-version = "1.0.2"
-arch = "linux-amd64"
-sha = "f3ceda81d68348fcb472c52371dcc00e2999a10bba3360ca0226d6b81475c8a0"
+semantic_version = "1.0.2"
+architecture = "linux-amd64"
+sha_checksum = "f3ceda81d68348fcb472c52371dcc00e2999a10bba3360ca0226d6b81475c8a0"
 
 [[artifacts]]
 go_version = "go1.0.1"
-version = "1.0.1"
-arch = "linux-amd64"
-sha = "6b28d28da5ba30ca2bef0ffad6935a56b21b866c27acb547931eeb5130a48de4"
-
+semantic_version = "1.0.1"
+architecture = "linux-amd64"
+sha_checksum = "6b28d28da5ba30ca2bef0ffad6935a56b21b866c27acb547931eeb5130a48de4"
