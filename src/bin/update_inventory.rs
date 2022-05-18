@@ -73,7 +73,7 @@ fn main() {
 
     inventory
         .artifacts
-        .sort_by(|a, b| a.version.cmp(&b.version));
+        .sort_by(|b, a| a.version.cmp(&b.version));
 
     let toml = toml::to_string(&inventory).unwrap_or_else(|e| {
         eprintln!("Error serializing inventory as toml: {e}");
