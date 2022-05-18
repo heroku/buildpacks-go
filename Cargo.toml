@@ -5,15 +5,20 @@ description = "Heroku Go Cloud Native Buildpack"
 edition = "2021"
 publish = false
 rust-version = "1.60"
+default-run = "heroku-go-buildpack"
 
 [dependencies]
 libcnb = "0.6"
 libherokubuildpack = "0.6"
 serde = "1.0"
+serde_json = "1.0"
 tempfile = "3.3"
 toml = "0.5"
+anyhow = "1.0"
 thiserror = "1.0"
 semver = "0.9"
+regex = "1.5"
+ureq = {version = "2.4", features = ["json"]}
 
 [dev-dependencies]
 libcnb-test = "0.3"

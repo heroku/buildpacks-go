@@ -59,11 +59,10 @@ impl Layer for DistLayer {
         download_file("some_url", go_tgz.path()).map_err(DistLayerError::Download)?;
 
         log_info(format!("Extracting Go {}", self.go_version));
-        decompress_tarball(&mut node_tgz.into_file(), &layer_path)
-            .map_err(DistLayerError::Untar)?;
+        decompress_tarball(&mut go_tgz.into_file(), &layer_path).map_err(DistLayerError::Untar)?;
 
         log_info(format!("Installing Go {}", self.go_version));
-        let dist_path = Path::new(layer_path).join(self.go_version);
+        let dist_path = Path::new(layer_path).join(&self.go_version);
         move_directory_contents(dist_path, layer_path).map_err(DistLayerError::Installation)?;
 
         LayerResultBuilder::new(DistLayerMetadata::current(self, context)).build()
@@ -86,7 +85,7 @@ impl Layer for DistLayer {
 impl DistLayerMetadata {
     fn current(layer: &DistLayer, context: &BuildContext<GoBuildpack>) -> Self {
         DistLayerMetadata {
-            go_version: layer.go_version,
+            go_version: layer.go_version.clone(),
             stack_id: context.stack_id.clone(),
             layer_version: String::from(LAYER_VERSION),
         }
