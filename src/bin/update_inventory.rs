@@ -1,5 +1,4 @@
 #![warn(clippy::pedantic)]
-#![warn(clippy::cargo)]
 #![allow(clippy::module_name_repetitions)]
 
 use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, Inventory};

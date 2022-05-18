@@ -1,7 +1,8 @@
-#![warn(unused_crate_dependencies)]
 #![warn(clippy::pedantic)]
 #![warn(clippy::cargo)]
 #![allow(clippy::module_name_repetitions)]
+
+mod layers;
 
 use crate::layers::{DistLayer, DistLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -13,9 +14,6 @@ use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack};
 use libherokubuildpack::{log_error, log_header, log_info};
 use thiserror::Error;
-
-mod inv;
-mod layers;
 
 #[cfg(test)]
 use libcnb_test as _;
