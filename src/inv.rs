@@ -23,14 +23,14 @@ pub struct Inventory {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Artifact {
     pub go_version: String,
-    pub version: String,
+    pub version: Version,
     pub arch: String,
     pub sha: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(try_from = "String", into = "String")]
-struct Version(semver::Version);
+pub struct Version(semver::Version);
 impl Version {
     /// Parses a semver string as a `Version`
     ///
@@ -86,7 +86,7 @@ impl Artifact {
     }
 }
 
-pub fn parse_go_semver(goversion: &str) -> anyhow::Result<String> {
+pub fn parse_go_semver(goversion: &str) -> anyhow::Result<Version> {
     let stripped_version = goversion
         .strip_prefix("go")
         .ok_or(anyhow!("missing go prefix for {goversion}"))?;
@@ -108,9 +108,7 @@ pub fn parse_go_semver(goversion: &str) -> anyhow::Result<String> {
         composed_version.push_str(pre.as_str());
     };
 
-    Version::parse(&composed_version)
-        .context(format!("couldn't parse semver for {goversion}"))
-        .map(|v| Ok(v.to_string()))?
+    Version::parse(&composed_version).context(format!("couldn't parse semver for {goversion}"))
 }
 
 fn fetch_go_checksum(goversion: &str) -> anyhow::Result<String> {
