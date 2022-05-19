@@ -1,4 +1,4 @@
-use crate::vrs::Version;
+use crate::vrs::{Requirement, Version};
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -58,9 +58,16 @@ fn fetch_go_checksum(goversion: &str) -> anyhow::Result<String> {
 }
 
 impl Inventory {
-    pub fn read(path: &str) -> Result<Inventory, String> {
-        let contents = fs::read_to_string(path).map_err(|e| e.to_string())?;
-        toml::from_str(&contents).map_err(|e| e.to_string())
+    pub fn read(path: &str) -> anyhow::Result<Inventory> {
+        let contents = fs::read_to_string(path)?;
+        let inv = toml::from_str(&contents)?;
+        Ok(inv)
+    }
+
+    pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
+        self.artifacts
+            .iter()
+            .find(|artifact| requirement.satisfies(&artifact.semantic_version))
     }
 }
 

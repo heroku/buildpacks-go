@@ -3,9 +3,10 @@
 #![allow(clippy::module_name_repetitions)]
 
 mod layers;
-mod vrs;
 
-use crate::layers::{DistLayer, DistLayerError};
+use heroku_go_buildpack::inv::Inventory;
+use heroku_go_buildpack::vrs::{read_gomod_version, Requirement};
+use layers::{DistLayer, DistLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
@@ -51,13 +52,22 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Checking Go version requirement");
-        let requirement = vrs::read_gomod_version(context.app_dir.join("go.mod"))
+        let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
+        log_header("Determining Go version");
+        let requirement = read_gomod_version(context.app_dir.join("go.mod"))
             .map_err(GoBuildpackError::VersionRequirement)?
-            .unwrap_or_else(semver::VersionReq::any);
+            .unwrap_or_else(Requirement::any);
 
-        log_info("Detected Go version requirement: {requirement}");
-        log_info("Resolved Go version: 1.18.2");
+        log_info(format!("Detected Go version requirement: {requirement}"));
+
+        let artifact = inv
+            .resolve(&requirement)
+            .ok_or_else(|| GoBuildpackError::VersionResolution(requirement))?;
+
+        log_info(format!(
+            "Resolved Go version: {}",
+            artifact.semantic_version
+        ));
 
         log_header("Installing Go distribution");
         context.handle_layer(
@@ -87,6 +97,14 @@ impl Buildpack for GoBuildpack {
                         log_error("Go version requirement error", err_string);
                         21
                     }
+                    GoBuildpackError::InventoryParse(_) => {
+                        log_error("Go inventory error", err_string);
+                        22
+                    }
+                    GoBuildpackError::VersionResolution(_) => {
+                        log_error("Go version resolution error", err_string);
+                        23
+                    }
                 }
             }
             err => {
@@ -103,6 +121,10 @@ pub enum GoBuildpackError {
     VersionRequirement(anyhow::Error),
     #[error("{0}")]
     DistLayerError(#[from] DistLayerError),
+    #[error("Couldn't parse go artifact inventory: {0}")]
+    InventoryParse(toml::de::Error),
+    #[error("Couldn't resolve go version for: {0}")]
+    VersionResolution(Requirement),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {

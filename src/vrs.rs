@@ -5,6 +5,43 @@ use serde::{Deserialize, Serialize};
 use std::io::{self, BufRead, BufReader};
 use std::{fmt, fs, path};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(try_from = "String", into = "String")]
+pub struct Requirement(semver::VersionReq);
+impl Requirement {
+    pub fn parse(go_req: &str) -> anyhow::Result<Self> {
+        let stripped_req = go_req.strip_prefix("go").unwrap_or(&go_req);
+        let req = semver::VersionReq::parse(stripped_req).map(Self)?;
+        Ok(req)
+    }
+
+    pub fn any() -> Self {
+        Self(semver::VersionReq::any())
+    }
+
+    pub fn satisfies(&self, version: &Version) -> bool {
+        self.0.matches(&version.0)
+    }
+}
+
+impl TryFrom<String> for Requirement {
+    type Error = anyhow::Error;
+    fn try_from(val: String) -> Result<Self, Self::Error> {
+        Requirement::parse(&val)
+    }
+}
+
+impl From<Requirement> for String {
+    fn from(req: Requirement) -> Self {
+        format!("{req}")
+    }
+}
+
+impl fmt::Display for Requirement {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 /// `Version` is a wrapper around semver::Version that adds
 /// - `Deserialize` and `Serialize` traits
 /// - Ability to parse go-flavored versions
@@ -70,16 +107,9 @@ impl fmt::Display for Version {
     }
 }
 
-fn parse_go_requirement(go_req: String) -> anyhow::Result<semver::VersionReq> {
-    let stripped_req = go_req.strip_prefix("go").unwrap_or(&go_req);
-
-    let req = semver::VersionReq::parse(stripped_req)?;
-    Ok(req)
-}
-
 pub fn read_gomod_version<P: AsRef<path::Path>>(
     gomod_path: P,
-) -> anyhow::Result<Option<semver::VersionReq>> {
+) -> anyhow::Result<Option<Requirement>> {
     let file: fs::File;
     match fs::File::open(gomod_path) {
         Ok(f) => file = f,
@@ -110,7 +140,7 @@ pub fn read_gomod_version<P: AsRef<path::Path>>(
 
     match version_option {
         None => Ok(None),
-        Some(version_string) => parse_go_requirement(version_string).map(Some),
+        Some(version_string) => Requirement::parse(&version_string).map(Some),
     }
 }
 
