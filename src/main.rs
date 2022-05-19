@@ -3,6 +3,7 @@
 #![allow(clippy::module_name_repetitions)]
 
 mod layers;
+mod vrs;
 
 use crate::layers::{DistLayer, DistLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -50,8 +51,12 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Checking Go version");
-        log_info("Detected Go version range: > 1.16");
+        log_header("Checking Go version requirement");
+        let requirement = vrs::read_gomod_version(context.app_dir.join("go.mod"))
+            .map_err(GoBuildpackError::VersionRequirement)?
+            .unwrap_or_else(semver::VersionReq::any);
+
+        log_info("Detected Go version requirement: {requirement}");
         log_info("Resolved Go version: 1.18.2");
 
         log_header("Installing Go distribution");
@@ -78,6 +83,10 @@ impl Buildpack for GoBuildpack {
                         log_error("Go distribution layer error", err_string);
                         20
                     }
+                    GoBuildpackError::VersionRequirement(_) => {
+                        log_error("Go version requirement error", err_string);
+                        21
+                    }
                 }
             }
             err => {
@@ -90,6 +99,8 @@ impl Buildpack for GoBuildpack {
 
 #[derive(Error, Debug)]
 pub enum GoBuildpackError {
+    #[error("Couldn't parse go version requirement: {0}")]
+    VersionRequirement(anyhow::Error),
     #[error("{0}")]
     DistLayerError(#[from] DistLayerError),
 }

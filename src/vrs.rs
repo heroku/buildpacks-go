@@ -2,7 +2,8 @@ use anyhow::{anyhow, Context};
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::io::{self, BufRead, BufReader};
+use std::{fmt, fs, path};
 
 /// `Version` is a wrapper around semver::Version that adds
 /// - `Deserialize` and `Serialize` traits
@@ -66,6 +67,50 @@ impl From<Version> for String {
 impl fmt::Display for Version {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+fn parse_go_requirement(go_req: String) -> anyhow::Result<semver::VersionReq> {
+    let stripped_req = go_req.strip_prefix("go").unwrap_or(&go_req);
+
+    let req = semver::VersionReq::parse(stripped_req)?;
+    Ok(req)
+}
+
+pub fn read_gomod_version<P: AsRef<path::Path>>(
+    gomod_path: P,
+) -> anyhow::Result<Option<semver::VersionReq>> {
+    let file: fs::File;
+    match fs::File::open(gomod_path) {
+        Ok(f) => file = f,
+        Err(err) => match err.kind() {
+            io::ErrorKind::NotFound => {
+                return Ok(None);
+            }
+            _ => {
+                return Err(err.into());
+            }
+        },
+    };
+    let mut version_option: Option<String> = None;
+    for line_result in BufReader::new(file).lines() {
+        let line = line_result?;
+        let mut parts = line.trim().split_whitespace();
+        match (parts.next(), parts.next(), parts.next(), parts.next()) {
+            (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
+                version_option = Some(vrs.to_string());
+                break;
+            }
+            (Some("go"), Some(vrs), None, None) => {
+                version_option = Some(vrs.to_string());
+            }
+            _ => (),
+        }
+    }
+
+    match version_option {
+        None => Ok(None),
+        Some(version_string) => parse_go_requirement(version_string).map(Some),
     }
 }
 

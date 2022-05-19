@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Heroku Go Cloud Native Buildpack"
 edition = "2021"
 publish = false
-rust-version = "1.60"
+rust-version = "1.61"
 default-run = "heroku-go-buildpack"
 
 [dependencies]
