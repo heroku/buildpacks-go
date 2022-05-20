@@ -1,4 +1,5 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use heroku_go_buildpack::inv::Artifact;
 use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
@@ -6,13 +7,14 @@ use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerR
 use libcnb::Buildpack;
 use libherokubuildpack::{decompress_tarball, download_file, log_info, move_directory_contents};
 use serde::{Deserialize, Serialize};
+use std::fs;
 use std::path::Path;
-use tempfile::NamedTempFile;
+use tempfile::{NamedTempFile, TempDir};
 use thiserror::Error;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub struct DistLayer {
-    pub go_version: String,
+    pub artifact: Artifact,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
@@ -24,8 +26,10 @@ pub struct DistLayerMetadata {
 
 #[derive(Error, Debug)]
 pub enum DistLayerError {
-    #[error("Couldn't create tempfile for Go distribution: {0}")]
-    TempFile(std::io::Error),
+    #[error("Couldn't write temporary Go distribution data: {0}")]
+    Tmp(std::io::Error),
+    #[error("Couldn't create Go distribiton directory: {0}")]
+    Dir(std::io::Error),
     #[error("Couldn't download Go distribution: {0}")]
     Download(libherokubuildpack::DownloadError),
     #[error("Couldn't decompress Go distribution: {0}")]
@@ -43,7 +47,7 @@ impl Layer for DistLayer {
     fn types(&self) -> LayerTypes {
         LayerTypes {
             build: true,
-            launch: true,
+            launch: false,
             cache: true,
         }
     }
@@ -53,17 +57,25 @@ impl Layer for DistLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        let go_tgz = NamedTempFile::new().map_err(DistLayerError::TempFile)?;
+        let tmp_tgz = NamedTempFile::new().map_err(DistLayerError::Tmp)?;
 
-        log_info(format!("Downloading Go {}", self.go_version));
-        download_file("some_url", go_tgz.path()).map_err(DistLayerError::Download)?;
+        log_info(format!("Downloading Go {}", self.artifact.semantic_version));
+        download_file(self.artifact.mirror_tarball_url(), tmp_tgz.path())
+            .map_err(DistLayerError::Download)?;
 
-        log_info(format!("Extracting Go {}", self.go_version));
-        decompress_tarball(&mut go_tgz.into_file(), &layer_path).map_err(DistLayerError::Untar)?;
+        log_info(format!("Extracting Go {}", self.artifact.semantic_version));
+        let tmp_dist = TempDir::new().map_err(DistLayerError::Tmp)?;
+        decompress_tarball(&mut tmp_tgz.into_file(), tmp_dist.path())
+            .map_err(DistLayerError::Untar)?;
 
-        log_info(format!("Installing Go {}", self.go_version));
-        let dist_path = Path::new(layer_path).join(&self.go_version);
-        move_directory_contents(dist_path, layer_path).map_err(DistLayerError::Installation)?;
+        log_info(format!("Installing Go {}", self.artifact.semantic_version));
+        fs::create_dir_all(layer_path.join("bin")).map_err(DistLayerError::Dir)?;
+
+        fs::copy(
+            tmp_dist.path().join("go").join("bin").join("go"),
+            layer_path.join("bin").join("go"),
+        )
+        .map_err(DistLayerError::Installation)?;
 
         LayerResultBuilder::new(DistLayerMetadata::current(self, context)).build()
     }
@@ -74,7 +86,7 @@ impl Layer for DistLayer {
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
         if layer_data.content_metadata.metadata == DistLayerMetadata::current(self, context) {
-            log_info(format!("Reusing Go {}", self.go_version));
+            log_info(format!("Reusing Go {}", self.artifact.semantic_version));
             Ok(ExistingLayerStrategy::Keep)
         } else {
             Ok(ExistingLayerStrategy::Recreate)
@@ -85,7 +97,7 @@ impl Layer for DistLayer {
 impl DistLayerMetadata {
     fn current(layer: &DistLayer, context: &BuildContext<GoBuildpack>) -> Self {
         DistLayerMetadata {
-            go_version: layer.go_version.clone(),
+            go_version: layer.artifact.go_version.clone(),
             stack_id: context.stack_id.clone(),
             layer_version: String::from(LAYER_VERSION),
         }

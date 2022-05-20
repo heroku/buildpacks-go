@@ -16,6 +16,7 @@ tempfile = "3.3"
 toml = "0.5"
 anyhow = "1.0"
 thiserror = "1.0"
+sha256 = "1.0"
 semver = "0.9"
 regex = "1.5"
 ureq = {version = "2.4", features = ["json"]}

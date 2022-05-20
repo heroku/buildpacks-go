@@ -26,6 +26,15 @@ pub struct Artifact {
     pub sha_checksum: String,
 }
 
+impl Artifact {
+    pub fn mirror_tarball_url(&self) -> String {
+        format!(
+            "{}/{}.{}.tar.gz",
+            GO_MIRROR_URL, self.go_version, self.architecture
+        )
+    }
+}
+
 pub enum ArtifactError {
     Checksum(anyhow::Error),
     Version(anyhow::Error),

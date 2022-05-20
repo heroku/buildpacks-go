@@ -15,6 +15,7 @@ use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
 use libcnb::{buildpack_main, Buildpack};
 use libherokubuildpack::{log_error, log_header, log_info};
+use std::path::Path;
 use thiserror::Error;
 
 #[cfg(test)]
@@ -73,11 +74,23 @@ impl Buildpack for GoBuildpack {
         context.handle_layer(
             layer_name!("dist"),
             DistLayer {
-                go_version: "1.18.2".to_string(),
+                artifact: artifact.clone(),
             },
         )?;
 
-        log_header("Installing Go modules");
+        let modules = Path::exists(&context.app_dir.join("go.mod"));
+        if modules {
+            let vendor = Path::exists(&context.app_dir.join("vendor").join("modules.txt"));
+            if vendor {
+                log_header("Using vendored Go modules");
+            } else {
+                log_header("Installing Go modules")
+            }
+        } else {
+            log_info("No Go modules detected");
+        }
+
+        log_header("Building Go binaries");
 
         log_header("Setting process types");
 
