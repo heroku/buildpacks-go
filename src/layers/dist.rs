@@ -5,7 +5,7 @@ use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::Buildpack;
-use libherokubuildpack::{decompress_tarball, download_file, log_info, move_directory_contents};
+use libherokubuildpack::{decompress_tarball, download_file, log_info};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;

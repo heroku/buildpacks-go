@@ -6,7 +6,7 @@ mod layers;
 
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::vrs::{read_gomod_version, Requirement};
-use layers::{DepsLayer, DistLayer, DistLayerError};
+use layers::{BuildLayer, DepsLayer, DistLayer, DistLayerError, TargetLayer};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
@@ -72,7 +72,7 @@ impl Buildpack for GoBuildpack {
 
         log_header("Installing Go distribution");
         context.handle_layer(
-            layer_name!("dist"),
+            layer_name!("go-dist"),
             DistLayer {
                 artifact: artifact.clone(),
             },
@@ -85,13 +85,15 @@ impl Buildpack for GoBuildpack {
                 log_header("Using vendored Go modules");
             } else {
                 log_header("Installing Go modules");
-                context.handle_layer(layer_name!("deps"), DepsLayer {})?;
+                context.handle_layer(layer_name!("go-deps"), DepsLayer {})?;
             }
         } else {
             log_info("No Go modules detected");
         }
 
         log_header("Building Go binaries");
+        context.handle_layer(layer_name!("go-target"), TargetLayer {})?;
+        context.handle_layer(layer_name!("go-build"), BuildLayer {})?;
 
         log_header("Setting process types");
 
