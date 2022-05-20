@@ -4,7 +4,7 @@
   -f`.
 - Determine packages to install with the +heroku install build directive if
   present.
-- Install modules into the global module cache if they aren't vendored, and ensure the cached is cached and restored between builds.
+- Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
 - Verify modules against go.sum, if it's present.
 - Write launch.toml based on installed packages
   - If there is only package that is built and installed, it can be set as
@@ -25,8 +25,11 @@ cached. It is not available at runtime.
 go dependencies are installed here, if they aren't vendored in the app. 
 This layer is available during the build and is cached. It is not available at runtime.
 
-#### `out`
+#### `build`
 
-compiled app binaries are installed here. This wil be needed at runtime, but not during build.
-This should probably not be cached.
+the go build cache is stored here to enable incremental builds. 
 
+#### `target`
+
+compiled app binaries are installed here. This wil be needed at runtime, but not
+during build, and will not be cached.

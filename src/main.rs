@@ -6,7 +6,7 @@ mod layers;
 
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::vrs::{read_gomod_version, Requirement};
-use layers::{DistLayer, DistLayerError};
+use layers::{DepsLayer, DistLayer, DistLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
@@ -84,7 +84,8 @@ impl Buildpack for GoBuildpack {
             if vendor {
                 log_header("Using vendored Go modules");
             } else {
-                log_header("Installing Go modules")
+                log_header("Installing Go modules");
+                context.handle_layer(layer_name!("deps"), DepsLayer {})?;
             }
         } else {
             log_info("No Go modules detected");

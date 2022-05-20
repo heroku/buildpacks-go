@@ -1,12 +1,10 @@
 use crate::{GoBuildpack, GoBuildpackError};
 use libcnb::build::BuildContext;
-use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::Buildpack;
 use libherokubuildpack::log_info;
 use serde::{Deserialize, Serialize};
-use sha256::digest_file;
 use std::path::Path;
 use thiserror::Error;
 
@@ -21,7 +19,7 @@ pub struct DepsLayerMetadata {
     gomod_sha: Option<String>,
 }
 
-#[derive(Error)]
+#[derive(Error, Debug)]
 pub enum DepsLayerError {
     #[error("Unknown: {0}")]
     Unknown(std::io::Error),
