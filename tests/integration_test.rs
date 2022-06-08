@@ -4,7 +4,7 @@ use libcnb_test::{assert_contains, BuildpackReference, IntegrationTest};
 use std::time::Duration;
 
 fn test_go_fixture(fixture: &str, expected_output: Vec<&str>) {
-    for stack in ["heroku/buildpacks:20", "heroku/buildpacks:22"] {
+    for stack in ["heroku/buildpacks:20", "heroku/builder:22"] {
         IntegrationTest::new(stack, format!("tests/fixtures/{fixture}"))
             .buildpacks(vec![BuildpackReference::Crate])
             .run_test(|ctx| {
@@ -34,5 +34,5 @@ fn test_go_fixture(fixture: &str, expected_output: Vec<&str>) {
 #[test]
 #[ignore]
 fn test_main_no_gomod() {
-    test_go_fixture("main_no_gomod", vec!["Detected Go version requirement: *"]);
+    test_go_fixture("basic_118", vec!["Detected Go version requirement: 1.17"]);
 }
