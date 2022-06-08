@@ -1,7 +1,7 @@
 #![warn(clippy::pedantic)]
 #![allow(clippy::module_name_repetitions)]
 
-use heroku_go_buildpack::{list_github_go_versions, Artifact, ArtifactError, Inventory};
+use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, ArtifactError, Inventory};
 use std::collections::HashSet;
 use std::{env, fs, process};
 

@@ -4,16 +4,21 @@
 
 mod layers;
 
+use heroku_go_buildpack::gomod::read_gomod_version;
 use heroku_go_buildpack::inv::Inventory;
-use heroku_go_buildpack::vrs::{read_gomod_version, Requirement};
-use layers::{BuildLayer, DepsLayer, DistLayer, DistLayerError, TargetLayer};
+use heroku_go_buildpack::vrs::Requirement;
+use layers::{
+    BuildLayer, BuildLayerError, DepsLayer, DistLayer, DistLayerError, TargetLayer,
+    TargetLayerError,
+};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
-use libcnb::{buildpack_main, Buildpack};
+use libcnb::layer_env::Scope;
+use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::{log_error, log_header, log_info};
 use std::path::Path;
 use thiserror::Error;
@@ -71,12 +76,13 @@ impl Buildpack for GoBuildpack {
         ));
 
         log_header("Installing Go distribution");
-        context.handle_layer(
+        let dist_layer = context.handle_layer(
             layer_name!("go-dist"),
             DistLayer {
                 artifact: artifact.clone(),
             },
         )?;
+        let go_env = dist_layer.env.apply(Scope::Build, &Env::from_current());
 
         let modules = Path::exists(&context.app_dir.join("go.mod"));
         if modules {
@@ -92,8 +98,15 @@ impl Buildpack for GoBuildpack {
         }
 
         log_header("Building Go binaries");
-        context.handle_layer(layer_name!("go-target"), TargetLayer {})?;
-        context.handle_layer(layer_name!("go-build"), BuildLayer {})?;
+        let target_layer = context.handle_layer(layer_name!("go-target"), TargetLayer {})?;
+        context.handle_layer(
+            layer_name!("go-build"),
+            BuildLayer {
+                go_env,
+                go_target: target_layer.path.join("bin"),
+                go_version: artifact.go_version.clone(),
+            },
+        )?;
 
         log_header("Setting process types");
 
@@ -105,21 +118,29 @@ impl Buildpack for GoBuildpack {
             libcnb::Error::BuildpackError(bp_err) => {
                 let err_string = bp_err.to_string();
                 match bp_err {
-                    GoBuildpackError::DistLayerError(_) => {
-                        log_error("Go distribution layer error", err_string);
+                    GoBuildpackError::BuildLayer(_) => {
+                        log_error("Go build layer error", err_string);
                         20
+                    }
+                    GoBuildpackError::DistLayer(_) => {
+                        log_error("Go distribution layer error", err_string);
+                        21
+                    }
+                    GoBuildpackError::TargetLayer(_) => {
+                        log_error("Go target layer error", err_string);
+                        22
                     }
                     GoBuildpackError::VersionRequirement(_) => {
                         log_error("Go version requirement error", err_string);
-                        21
+                        23
                     }
                     GoBuildpackError::InventoryParse(_) => {
                         log_error("Go inventory error", err_string);
-                        22
+                        24
                     }
                     GoBuildpackError::VersionResolution(_) => {
                         log_error("Go version resolution error", err_string);
-                        23
+                        25
                     }
                 }
             }
@@ -136,7 +157,11 @@ pub enum GoBuildpackError {
     #[error("Couldn't parse go version requirement: {0}")]
     VersionRequirement(anyhow::Error),
     #[error("{0}")]
-    DistLayerError(#[from] DistLayerError),
+    BuildLayer(#[from] BuildLayerError),
+    #[error("{0}")]
+    DistLayer(#[from] DistLayerError),
+    #[error("{0}")]
+    TargetLayer(#[from] TargetLayerError),
     #[error("Couldn't parse go artifact inventory: {0}")]
     InventoryParse(toml::de::Error),
     #[error("Couldn't resolve go version for: {0}")]

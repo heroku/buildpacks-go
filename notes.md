@@ -10,6 +10,10 @@
   - If there is only package that is built and installed, it can be set as
     default and web.
 - Validate go distribution sha on installation.
+- There's a cross-device issue when renaming from /tmp/go/bin/go to
+  /layers/bin/go, so for now we're copying the file instead. Maybe if we 
+  extract the tarball to a cache=false, build=false, run=false (which serves 
+  as a tmp directory of sorts), we can rename the go binary instead of copying it.
 - Git credential helper for private dependencies. Maybe this should be another
   buildpack? Or a netrc buildpack?
 

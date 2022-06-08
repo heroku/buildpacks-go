@@ -4,6 +4,7 @@ use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::{decompress_tarball, download_file, log_info};
 use serde::{Deserialize, Serialize};
@@ -77,7 +78,14 @@ impl Layer for DistLayer {
         )
         .map_err(DistLayerError::Installation)?;
 
-        LayerResultBuilder::new(DistLayerMetadata::current(self, context)).build()
+        LayerResultBuilder::new(DistLayerMetadata::current(self, context))
+            .env(LayerEnv::new().chainable_insert(
+                Scope::Build,
+                libcnb::layer_env::ModificationBehavior::Override,
+                "GOROOT",
+                layer_path,
+            ))
+            .build()
     }
 
     fn existing_layer_strategy(
