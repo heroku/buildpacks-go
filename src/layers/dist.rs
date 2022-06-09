@@ -6,16 +6,16 @@ use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Buildpack;
-use libherokubuildpack::{decompress_tarball, download_file, log_info};
+use libherokubuildpack::{decompress_tarball, download_file, log_info, move_directory_contents};
 use serde::{Deserialize, Serialize};
-use std::fs;
-use std::path::Path;
-use tempfile::{NamedTempFile, TempDir};
+use std::fs::{self, File};
+use std::path::{Path, PathBuf};
 use thiserror::Error;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub struct DistLayer {
     pub artifact: Artifact,
+    pub tmp_dir: PathBuf,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
@@ -27,13 +27,13 @@ pub struct DistLayerMetadata {
 
 #[derive(Error, Debug)]
 pub enum DistLayerError {
-    #[error("Couldn't write temporary Go distribution data: {0}")]
-    Tmp(std::io::Error),
+    #[error("Couldn't read Go distribution tarball: {0}")]
+    OpenTar(std::io::Error),
     #[error("Couldn't create Go distribiton directory: {0}")]
     Dir(std::io::Error),
     #[error("Couldn't download Go distribution: {0}")]
     Download(libherokubuildpack::DownloadError),
-    #[error("Couldn't decompress Go distribution: {0}")]
+    #[error("Couldn't extract Go distribution: {0}")]
     Untar(std::io::Error),
     #[error("Couldn't move Go distribution artifacts to the correct location: {0}")]
     Installation(std::io::Error),
@@ -58,25 +58,19 @@ impl Layer for DistLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        let tmp_tgz = NamedTempFile::new().map_err(DistLayerError::Tmp)?;
+        let tmp_tgz_path = self.tmp_dir.join("go.tar.gz");
 
         log_info(format!("Downloading Go {}", self.artifact.semantic_version));
-        download_file(self.artifact.mirror_tarball_url(), tmp_tgz.path())
+        download_file(self.artifact.mirror_tarball_url(), &tmp_tgz_path)
             .map_err(DistLayerError::Download)?;
 
         log_info(format!("Extracting Go {}", self.artifact.semantic_version));
-        let tmp_dist = TempDir::new().map_err(DistLayerError::Tmp)?;
-        decompress_tarball(&mut tmp_tgz.into_file(), tmp_dist.path())
-            .map_err(DistLayerError::Untar)?;
+        let mut tmp_tgz = File::open(tmp_tgz_path).map_err(DistLayerError::OpenTar)?;
+        decompress_tarball(&mut tmp_tgz, &self.tmp_dir).map_err(DistLayerError::Untar)?;
 
         log_info(format!("Installing Go {}", self.artifact.semantic_version));
-        fs::create_dir_all(layer_path.join("bin")).map_err(DistLayerError::Dir)?;
-
-        fs::copy(
-            tmp_dist.path().join("go").join("bin").join("go"),
-            layer_path.join("bin").join("go"),
-        )
-        .map_err(DistLayerError::Installation)?;
+        move_directory_contents(self.tmp_dir.join("go"), layer_path)
+            .map_err(DistLayerError::Installation)?;
 
         LayerResultBuilder::new(DistLayerMetadata::current(self, context))
             .env(LayerEnv::new().chainable_insert(

@@ -34,5 +34,11 @@ fn test_go_fixture(fixture: &str, expected_output: Vec<&str>) {
 #[test]
 #[ignore]
 fn test_main_no_gomod() {
-    test_go_fixture("basic_118", vec!["Detected Go version requirement: 1.17"]);
+    test_go_fixture(
+        "basic_118",
+        vec![
+            "Detected Go version requirement: ^1.18",
+            "Installing Go 1.18",
+        ],
+    );
 }

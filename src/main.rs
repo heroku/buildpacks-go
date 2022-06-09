@@ -9,7 +9,7 @@ use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::vrs::Requirement;
 use layers::{
     BuildLayer, BuildLayerError, DepsLayer, DistLayer, DistLayerError, TargetLayer,
-    TargetLayerError,
+    TargetLayerError, TmpLayer,
 };
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -76,9 +76,11 @@ impl Buildpack for GoBuildpack {
         ));
 
         log_header("Installing Go distribution");
+        let tmp_layer = context.handle_layer(layer_name!("go_tmp"), TmpLayer {})?;
         let dist_layer = context.handle_layer(
-            layer_name!("go-dist"),
+            layer_name!("go_dist"),
             DistLayer {
+                tmp_dir: tmp_layer.path,
                 artifact: artifact.clone(),
             },
         )?;
@@ -91,16 +93,16 @@ impl Buildpack for GoBuildpack {
                 log_header("Using vendored Go modules");
             } else {
                 log_header("Installing Go modules");
-                context.handle_layer(layer_name!("go-deps"), DepsLayer {})?;
+                context.handle_layer(layer_name!("go_deps"), DepsLayer {})?;
             }
         } else {
             log_info("No Go modules detected");
         }
 
-        log_header("Building Go binaries");
-        let target_layer = context.handle_layer(layer_name!("go-target"), TargetLayer {})?;
+        log_header("Building target binaries");
+        let target_layer = context.handle_layer(layer_name!("go_target"), TargetLayer {})?;
         context.handle_layer(
-            layer_name!("go-build"),
+            layer_name!("go_build"),
             BuildLayer {
                 go_env,
                 go_target: target_layer.path.join("bin"),

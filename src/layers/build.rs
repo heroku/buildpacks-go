@@ -87,9 +87,11 @@ impl BuildLayer {
         context: &BuildContext<GoBuildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<BuildLayerMetadata>, GoBuildpackError> {
+        let mut env = self.go_env.clone();
+        env.insert("GOCACHE", layer_path);
         let mut build_cmd = Command::new("go")
-            .args(vec!["build"])
-            .envs(&self.go_env)
+            .args(vec!["build", "-o", &self.go_target.to_string_lossy()])
+            .envs(&env)
             .spawn()
             .map_err(BuildLayerError::CommandStart)?;
 
