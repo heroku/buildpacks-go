@@ -5,35 +5,38 @@
 - Determine packages to install with the +heroku install build directive if
   present.
 - Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
-- Verify modules against go.sum, if it's present.
+- Verify vendored modules against go.sum, if it's present.
+- Cache the incremental build cache to speed up successive builds
 - Write launch.toml based on installed packages
-  - If there is only package that is built and installed, it can be set as
+  - If there is only one binary that is built and installed, it can be set as
     default and web.
+  - If there is a web or server binary, set it as default and web
+  - Otherwise set the alphabetically first binary as default
 - Validate go distribution sha on installation.
-- There's a cross-device issue when renaming from /tmp/go/bin/go to
-  /layers/bin/go, so for now we're copying the file instead. Maybe if we 
-  extract the tarball to a cache=false, build=false, run=false (which serves 
-  as a tmp directory of sorts), we can rename the go binary instead of copying it.
 - Git credential helper for private dependencies. Maybe this should be another
   buildpack? Or a netrc buildpack?
 
 ### Layers:
 
-#### `dist`
+#### `go_tmp`
+
+A temporary dir used to download and extract the go distribution tarball. 
+
+#### `go_dist`
 
 `go` itself is installed here. This layer is available during the build and is
 cached. It is not available at runtime.
 
-#### `deps`
+#### `go_deps`
 
-go dependencies are installed here, if they aren't vendored in the app. 
+go dependencies are installed here, if they aren't vendored in the app.
 This layer is available during the build and is cached. It is not available at runtime.
 
-#### `build`
+#### `go_build`
 
-the go build cache is stored here to enable incremental builds. 
+the go build cache is stored here to enable incremental builds.
 
-#### `target`
+#### `go_target`
 
 compiled app binaries are installed here. This wil be needed at runtime, but not
 during build, and will not be cached.

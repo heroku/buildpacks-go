@@ -8,7 +8,7 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::{decompress_tarball, download_file, log_info, move_directory_contents};
 use serde::{Deserialize, Serialize};
-use std::fs::{self, File};
+use std::fs::File;
 use std::path::{Path, PathBuf};
 use thiserror::Error;
 

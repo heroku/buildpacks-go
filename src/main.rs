@@ -4,6 +4,7 @@
 
 mod layers;
 
+use heroku_go_buildpack::gocmd::{self, GoCmdError};
 use heroku_go_buildpack::gomod::read_gomod_version;
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::vrs::Requirement;
@@ -18,7 +19,7 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
-use libcnb::{buildpack_main, Buildpack, Env};
+use libcnb::{buildpack_main, Buildpack};
 use libherokubuildpack::{log_error, log_header, log_info};
 use std::path::Path;
 use thiserror::Error;
@@ -84,7 +85,7 @@ impl Buildpack for GoBuildpack {
                 artifact: artifact.clone(),
             },
         )?;
-        let go_env = dist_layer.env.apply(Scope::Build, &Env::from_current());
+        let mut go_env = dist_layer.env.apply_to_empty(Scope::Build);
 
         let modules = Path::exists(&context.app_dir.join("go.mod"));
         if modules {
@@ -101,14 +102,16 @@ impl Buildpack for GoBuildpack {
 
         log_header("Building target binaries");
         let target_layer = context.handle_layer(layer_name!("go_target"), TargetLayer {})?;
-        context.handle_layer(
+        let build_layer = context.handle_layer(
             layer_name!("go_build"),
             BuildLayer {
-                go_env,
-                go_target: target_layer.path.join("bin"),
                 go_version: artifact.go_version.clone(),
             },
         )?;
+        go_env = build_layer.env.apply(Scope::Build, &go_env);
+
+        gocmd::go_build(vec![], &target_layer.path.to_string_lossy(), &go_env)
+            .map_err(GoBuildpackError::GoBuild)?;
 
         log_header("Setting process types");
 
@@ -144,6 +147,10 @@ impl Buildpack for GoBuildpack {
                         log_error("Go version resolution error", err_string);
                         25
                     }
+                    GoBuildpackError::GoBuild(_) => {
+                        log_error("Go build error", err_string);
+                        26
+                    }
                 }
             }
             err => {
@@ -160,6 +167,8 @@ pub enum GoBuildpackError {
     VersionRequirement(anyhow::Error),
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
+    #[error("Couldn't run `go build`: {0}")]
+    GoBuild(#[from] GoCmdError),
     #[error("{0}")]
     DistLayer(#[from] DistLayerError),
     #[error("{0}")]
