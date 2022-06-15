@@ -20,8 +20,9 @@ use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
-use libcnb::{buildpack_main, Buildpack};
+use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::{log_error, log_header, log_info};
+use std::env;
 use std::path::Path;
 use thiserror::Error;
 
@@ -55,6 +56,13 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        let mut go_env = Env::new();
+        env::vars()
+            .filter(|(k, _v)| k == "PATH")
+            .for_each(|(k, v)| {
+                go_env.insert(k, v);
+            });
+
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
         log_header("Determining Go version");
         let requirement = read_gomod_version(context.app_dir.join("go.mod"))
@@ -81,7 +89,7 @@ impl Buildpack for GoBuildpack {
                 artifact: artifact.clone(),
             },
         )?;
-        let mut go_env = dist_layer.env.apply_to_empty(Scope::Build);
+        go_env = dist_layer.env.apply(Scope::Build, &go_env);
 
         log_header("Building Go packages");
 
@@ -105,7 +113,7 @@ impl Buildpack for GoBuildpack {
 
         // Use `go list` to determine packages to build, which has the
         // side effect of downloading needed modules.
-        log_info("Downloading Go modules");
+        log_info("Resolving Go modules");
         let packages = gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?;
 
         log_info(format!("Building packages: {packages:?}"));

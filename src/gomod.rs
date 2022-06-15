@@ -28,7 +28,7 @@ pub fn read_gomod_version<P: AsRef<path::Path>>(
                 break;
             }
             (Some("go"), Some(vrs), None, None) => {
-                version_option = Some(vrs.to_string());
+                version_option = Some(format!("~{vrs}"));
             }
             _ => (),
         }

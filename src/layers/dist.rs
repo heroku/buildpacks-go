@@ -4,7 +4,7 @@ use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
-use libcnb::layer_env::{LayerEnv, Scope};
+use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::{decompress_tarball, download_file, log_info, move_directory_contents};
 use serde::{Deserialize, Serialize};
@@ -73,12 +73,21 @@ impl Layer for DistLayer {
             .map_err(DistLayerError::Installation)?;
 
         LayerResultBuilder::new(DistLayerMetadata::current(self, context))
-            .env(LayerEnv::new().chainable_insert(
-                Scope::Build,
-                libcnb::layer_env::ModificationBehavior::Override,
-                "GOROOT",
-                layer_path,
-            ))
+            .env(
+                LayerEnv::new()
+                    .chainable_insert(
+                        Scope::Build,
+                        ModificationBehavior::Override,
+                        "GOROOT",
+                        layer_path,
+                    )
+                    .chainable_insert(
+                        Scope::Build,
+                        ModificationBehavior::Override,
+                        "GO111MODULE",
+                        "on",
+                    ),
+            )
             .build()
     }
 
