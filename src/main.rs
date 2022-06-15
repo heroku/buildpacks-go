@@ -93,6 +93,8 @@ impl Buildpack for GoBuildpack {
         }
 
         let target_layer = context.handle_layer(layer_name!("go_target"), TargetLayer {})?;
+        go_env = target_layer.env.apply(Scope::Build, &go_env);
+
         let build_layer = context.handle_layer(
             layer_name!("go_build"),
             BuildLayer {
@@ -107,12 +109,7 @@ impl Buildpack for GoBuildpack {
         let packages = gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?;
 
         log_info(format!("Building packages: {packages:?}"));
-        gocmd::go_build(
-            &packages,
-            &target_layer.path.join("bin").to_string_lossy(),
-            &go_env,
-        )
-        .map_err(GoBuildpackError::GoBuild)?;
+        gocmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         log_header("Setting process types");
         let procs = packages

@@ -10,12 +10,8 @@ pub enum GoCmdError {
     Exit(ExitStatus),
 }
 
-pub fn go_build<S: AsRef<str>>(
-    packages: &[S],
-    target_dir: &str,
-    go_env: &Env,
-) -> Result<(), GoCmdError> {
-    let mut args = vec!["build", "-o", target_dir];
+pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), GoCmdError> {
+    let mut args = vec!["install"];
     for pkg in packages {
         args.push(pkg.as_ref());
     }

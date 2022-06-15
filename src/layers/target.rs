@@ -3,6 +3,7 @@ use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
 use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
+use libcnb::layer_env::{LayerEnv, Scope};
 use std::fs;
 use std::io;
 use std::path::Path;
@@ -27,14 +28,21 @@ impl Layer for TargetLayer {
         }
     }
 
-    // This layer creates a `bin` directory, which is the target for `go build`
-    // later.
+    // This layer creates a the `GOBIN` directory, which is the target for `go install` later.
     fn create(
         &self,
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        fs::create_dir(layer_path.join("bin")).map_err(TargetLayerError)?;
-        LayerResultBuilder::new(GenericMetadata::default()).build()
+        let bin_dir = layer_path.join("bin");
+        fs::create_dir(&bin_dir).map_err(TargetLayerError)?;
+        LayerResultBuilder::new(GenericMetadata::default())
+            .env(LayerEnv::new().chainable_insert(
+                Scope::Build,
+                libcnb::layer_env::ModificationBehavior::Override,
+                "GOBIN",
+                bin_dir,
+            ))
+            .build()
     }
 }
