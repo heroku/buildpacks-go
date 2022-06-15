@@ -3,14 +3,18 @@
 use libcnb_test::{assert_contains, BuildpackReference, IntegrationTest};
 use std::time::Duration;
 
-fn test_go_fixture(fixture: &str, expected_output: Vec<&str>) {
+fn test_go_fixture(fixture: &str, expected_out: Vec<&str>, expected_err: Vec<&str>) {
     for stack in ["heroku/buildpacks:20", "heroku/builder:22"] {
         IntegrationTest::new(stack, format!("tests/fixtures/{fixture}"))
             .buildpacks(vec![BuildpackReference::Crate])
             .run_test(|ctx| {
-                for phrase in expected_output.clone() {
-                    assert_contains!(ctx.pack_stdout, phrase);
+                for out_phrase in expected_out.clone() {
+                    assert_contains!(ctx.pack_stdout, out_phrase);
                 }
+                for err_phrase in expected_err.clone() {
+                    assert_contains!(ctx.pack_stderr, err_phrase);
+                }
+
                 let port = 8080;
                 ctx.prepare_container()
                     .expose_port(port)
@@ -33,12 +37,22 @@ fn test_go_fixture(fixture: &str, expected_output: Vec<&str>) {
 
 #[test]
 #[ignore]
-fn test_main_no_gomod() {
+fn test_basic_118() {
     test_go_fixture(
         "basic_118",
         vec![
             "Detected Go version requirement: ^1.18",
             "Installing Go 1.18",
         ],
+        vec![],
+    );
+}
+#[test]
+#[ignore]
+fn test_modules_118() {
+    test_go_fixture(
+        "modules_118",
+        vec!["Installing Go 1.18"],
+        vec!["downloading github.com/gorilla/mux v1.8.0"],
     );
 }

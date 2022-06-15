@@ -2,21 +2,25 @@ use crate::{GoBuildpack, GoBuildpackError};
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::log_info;
 use serde::{Deserialize, Serialize};
+use std::fs;
 use std::path::Path;
+use thiserror::Error;
 
-/// A layer that downloads Go module dependencies
+/// A layer that caches the go modules cache
 pub struct DepsLayer {}
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct DepsLayerMetadata {
     layer_version: String,
-    modtxt_sha: Option<String>,
-    gosum_sha: Option<String>,
-    gomod_sha: Option<String>,
 }
+
+#[derive(Error, Debug)]
+#[error("Couldn't write to build layer: {0}")]
+pub struct DepsLayerError(std::io::Error);
 
 const LAYER_VERSION: &str = "1";
 
@@ -35,9 +39,19 @@ impl Layer for DepsLayer {
     fn create(
         &self,
         context: &BuildContext<Self::Buildpack>,
-        _layer_path: &Path,
+        layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        LayerResultBuilder::new(DepsLayerMetadata::current(self, context)).build()
+        log_info("Creating Go modules cache");
+        let cache_dir = layer_path.join("cache");
+        fs::create_dir(&cache_dir).map_err(DepsLayerError)?;
+        LayerResultBuilder::new(DepsLayerMetadata::current(self, context))
+            .env(LayerEnv::new().chainable_insert(
+                Scope::Build,
+                libcnb::layer_env::ModificationBehavior::Override,
+                "GOMODCACHE",
+                cache_dir,
+            ))
+            .build()
     }
 
     fn existing_layer_strategy(
@@ -46,11 +60,10 @@ impl Layer for DepsLayer {
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
         if layer_data.content_metadata.metadata == DepsLayerMetadata::current(self, context) {
-            log_info("Reusing cached Go modules");
+            log_info("Reusing Go modules cache");
             Ok(ExistingLayerStrategy::Keep)
         } else {
-            log_info("Updating cached Go modules");
-            Ok(ExistingLayerStrategy::Update)
+            Ok(ExistingLayerStrategy::Recreate)
         }
     }
 }
@@ -58,9 +71,6 @@ impl Layer for DepsLayer {
 impl DepsLayerMetadata {
     fn current(_layer: &DepsLayer, _context: &BuildContext<GoBuildpack>) -> Self {
         DepsLayerMetadata {
-            gosum_sha: None,
-            gomod_sha: None,
-            modtxt_sha: None,
             layer_version: String::from(LAYER_VERSION),
         }
     }

@@ -9,7 +9,7 @@ use heroku_go_buildpack::gomod::read_gomod_version;
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::vrs::Requirement;
 use layers::{
-    BuildLayer, BuildLayerError, DepsLayer, DistLayer, DistLayerError, TargetLayer,
+    BuildLayer, BuildLayerError, DepsLayer, DepsLayerError, DistLayer, DistLayerError, TargetLayer,
     TargetLayerError, TmpLayer,
 };
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -40,14 +40,9 @@ impl Buildpack for GoBuildpack {
     fn detect(&self, context: DetectContext<Self>) -> libcnb::Result<DetectResult, Self::Error> {
         let mut plan_builder = BuildPlanBuilder::new().provides("go");
 
-        // If there are common go artifacts, this buildpack should both
-        // provide and require go so that it may be used without other
-        // buildpacks.
-        if ["go.mod", "main.go"]
-            .map(|name| context.app_dir.join(name))
-            .iter()
-            .any(|path| path.exists())
-        {
+        // If a go.mod exists, this buildpack should both provide and require
+        // go so that it may be used without other buildpacks.
+        if context.app_dir.join("go.mod").exists() {
             plan_builder = plan_builder.requires("go");
         }
 
@@ -88,22 +83,14 @@ impl Buildpack for GoBuildpack {
         )?;
         let mut go_env = dist_layer.env.apply_to_empty(Scope::Build);
 
-        let modules = Path::exists(&context.app_dir.join("go.mod"));
-        if modules {
-            let vendor = Path::exists(&context.app_dir.join("vendor").join("modules.txt"));
-            if vendor {
-                log_header("Using vendored Go modules");
-            } else {
-                log_header("Installing Go modules");
-                context.handle_layer(layer_name!("go_deps"), DepsLayer {})?;
-            }
-        } else {
-            log_info("No Go modules detected");
-        }
-
         log_header("Building Go packages");
-        let packages = gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?;
-        log_info(format!("Detected go packages: {packages:?}"));
+
+        if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
+            log_info("Using vendored Go modules");
+        } else {
+            let deps_layer = context.handle_layer(layer_name!("go_deps"), DepsLayer {})?;
+            go_env = deps_layer.env.apply(Scope::Build, &go_env);
+        }
 
         let target_layer = context.handle_layer(layer_name!("go_target"), TargetLayer {})?;
         let build_layer = context.handle_layer(
@@ -114,6 +101,12 @@ impl Buildpack for GoBuildpack {
         )?;
         go_env = build_layer.env.apply(Scope::Build, &go_env);
 
+        // Use `go list` to determine packages to build, which has the
+        // side effect of downloading needed modules.
+        log_info("Downloading Go modules");
+        let packages = gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?;
+
+        log_info(format!("Building packages: {packages:?}"));
         gocmd::go_build(
             &packages,
             &target_layer.path.join("bin").to_string_lossy(),
@@ -145,48 +138,24 @@ impl Buildpack for GoBuildpack {
         match error {
             libcnb::Error::BuildpackError(bp_err) => {
                 let err_string = bp_err.to_string();
-                match bp_err {
-                    GoBuildpackError::BuildLayer(_) => {
-                        log_error("Go build layer error", err_string);
-                        20
-                    }
-                    GoBuildpackError::DistLayer(_) => {
-                        log_error("Go distribution layer error", err_string);
-                        21
-                    }
-                    GoBuildpackError::TargetLayer(_) => {
-                        log_error("Go target layer error", err_string);
-                        22
-                    }
-                    GoBuildpackError::VersionRequirement(_) => {
-                        log_error("Go version requirement error", err_string);
-                        23
-                    }
-                    GoBuildpackError::InventoryParse(_) => {
-                        log_error("Go inventory error", err_string);
-                        24
-                    }
-                    GoBuildpackError::VersionResolution(_) => {
-                        log_error("Go version resolution error", err_string);
-                        25
-                    }
-                    GoBuildpackError::GoBuild(_) => {
-                        log_error("Go build error", err_string);
-                        26
-                    }
-                    GoBuildpackError::GoList(_) => {
-                        log_error("Go list error", err_string);
-                        26
-                    }
-                    GoBuildpackError::ProcessType(_) => {
-                        log_error("Go buildpack process error", err_string);
-                        27
-                    }
-                }
+                let (err_ctx, exit_code) = match bp_err {
+                    GoBuildpackError::BuildLayer(_) => ("build layer", 20),
+                    GoBuildpackError::DepsLayer(_) => ("dependency layer", 21),
+                    GoBuildpackError::DistLayer(_) => ("distribution layer", 21),
+                    GoBuildpackError::TargetLayer(_) => ("target layer", 22),
+                    GoBuildpackError::VersionRequirement(_) => ("version requirement", 23),
+                    GoBuildpackError::InventoryParse(_) => ("inventory parse", 24),
+                    GoBuildpackError::VersionResolution(_) => ("version resolution", 25),
+                    GoBuildpackError::GoBuild(_) => ("go build", 26),
+                    GoBuildpackError::GoList(_) => ("go list", 27),
+                    GoBuildpackError::ProcessType(_) => ("process type", 28),
+                };
+                log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
+                exit_code
             }
             err => {
-                log_error("Internal Buildpack Error", err.to_string());
-                100
+                log_error("Heroku Go Buildpack internal error", err.to_string());
+                99
             }
         }
     }
@@ -202,6 +171,8 @@ pub enum GoBuildpackError {
     GoBuild(GoCmdError),
     #[error("Couldn't run `go list`: {0}")]
     GoList(GoCmdError),
+    #[error("{0}")]
+    DepsLayer(#[from] DepsLayerError),
     #[error("{0}")]
     DistLayer(#[from] DistLayerError),
     #[error("{0}")]

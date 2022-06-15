@@ -1,19 +1,19 @@
 ### TODO:
 
-- Determine packages to install by looking for `main` packages with `go list
+- [x] Determine packages to install by looking for `main` packages with `go list
   -f`.
-- Determine packages to install with the +heroku install build directive if
+- [] Determine packages to install with the +heroku install build directive if
   present.
-- Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
+- [] Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
 - Verify vendored modules against go.sum, if it's present.
-- Cache the incremental build cache to speed up successive builds
-- Write launch.toml based on installed packages
-  - If there is only one binary that is built and installed, it can be set as
+- [x] Cache the incremental build cache to speed up successive builds
+- [x] Write launch.toml based on installed packages
+  - [] If there is only one binary that is built and installed, it can be set as
     default and web.
-  - If there is a web or server binary, set it as default and web
-  - Otherwise set the alphabetically first binary as default
-- Validate go distribution sha on installation.
-- Git credential helper for private dependencies. Maybe this should be another
+  - [] If there is a web or server binary, set it as default and web
+  - [x] Otherwise set the alphabetically first binary as default
+- [] Validate go distribution sha on installation.
+- [] Git credential helper for private dependencies. Maybe this should be another
   buildpack? Or a netrc buildpack?
 
 ### Layers:

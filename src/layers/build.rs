@@ -46,6 +46,7 @@ impl Layer for BuildLayer {
         context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
+        log_info("Creating Go build cache");
         let cache_dir = layer_path.join("cache");
         fs::create_dir(&cache_dir).map_err(BuildLayerError)?;
         LayerResultBuilder::new(BuildLayerMetadata::current(self, context))
