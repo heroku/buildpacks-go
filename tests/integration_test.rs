@@ -41,8 +41,8 @@ fn test_basic_118() {
     test_go_fixture(
         "basic_118",
         vec![
-            "Detected Go version requirement: ^1.18",
-            "Installing Go 1.18",
+            "Detected Go version requirement: ~1.18",
+            "Installing Go 1.18.",
         ],
         vec![],
     );
@@ -52,7 +52,10 @@ fn test_basic_118() {
 fn test_modules_118() {
     test_go_fixture(
         "modules_118",
-        vec!["Installing Go 1.18"],
+        vec![
+            "Detected Go version requirement: ~1.18",
+            "Installing Go 1.18.",
+        ],
         vec!["downloading github.com/gorilla/mux v1.8.0"],
     );
 }

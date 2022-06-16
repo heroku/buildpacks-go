@@ -1,4 +1,4 @@
-use crate::vrs::Requirement;
+use crate::vrs::{Requirement, Version};
 use std::fs;
 use std::io::{self, BufRead, BufReader};
 use std::path;
@@ -28,7 +28,7 @@ pub fn read_gomod_version<P: AsRef<path::Path>>(
                 break;
             }
             (Some("go"), Some(vrs), None, None) => {
-                version_option = Some(format!("~{vrs}"));
+                version_option = Some(format!("~{}", Version::parse_go(vrs)?));
             }
             _ => (),
         }

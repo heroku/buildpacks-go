@@ -4,7 +4,7 @@ use semver;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
 impl Requirement {
@@ -64,9 +64,7 @@ impl Version {
     ///
     /// Invalid go version strings will return an error
     pub fn parse_go(go_version: &str) -> anyhow::Result<Version> {
-        let stripped_version = go_version
-            .strip_prefix("go")
-            .ok_or(anyhow!("missing go prefix for {go_version}"))?;
+        let stripped_version = go_version.strip_prefix("go").unwrap_or(&go_version);
 
         let re = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?;
         let caps = re
@@ -113,20 +111,62 @@ mod tests {
     #[test]
     fn test_version_parsing() {
         let go_versions = [
-            ["go1", "1.0.0"],
-            ["go1.2", "1.2.0"],
-            ["go1.2.3", "1.2.3"],
-            ["go1.10.12", "1.10.12"],
-            ["go1beta1", "1.0.0-beta1"],
-            ["go1.2rc3", "1.2.0-rc3"],
-            ["go1.23.34alpha", "1.23.34-alpha"],
+            ("go1", "1.0.0"),
+            ("1", "1.0.0"),
+            ("go1.2", "1.2.0"),
+            ("1.2", "1.2.0"),
+            ("go1.2.3", "1.2.3"),
+            ("1.2.3", "1.2.3"),
+            ("go1.10.12", "1.10.12"),
+            ("1.10.12", "1.10.12"),
+            ("go1beta1", "1.0.0-beta1"),
+            ("1beta1", "1.0.0-beta1"),
+            ("go1.2rc3", "1.2.0-rc3"),
+            ("go1.23.34alpha", "1.23.34-alpha"),
         ];
 
-        for [gover, semver] in go_versions {
-            let parsed_gover = Version::parse_go(gover).expect("Failed to parse go version");
-            assert_eq!(semver, parsed_gover.to_string());
-            let parsed_semver = Version::parse(semver).expect("Failed to parse semantic version");
-            assert_eq!(parsed_gover, parsed_semver);
+        for (input, expected_str) in go_versions {
+            let actual = Version::parse_go(input).expect("Failed to parse go input version");
+            let actual_str = actual.to_string();
+            let expected =
+                Version::parse(expected_str).expect("Failed to parse go expected version");
+            assert_eq!(
+                expected, actual,
+                "Expected {input} to parse as {expected} but got {actual}."
+            );
+            assert_eq!(
+                expected_str, actual_str,
+                "Expected {input} to parse as {expected_str} but got {actual_str}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_requirement_parsing() {
+        let examples = [
+            ("go1", "^1"),
+            ("1", "^1"),
+            ("~1", "~1"),
+            ("go1.16", "^1.16"),
+            ("1.16", "^1.16"),
+            ("~1.16", "~1.16"),
+            ("go1.18.2", "^1.18.2"),
+            ("1.18.2", "^1.18.2"),
+            ("~1.18.2", "~1.18.2"),
+        ];
+        for (input, expected_str) in examples {
+            let actual = Requirement::parse(input).expect("Failed to parse go input requirement");
+            let actual_str = actual.to_string();
+            let expected =
+                Requirement::parse(expected_str).expect("Failed to parse go expected requirement");
+            assert_eq!(
+                expected, actual,
+                "Expected {input} to parse as {expected} but got {actual}."
+            );
+            assert_eq!(
+                expected_str, actual_str,
+                "Expected {input} to parse as {expected_str} but got {actual_str}"
+            );
         }
     }
 }
