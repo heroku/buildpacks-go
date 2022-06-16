@@ -15,7 +15,6 @@ use layers::{
 };
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{Launch, ProcessBuilder, ProcessType, ProcessTypeError};
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
@@ -147,7 +146,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::VersionResolution(_) => ("version resolution", 25),
                     GoBuildpackError::GoBuild(_) => ("go build", 26),
                     GoBuildpackError::GoList(_) => ("go list", 27),
-                    GoBuildpackError::Launch(_) => ("process type", 28),
+                    GoBuildpackError::Launch(_) => ("launch process type", 28),
                 };
                 log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
                 exit_code
