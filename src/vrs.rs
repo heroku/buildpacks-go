@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
