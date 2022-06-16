@@ -7,6 +7,7 @@ mod layers;
 use heroku_go_buildpack::gocmd::{self, GoCmdError};
 use heroku_go_buildpack::gomod::read_gomod_version;
 use heroku_go_buildpack::inv::Inventory;
+use heroku_go_buildpack::proc;
 use heroku_go_buildpack::vrs::Requirement;
 use layers::{
     BuildLayer, BuildLayerError, DepsLayer, DepsLayerError, DistLayer, DistLayerError, TargetLayer,
@@ -116,27 +117,20 @@ impl Buildpack for GoBuildpack {
         log_info("Resolving Go modules");
         let packages = gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?;
 
-        log_info(format!("Building packages: {packages:?}"));
+        log_info(format!("Building packages:"));
+        for pkg in &packages {
+            log_info(format!("  - {pkg}"));
+        }
         gocmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
-        log_header("Setting process types");
-        let procs = packages
-            .iter()
-            .filter_map(|pkg| pkg.rsplit_once("/").and_then(|(_base, name)| Some(name)))
-            .map(|pkg| pkg.parse())
-            .collect::<Result<Vec<ProcessType>, _>>()
-            .map_err(GoBuildpackError::ProcessType)?;
-
-        let mut launch_procs = Launch::new();
-        for (i, proc) in procs.iter().enumerate() {
-            launch_procs.processes.push(
-                ProcessBuilder::new(proc.clone(), proc.to_string())
-                    .default(i == 0)
-                    .build(),
-            );
+        log_header("Setting launch table");
+        let launch = proc::build_launch(packages).map_err(GoBuildpackError::Launch)?;
+        log_info("Detected processes:");
+        for proc in &launch.processes {
+            log_info(format!("  - {}: {}", proc.r#type, proc.command));
         }
 
-        BuildResultBuilder::new().launch(launch_procs).build()
+        BuildResultBuilder::new().launch(launch).build()
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
@@ -153,7 +147,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::VersionResolution(_) => ("version resolution", 25),
                     GoBuildpackError::GoBuild(_) => ("go build", 26),
                     GoBuildpackError::GoList(_) => ("go list", 27),
-                    GoBuildpackError::ProcessType(_) => ("process type", 28),
+                    GoBuildpackError::Launch(_) => ("process type", 28),
                 };
                 log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
                 exit_code
@@ -186,8 +180,8 @@ pub enum GoBuildpackError {
     InventoryParse(toml::de::Error),
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(Requirement),
-    #[error("Couldn't resolve process type: {0}")]
-    ProcessType(ProcessTypeError),
+    #[error("Launch process error: {0}")]
+    Launch(proc::LaunchErr),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {

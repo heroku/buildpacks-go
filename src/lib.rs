@@ -3,4 +3,5 @@
 pub mod gocmd;
 pub mod gomod;
 pub mod inv;
+pub mod proc;
 pub mod vrs;
