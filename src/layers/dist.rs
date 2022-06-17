@@ -53,10 +53,12 @@ impl Layer for DistLayer {
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         log_info(format!("Installing Go {}", self.artifact.semantic_version));
-        godist::download_validate_extract(
+        godist::fetch_strip_filter_extract_verify(
             self.artifact.mirror_tarball_url(),
-            &self.artifact.sha_checksum,
+            "go",
+            ["bin", "src", "LICENSE"].into_iter(),
             layer_path,
+            &self.artifact.sha_checksum,
         )
         .map_err(DistLayerError::Dist)?;
 
