@@ -1,6 +1,6 @@
 use crate::{GoBuildpack, GoBuildpackError};
-use heroku_go_buildpack::godist;
 use heroku_go_buildpack::inv::Artifact;
+use heroku_go_buildpack::tgz;
 use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
@@ -27,8 +27,8 @@ pub struct DistLayerMetadata {
 
 #[derive(Error, Debug)]
 pub enum DistLayerError {
-    #[error("Couldn't install Go distribution: {0}")]
-    Dist(godist::DistError),
+    #[error("Couldn't extract Go distribution archive: {0}")]
+    Tgz(tgz::TgzError),
     #[error("Couldn't create Go distribiton directory: {0}")]
     Dir(std::io::Error),
 }
@@ -53,14 +53,14 @@ impl Layer for DistLayer {
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         log_info(format!("Installing Go {}", self.artifact.semantic_version));
-        godist::fetch_strip_filter_extract_verify(
+        tgz::fetch_strip_filter_extract_verify(
             self.artifact.mirror_tarball_url(),
             "go",
             ["bin", "src", "LICENSE"].into_iter(),
             layer_path,
             &self.artifact.sha_checksum,
         )
-        .map_err(DistLayerError::Dist)?;
+        .map_err(DistLayerError::Tgz)?;
 
         LayerResultBuilder::new(DistLayerMetadata::current(self, context))
             .env(

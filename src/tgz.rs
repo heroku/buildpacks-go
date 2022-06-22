@@ -1,12 +1,14 @@
 use flate2::read::GzDecoder;
-use sha2::{Digest, Sha256};
+use sha2::{
+    digest::{generic_array::GenericArray, OutputSizeUser},
+    Digest, Sha256,
+};
 use std::{io::Read, path::StripPrefixError};
 use tar::Archive;
 
 #[derive(thiserror::Error, Debug)]
-pub enum DistError {
-    // Boxed to prevent `large_enum_variant` errors since `ureq::Error` is massive.
-    #[error("HTTP error while downloading go distribution: {0}")]
+pub enum TgzError {
+    #[error("HTTP error while fetching archive: {0}")]
     Http(#[from] Box<ureq::Error>),
 
     #[error("Error reading archive entries: {0}")]
@@ -18,7 +20,7 @@ pub enum DistError {
     #[error("Error reading archive file path: {0}")]
     Path(std::io::Error),
 
-    #[error("Failed to validate checksum; expected {0}, but found {1}")]
+    #[error("Failed to validate archive checksum; expected {0}, but found {1}")]
     Checksum(String, String),
 
     #[error("Error writing archive entry: {0}")]
@@ -29,65 +31,63 @@ pub enum DistError {
 }
 
 /// Fetches a tarball from a url, strips component paths, filters path prefixes,
-/// and verifies a sha256 checksum, without writing temporary files or
-/// reading the tarball fully into memory.
+/// and verifies a sha256 checksum. Care is taken not to write temporary files
+/// or read the entire contents into memory. In an error scenario, any archive
+/// contents already extracted will not be removed.
 pub fn fetch_strip_filter_extract_verify<'a>(
     uri: impl AsRef<str>,
     strip_prefix: impl AsRef<str>,
     filter_prefixes: impl Iterator<Item = &'a str>,
     dest_dir: impl AsRef<std::path::Path>,
     sha256: impl AsRef<str>,
-) -> Result<(), DistError> {
+) -> Result<(), TgzError> {
     let expected_digest = sha256.as_ref();
     let destination = dest_dir.as_ref();
     let body = ureq::get(uri.as_ref())
         .call()
         .map_err(Box::new)?
         .into_reader();
-    let mut archive = Archive::new(GzDecoder::new(HashingReader::new(body, Sha256::new())));
+    let mut archive = Archive::new(GzDecoder::new(DigestingReader::new(body, Sha256::new())));
     let filters: Vec<&str> = filter_prefixes.into_iter().collect();
-    for entry in archive.entries().map_err(DistError::Entries)? {
-        let mut file = entry.map_err(DistError::Entry)?;
+    for entry in archive.entries().map_err(TgzError::Entries)? {
+        let mut file = entry.map_err(TgzError::Entry)?;
         let path = destination.join(
             file.path()
-                .map_err(DistError::Path)?
+                .map_err(TgzError::Path)?
                 .strip_prefix(strip_prefix.as_ref())
-                .map_err(DistError::Prefix)?,
+                .map_err(TgzError::Prefix)?,
         );
         if filters
             .iter()
             .any(|prefix| path.starts_with(destination.join(prefix)))
         {
-            file.unpack(&path).map_err(DistError::Unpack)?;
+            file.unpack(&path).map_err(TgzError::Unpack)?;
         }
     }
-    let actual_digest = format!(
-        "{:x}",
-        archive.into_inner().into_inner().hasher().finalize()
-    );
+    let actual_digest = format!("{:x}", archive.into_inner().into_inner().finalize());
     (expected_digest == actual_digest)
         .then(|| ())
-        .ok_or_else(|| DistError::Checksum(expected_digest.to_string(), actual_digest))
+        .ok_or_else(|| TgzError::Checksum(expected_digest.to_string(), actual_digest))
 }
 
-struct HashingReader<R: Read, H: sha2::Digest> {
+struct DigestingReader<R: Read, H: sha2::Digest> {
     r: R,
     h: H,
 }
 
-impl<R: Read, H: sha2::Digest> HashingReader<R, H> {
-    pub fn new(reader: R, hasher: H) -> HashingReader<R, H> {
-        HashingReader {
+impl<R: Read, H: sha2::Digest> DigestingReader<R, H> {
+    pub fn new(reader: R, hasher: H) -> DigestingReader<R, H> {
+        DigestingReader {
             r: reader,
             h: hasher,
         }
     }
-    pub fn hasher(self) -> H {
-        self.h
+    pub fn finalize(self) -> GenericArray<u8, <H as OutputSizeUser>::OutputSize> {
+        self.h.finalize()
     }
 }
 
-impl<R: Read, H: sha2::Digest> Read for HashingReader<R, H> {
+impl<R: Read, H: sha2::Digest> Read for DigestingReader<R, H> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let n = self.r.read(buf)?;
         self.h.update(&buf[..n]);
