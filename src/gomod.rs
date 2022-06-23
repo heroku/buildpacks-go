@@ -22,12 +22,22 @@ pub fn read_gomod_version<P: AsRef<path::Path>>(
     for line_result in BufReader::new(file).lines() {
         let line = line_result?;
         let mut parts = line.trim().split_whitespace();
-        match (parts.next(), parts.next(), parts.next(), parts.next()) {
-            (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
+        match (
+            parts.next(),
+            parts.next(),
+            parts.next(),
+            parts.next(),
+            parts.next(),
+        ) {
+            (Some("//"), Some("+heroku"), Some("goVersion"), Some(cmp), Some(vrs)) => {
+                version_option = Some(format!("{cmp} {vrs}"));
+                break;
+            }
+            (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs), None) => {
                 version_option = Some(vrs.to_string());
                 break;
             }
-            (Some("go"), Some(vrs), None, None) => {
+            (Some("go"), Some(vrs), None, None, None) => {
                 version_option = Some(format!("~{}", Version::parse_go(vrs)?));
             }
             _ => (),

@@ -56,7 +56,7 @@ impl Layer for DistLayer {
         tgz::fetch_strip_filter_extract_verify(
             self.artifact.mirror_tarball_url(),
             "go",
-            ["bin", "src", "LICENSE"].into_iter(),
+            ["bin", "src", "pkg", "LICENSE"].into_iter(),
             layer_path,
             &self.artifact.sha_checksum,
         )

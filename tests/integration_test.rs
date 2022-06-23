@@ -49,12 +49,12 @@ fn test_basic_118() {
 }
 #[test]
 #[ignore]
-fn test_modules_118() {
+fn test_modules_gorilla_117() {
     test_go_fixture(
-        "modules_118",
+        "modules_gorilla_117",
         vec![
-            "Detected Go version requirement: ~1.18",
-            "Installing Go 1.18.",
+            "Detected Go version requirement: = 1.17.8",
+            "Installing Go 1.17.8",
         ],
         vec!["downloading github.com/gorilla/mux v1.8.0"],
     );
