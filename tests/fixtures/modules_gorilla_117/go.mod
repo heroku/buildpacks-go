@@ -1,6 +1,6 @@
 module example.com/modules_gorilla_117
 
-// +heroku goVersion =1.17.8
+// +heroku goVersion go1.17.8
 
 go 1.16
 

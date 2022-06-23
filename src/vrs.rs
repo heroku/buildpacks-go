@@ -15,7 +15,7 @@ impl Requirement {
     pub fn parse_go(go_req: &str) -> anyhow::Result<Self> {
         let stripped_req = go_req
             .strip_prefix("go")
-            .and_then(|req| Some(Cow::Owned(format!("~{req}"))))
+            .and_then(|req| Some(Cow::Owned(format!("={req}"))))
             .unwrap_or(Cow::Borrowed(go_req));
         println!("stripped_req: {stripped_req}");
         Self::parse(&stripped_req)
@@ -151,13 +151,13 @@ mod tests {
     #[test]
     fn test_requirement_parsing() {
         let examples = [
-            ("go1", "~1"),
+            ("go1", "= 1"),
             ("1", "^1"),
             ("=1", "= 1"),
-            ("go1.16", "~1.16"),
+            ("go1.16", "= 1.16"),
             ("1.16", "^1.16"),
             ("~1.16", "~1.16"),
-            ("go1.18.2", "~1.18.2"),
+            ("go1.18.2", "= 1.18.2"),
             ("1.18.2", "^1.18.2"),
             ("^1.18.2", "^1.18.2"),
         ];

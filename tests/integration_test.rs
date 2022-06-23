@@ -41,7 +41,7 @@ fn test_basic_http_116() {
     test_go_fixture(
         "basic_http_116",
         vec![
-            "Detected Go version requirement: ~1.16.0",
+            "Detected Go version requirement: ~1.16.2",
             "Installing Go 1.16.",
         ],
         vec![],
@@ -67,7 +67,7 @@ fn test_vendor_gin_118() {
     test_go_fixture(
         "vendor_gin_118",
         vec![
-            "Detected Go version requirement: ~1.18",
+            "Detected Go version requirement: = 1.18",
             "Installing Go 1.18",
         ],
         vec![],
