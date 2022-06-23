@@ -2,16 +2,23 @@ use anyhow::Context;
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::{borrow::Cow, fmt};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
 impl Requirement {
-    pub fn parse(go_req: &str) -> anyhow::Result<Self> {
-        let stripped_req = go_req.strip_prefix("go").unwrap_or(&go_req);
-        let req = semver::VersionReq::parse(stripped_req).map(Self)?;
-        Ok(req)
+    pub fn parse(req: &str) -> anyhow::Result<Self> {
+        Ok(semver::VersionReq::parse(req).map(Self)?)
+    }
+
+    pub fn parse_go(go_req: &str) -> anyhow::Result<Self> {
+        let stripped_req = go_req
+            .strip_prefix("go")
+            .and_then(|req| Some(Cow::Owned(format!("~{req}"))))
+            .unwrap_or(Cow::Borrowed(go_req));
+        println!("stripped_req: {stripped_req}");
+        Self::parse(&stripped_req)
     }
 
     pub fn any() -> Self {
@@ -144,18 +151,19 @@ mod tests {
     #[test]
     fn test_requirement_parsing() {
         let examples = [
-            ("go1", "^1"),
+            ("go1", "~1"),
             ("1", "^1"),
-            ("~1", "~1"),
-            ("go1.16", "^1.16"),
+            ("=1", "= 1"),
+            ("go1.16", "~1.16"),
             ("1.16", "^1.16"),
             ("~1.16", "~1.16"),
-            ("go1.18.2", "^1.18.2"),
+            ("go1.18.2", "~1.18.2"),
             ("1.18.2", "^1.18.2"),
-            ("~1.18.2", "~1.18.2"),
+            ("^1.18.2", "^1.18.2"),
         ];
         for (input, expected_str) in examples {
-            let actual = Requirement::parse(input).expect("Failed to parse go input requirement");
+            let actual = Requirement::parse_go(input)
+                .expect(&format!("Failed to parse go input requirement: {input}"));
             let actual_str = actual.to_string();
             let expected =
                 Requirement::parse(expected_str).expect("Failed to parse go expected requirement");
