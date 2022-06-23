@@ -4,23 +4,20 @@
   -f`.
 - [] Determine packages to install with the +heroku install build directive if
   present.
-- [] Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
+- [x] Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
 - Verify vendored modules against go.sum, if it's present.
 - [x] Cache the incremental build cache to speed up successive builds
 - [x] Write launch.toml based on installed packages
-  - [] If there is only one binary that is built and installed, it can be set as
-    default and web.
   - [] If there is a web or server binary, set it as default and web
+  - [x] If there is only one binary that is built and installed, it can be set as
+    default and web.
   - [x] Otherwise set the alphabetically first binary as default
-- [] Validate go distribution sha on installation.
+- [x] Validate go distribution sha on installation.
+- [] Use `-tags heroku` during `go install`
 - [] Git credential helper for private dependencies. Maybe this should be another
   buildpack? Or a netrc buildpack?
 
 ### Layers:
-
-#### `go_tmp`
-
-A temporary dir used to download and extract the go distribution tarball. 
 
 #### `go_dist`
 

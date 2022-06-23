@@ -47,6 +47,7 @@ fn test_basic_http_118() {
         vec![],
     );
 }
+
 #[test]
 #[ignore]
 fn test_modules_gorilla_117() {
@@ -57,5 +58,18 @@ fn test_modules_gorilla_117() {
             "Installing Go 1.17.8",
         ],
         vec!["downloading github.com/gorilla/mux v1.8.0"],
+    );
+}
+
+#[test]
+#[ignore]
+fn test_vendor_gin_118() {
+    test_go_fixture(
+        "vendor_gin_118",
+        vec![
+            "Detected Go version requirement: ~1.18",
+            "Installing Go 1.18",
+        ],
+        vec![],
     );
 }
