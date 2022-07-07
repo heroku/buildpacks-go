@@ -75,7 +75,7 @@ fn test_worker_http_118() {
     test_go_fixture(
         "worker_http_118",
         vec![
-            "Detected Go version requirement: ~1.18.",
+            "Detected Go version requirement: ^1.18.1",
             "Installing Go 1.18.",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",

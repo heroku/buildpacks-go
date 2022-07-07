@@ -2,7 +2,7 @@
 
 - [x] Determine packages to install by looking for `main` packages with `go list
   -f`.
-- [] Determine packages to install with the +heroku install build directive if
+- [x] Determine packages to install with the +heroku install build directive if
   present.
 - [x] Install modules into the global module cache if they aren't vendored, and ensure the cache data is persisted and restored between builds.
 - Verify vendored modules against go.sum, if it's present.
@@ -13,7 +13,7 @@
     default and web.
   - [x] Otherwise set the alphabetically first binary as default
 - [x] Validate go distribution sha on installation.
-- [] Use `-tags heroku` during `go install`
+- [x] Use `-tags heroku` during `go install`
 - [] Git credential helper for private dependencies. Maybe this should be another
   buildpack? Or a netrc buildpack?
 

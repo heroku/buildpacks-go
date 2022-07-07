@@ -11,7 +11,7 @@ pub enum GoCmdError {
 }
 
 pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), GoCmdError> {
-    let mut args = vec!["install"];
+    let mut args = vec!["install", "-tags", "heroku"];
     for pkg in packages {
         args.push(pkg.as_ref());
     }
@@ -30,6 +30,8 @@ pub fn go_list(go_env: &Env) -> Result<Vec<String>, GoCmdError> {
     let list_cmd = Command::new("go")
         .args(vec![
             "list",
+            "-tags",
+            "heroku",
             "-f",
             "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
             "./...",
