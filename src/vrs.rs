@@ -17,7 +17,6 @@ impl Requirement {
             .strip_prefix("go")
             .and_then(|req| Some(Cow::Owned(format!("={req}"))))
             .unwrap_or(Cow::Borrowed(go_req));
-        println!("stripped_req: {stripped_req}");
         Self::parse(&stripped_req)
     }
 

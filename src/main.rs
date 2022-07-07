@@ -5,7 +5,7 @@
 mod layers;
 
 use heroku_go_buildpack::gocmd::{self, GoCmdError};
-use heroku_go_buildpack::gomod::read_gomod_version;
+use heroku_go_buildpack::gomod::read_gomod_cfg;
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::proc;
 use heroku_go_buildpack::vrs::Requirement;
@@ -56,6 +56,8 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
+        log_header("Reading build configuration");
+
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -64,17 +66,15 @@ impl Buildpack for GoBuildpack {
             });
 
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
-        log_header("Determining Go version");
-        let requirement = read_gomod_version(context.app_dir.join("go.mod"))
-            .map_err(GoBuildpackError::VersionRequirement)?
-            .unwrap_or_else(Requirement::any);
 
+        let cfg =
+            read_gomod_cfg(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoMod)?;
+        let requirement = cfg.version.unwrap_or_else(Requirement::any);
         log_info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = inv
             .resolve(&requirement)
             .ok_or_else(|| GoBuildpackError::VersionResolution(requirement))?;
-
         log_info(format!(
             "Resolved Go version: {}",
             artifact.semantic_version
@@ -111,10 +111,13 @@ impl Buildpack for GoBuildpack {
         )?;
         go_env = build_layer.env.apply(Scope::Build, &go_env);
 
-        // Use `go list` to determine packages to build, which has the
-        // side effect of downloading needed modules.
         log_info("Resolving Go modules");
-        let packages = gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?;
+        let packages = cfg.packages.unwrap_or(
+            // Use `go list` to determine packages to build. Do this eagerly,
+            // even if the result is unused because it has the side effect of
+            // downloading any required go modules.
+            gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
+        );
 
         log_info(format!("Building packages:"));
         for pkg in &packages {
@@ -141,7 +144,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::DepsLayer(_) => ("dependency layer", 21),
                     GoBuildpackError::DistLayer(_) => ("distribution layer", 21),
                     GoBuildpackError::TargetLayer(_) => ("target layer", 22),
-                    GoBuildpackError::VersionRequirement(_) => ("version requirement", 23),
+                    GoBuildpackError::GoMod(_) => ("go.mod", 23),
                     GoBuildpackError::InventoryParse(_) => ("inventory parse", 24),
                     GoBuildpackError::VersionResolution(_) => ("version resolution", 25),
                     GoBuildpackError::GoBuild(_) => ("go build", 26),
@@ -161,14 +164,14 @@ impl Buildpack for GoBuildpack {
 
 #[derive(Error, Debug)]
 pub enum GoBuildpackError {
-    #[error("Couldn't parse go version requirement: {0}")]
-    VersionRequirement(anyhow::Error),
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
     #[error("Couldn't run `go build`: {0}")]
     GoBuild(GoCmdError),
     #[error("Couldn't run `go list`: {0}")]
     GoList(GoCmdError),
+    #[error("Couldn't read go.mod build configuration: {0}")]
+    GoMod(anyhow::Error),
     #[error("{0}")]
     DepsLayer(#[from] DepsLayerError),
     #[error("{0}")]
