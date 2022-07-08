@@ -12,9 +12,26 @@ pub enum LaunchErr {
     ProcessName(ProcessTypeError),
 }
 
-pub fn build_launch(pkgs: Vec<String>) -> Result<Launch, LaunchErr> {
+/// Turns a list of go packages into a `Launch` process table. Any package with
+/// a `web` suffix will be flagged as default process. If there are packages
+/// and none with a `web` suffix, a `web` process will be created for the
+/// first package.
+///
+/// # Examples
+///
+/// ```
+/// let launch = heroku_go_buildpack::proc::build_launch(
+///                &["github.com/heroku/maple".to_string()]
+///              ).unwrap();
+/// ```
+///
+/// # Errors
+///
+/// Invalid go packages (those without a `'/'`) and go packages with suffixes
+/// that don't satisfy CNB process naming conventions will error.
+pub fn build_launch(pkgs: &[String]) -> Result<Launch, LaunchErr> {
     let mut launch = Launch::new();
-    for pkg in &pkgs {
+    for pkg in pkgs {
         let proc = pkg
             .rsplit_once('/')
             .map(|(_path, name)| name)
@@ -45,7 +62,7 @@ mod tests {
 
     #[test]
     fn build_launch_adds_web() {
-        let launch = build_launch(vec![String::from("github.com/kubernetes/kubernetes")])
+        let launch = build_launch(&[String::from("github.com/kubernetes/kubernetes")])
             .expect("unexpected error with build_launch");
         for (i, name) in ["kubernetes", "web"].iter().enumerate() {
             let proc = launch
@@ -59,7 +76,7 @@ mod tests {
 
     #[test]
     fn build_launch_does_not_dup_web() {
-        let launch = build_launch(vec![String::from("example.com/web")])
+        let launch = build_launch(&[String::from("example.com/web")])
             .expect("unexpected error with build_launch");
         assert_eq!(launch.processes.len(), 1);
         assert_eq!(launch.processes[0].command, "web");
@@ -67,16 +84,16 @@ mod tests {
 
     #[test]
     fn build_launch_invalid_pkg() {
-        let err = build_launch(vec![String::from("foobar")]).unwrap_err();
-        assert_eq!(format!("{err}"), "Invalid Go package import path: foobar")
+        let err = build_launch(&[String::from("foobar")]).unwrap_err();
+        assert_eq!(format!("{err}"), "Invalid Go package import path: foobar");
     }
 
     #[test]
     fn build_launch_invalid_process() {
-        let err = build_launch(vec![String::from("example.com/[]")]).unwrap_err();
+        let err = build_launch(&[String::from("example.com/[]")]).unwrap_err();
         assert_eq!(
             format!("{err}"),
             "Invalid CNB process name: Invalid Value: []"
-        )
+        );
     }
 }

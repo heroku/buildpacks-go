@@ -126,7 +126,7 @@ impl Buildpack for GoBuildpack {
         gocmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         log_header("Setting launch table");
-        let launch = proc::build_launch(packages).map_err(GoBuildpackError::Launch)?;
+        let launch = proc::build_launch(&packages).map_err(GoBuildpackError::Launch)?;
         log_info("Detected processes:");
         for proc in &launch.processes {
             log_info(format!("  - {}: {}", proc.r#type, proc.command));

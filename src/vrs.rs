@@ -4,25 +4,55 @@ use semver;
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, fmt};
 
+/// `Requirement` is a wrapper around `semver::Requirement` that adds
+/// - `Deserialize` and `Serialize` traits
+/// - Ability to parse go-flavored requirements
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
 impl Requirement {
-    pub fn parse(req: &str) -> anyhow::Result<Self> {
-        Ok(semver::VersionReq::parse(req).map(Self)?)
+    /// Parses a semver requirement `&str` as a `Requirement`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let req = heroku_go_buildpack::vrs::Requirement::parse("~1.0").unwrap();
+    /// ```
+    ///
+    /// # Errors
+    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
+    /// will return an error.
+    pub fn parse(input: &str) -> anyhow::Result<Self> {
+        Ok(semver::VersionReq::parse(input).map(Self)?)
     }
 
+    /// Parses a go version requirement `&str` as a `Requirement`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let req = heroku_go_buildpack::vrs::Requirement::parse_go("go1.0").unwrap();
+    /// ```
+    ///
+    /// # Errors
+    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
+    /// will return an error.
     pub fn parse_go(go_req: &str) -> anyhow::Result<Self> {
         let stripped_req = go_req
-            .strip_prefix("go").map_or(Cow::Borrowed(go_req), |req| Cow::Owned(format!("={req}")));
+            .strip_prefix("go")
+            .map_or(Cow::Borrowed(go_req), |req| Cow::Owned(format!("={req}")));
         Self::parse(&stripped_req)
     }
 
-    #[must_use] pub fn any() -> Self {
+    /// Creates a wildcard version `Requirement`
+    #[must_use]
+    pub fn any() -> Self {
         Self(semver::VersionReq::any())
     }
 
-    #[must_use] pub fn satisfies(&self, version: &Version) -> bool {
+    /// Determines if a `&Version` satifies a `Requirement`
+    #[must_use]
+    pub fn satisfies(&self, version: &Version) -> bool {
         self.0.matches(&version.0)
     }
 }
@@ -45,6 +75,7 @@ impl fmt::Display for Requirement {
         write!(f, "{}", self.0)
     }
 }
+
 /// `Version` is a wrapper around `semver::Version` that adds
 /// - `Deserialize` and `Serialize` traits
 /// - Ability to parse go-flavored versions
@@ -52,21 +83,33 @@ impl fmt::Display for Requirement {
 #[serde(try_from = "String", into = "String")]
 pub struct Version(semver::Version);
 impl Version {
-    /// Parses a semver string as a `Version`
+    /// Parses a semver `&str` as a `Version`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let req = heroku_go_buildpack::vrs::Version::parse("1.14.2").unwrap();
+    /// ```
     ///
     /// # Errors
     ///
-    /// Invalid semver strings will return an error
+    /// Invalid semver `&str`s like ".1", "1.*", "abc", etc. will return an error.
     pub fn parse(version: &str) -> anyhow::Result<Version> {
         let vrs = semver::Version::parse(version.trim()).map(Version)?;
         Ok(vrs)
     }
 
-    /// Parses a go version (like go1.1) as a `Version`
+    /// Parses a go version `&str` as a `Version`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let req = heroku_go_buildpack::vrs::Version::parse_go("go1.12").unwrap();
+    /// ```
     ///
     /// # Errors
     ///
-    /// Invalid go version strings will return an error
+    /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
     pub fn parse_go(go_version: &str) -> anyhow::Result<Version> {
         let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
