@@ -8,8 +8,8 @@ rust-version = "1.61"
 default-run = "heroku-go-buildpack"
 
 [dependencies]
-libcnb = "0.6"
-libherokubuildpack = "0.6"
+libcnb = "0.8"
+libherokubuildpack = "0.8"
 serde = "1.0"
 serde_json = "1.0"
 tempfile = "3.3"
@@ -24,4 +24,4 @@ flate2 = { version = "1.0.23", default-features = false, features = ["zlib"] }
 tar = "0.4.38"
 
 [dev-dependencies]
-libcnb-test = "0.3"
+libcnb-test = "0.4"

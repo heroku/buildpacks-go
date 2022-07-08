@@ -1,13 +1,13 @@
 #![warn(clippy::pedantic)]
 
-use libcnb_test::{assert_contains, BuildpackReference, IntegrationTest};
+use libcnb_test::{assert_contains, TestConfig, TestRunner};
 use std::time::Duration;
 
 fn test_go_fixture(fixture: &str, expected_loglines: Vec<&str>) {
     for stack in ["heroku/buildpacks:20", "heroku/builder:22"] {
-        IntegrationTest::new(stack, format!("tests/fixtures/{fixture}"))
-            .buildpacks(vec![BuildpackReference::Crate])
-            .run_test(|ctx| {
+        TestRunner::default().run_test(
+            TestConfig::new(stack, format!("tests/fixtures/{fixture}")),
+            |ctx| {
                 let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
                 for logline in &expected_loglines {
                     assert_contains!(logs, logline);
@@ -28,7 +28,8 @@ fn test_go_fixture(fixture: &str, expected_loglines: Vec<&str>) {
 
                         assert_contains!(resp, fixture);
                     });
-            });
+            },
+        );
     }
 }
 

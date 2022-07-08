@@ -135,28 +135,26 @@ impl Buildpack for GoBuildpack {
         BuildResultBuilder::new().launch(launch).build()
     }
 
-    fn on_error(&self, error: libcnb::Error<Self::Error>) -> i32 {
+    fn on_error(&self, error: libcnb::Error<Self::Error>) {
         match error {
             libcnb::Error::BuildpackError(bp_err) => {
                 let err_string = bp_err.to_string();
-                let (err_ctx, exit_code) = match bp_err {
-                    GoBuildpackError::BuildLayer(_) => ("build layer", 20),
-                    GoBuildpackError::DepsLayer(_) => ("dependency layer", 21),
-                    GoBuildpackError::DistLayer(_) => ("distribution layer", 21),
-                    GoBuildpackError::TargetLayer(_) => ("target layer", 22),
-                    GoBuildpackError::GoMod(_) => ("go.mod", 23),
-                    GoBuildpackError::InventoryParse(_) => ("inventory parse", 24),
-                    GoBuildpackError::VersionResolution(_) => ("version resolution", 25),
-                    GoBuildpackError::GoBuild(_) => ("go build", 26),
-                    GoBuildpackError::GoList(_) => ("go list", 27),
-                    GoBuildpackError::Launch(_) => ("launch process type", 28),
+                let err_ctx = match bp_err {
+                    GoBuildpackError::BuildLayer(_) => "build layer",
+                    GoBuildpackError::DepsLayer(_) => "dependency layer",
+                    GoBuildpackError::DistLayer(_) => "distribution layer",
+                    GoBuildpackError::TargetLayer(_) => "target layer",
+                    GoBuildpackError::GoMod(_) => "go.mod",
+                    GoBuildpackError::InventoryParse(_) => "inventory parse",
+                    GoBuildpackError::VersionResolution(_) => "version resolution",
+                    GoBuildpackError::GoBuild(_) => "go build",
+                    GoBuildpackError::GoList(_) => "go list",
+                    GoBuildpackError::Launch(_) => "launch process type",
                 };
                 log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
-                exit_code
             }
             err => {
                 log_error("Heroku Go Buildpack internal error", err.to_string());
-                99
             }
         }
     }
