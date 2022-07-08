@@ -21,14 +21,20 @@ pub fn build_launch(pkgs: Vec<String>) -> Result<Launch, LaunchErr> {
             .ok_or_else(|| LaunchErr::ImportPath(pkg.to_string()))?
             .parse::<ProcessType>()
             .map_err(LaunchErr::ProcessName)?;
-        launch = launch.process(ProcessBuilder::new(proc.clone(), proc.to_string()).build());
-    }
-    if let Some(proc) = launch.processes.clone().get(0) {
         launch = launch.process(
-            ProcessBuilder::new(process_type!("web"), &proc.command)
-                .default(true)
+            ProcessBuilder::new(proc.clone(), proc.to_string())
+                .default(proc.to_string() == "web")
                 .build(),
         );
+    }
+    if launch.processes.iter().find(|p| p.default).is_none() {
+        if let Some(proc) = launch.processes.clone().get(0) {
+            launch = launch.process(
+                ProcessBuilder::new(process_type!("web"), &proc.command)
+                    .default(true)
+                    .build(),
+            );
+        }
     }
     Ok(launch)
 }
@@ -49,6 +55,14 @@ mod tests {
             assert_eq!(*name, proc.r#type.to_string());
             assert_eq!("kubernetes", proc.command);
         }
+    }
+
+    #[test]
+    fn build_launch_does_not_dup_web() {
+        let launch = build_launch(vec![String::from("example.com/web")])
+            .expect("unexpected error with build_launch");
+        assert_eq!(launch.processes.len(), 1);
+        assert_eq!(launch.processes[0].command, "web");
     }
 
     #[test]
