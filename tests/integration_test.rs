@@ -3,13 +3,13 @@
 use libcnb_test::{assert_contains, TestConfig, TestRunner};
 use std::time::Duration;
 
-fn test_go_fixture(fixture: &str, expected_loglines: Vec<&str>) {
+fn test_go_fixture(fixture: &str, expected_loglines: &[&str]) {
     for stack in ["heroku/buildpacks:20", "heroku/builder:22"] {
         TestRunner::default().run_test(
             TestConfig::new(stack, format!("tests/fixtures/{fixture}")),
             |ctx| {
                 let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
-                for logline in &expected_loglines {
+                for logline in expected_loglines {
                     assert_contains!(logs, logline);
                 }
                 let port = 8080;
@@ -38,7 +38,7 @@ fn test_go_fixture(fixture: &str, expected_loglines: Vec<&str>) {
 fn test_basic_http_116() {
     test_go_fixture(
         "basic_http_116",
-        vec![
+        &[
             "Detected Go version requirement: ~1.16.2",
             "Installing Go 1.16.",
         ],
@@ -50,7 +50,7 @@ fn test_basic_http_116() {
 fn test_modules_gorilla_117() {
     test_go_fixture(
         "modules_gorilla_117",
-        vec![
+        &[
             "Detected Go version requirement: = 1.17.8",
             "Installing Go 1.17.8",
             "downloading github.com/gorilla/mux v1.8.0",
@@ -63,7 +63,7 @@ fn test_modules_gorilla_117() {
 fn test_vendor_gin_118() {
     test_go_fixture(
         "vendor_gin_118",
-        vec![
+        &[
             "Detected Go version requirement: = 1.18",
             "Installing Go 1.18",
         ],
@@ -75,11 +75,11 @@ fn test_vendor_gin_118() {
 fn test_worker_http_118() {
     test_go_fixture(
         "worker_http_118",
-        vec![
+        &[
             "Detected Go version requirement: ^1.18.1",
             "Installing Go 1.18.",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",
         ],
-    )
+    );
 }
