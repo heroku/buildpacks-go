@@ -14,17 +14,15 @@ impl Requirement {
 
     pub fn parse_go(go_req: &str) -> anyhow::Result<Self> {
         let stripped_req = go_req
-            .strip_prefix("go")
-            .and_then(|req| Some(Cow::Owned(format!("={req}"))))
-            .unwrap_or(Cow::Borrowed(go_req));
+            .strip_prefix("go").map_or(Cow::Borrowed(go_req), |req| Cow::Owned(format!("={req}")));
         Self::parse(&stripped_req)
     }
 
-    pub fn any() -> Self {
+    #[must_use] pub fn any() -> Self {
         Self(semver::VersionReq::any())
     }
 
-    pub fn satisfies(&self, version: &Version) -> bool {
+    #[must_use] pub fn satisfies(&self, version: &Version) -> bool {
         self.0.matches(&version.0)
     }
 }
@@ -47,7 +45,7 @@ impl fmt::Display for Requirement {
         write!(f, "{}", self.0)
     }
 }
-/// `Version` is a wrapper around semver::Version that adds
+/// `Version` is a wrapper around `semver::Version` that adds
 /// - `Deserialize` and `Serialize` traits
 /// - Ability to parse go-flavored versions
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -70,7 +68,7 @@ impl Version {
     ///
     /// Invalid go version strings will return an error
     pub fn parse_go(go_version: &str) -> anyhow::Result<Version> {
-        let stripped_version = go_version.strip_prefix("go").unwrap_or(&go_version);
+        let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
         let re = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?;
         let caps = re
@@ -78,9 +76,9 @@ impl Version {
             .context(format!("couldn't find version identifiers in {go_version}"))?;
 
         let mut composed_version = vec![
-            caps.get(1).map(|major| major.as_str()).unwrap_or("0"),
-            caps.get(2).map(|minor| minor.as_str()).unwrap_or("0"),
-            caps.get(3).map(|patch| patch.as_str()).unwrap_or("0"),
+            caps.get(1).map_or("0", |major| major.as_str()),
+            caps.get(2).map_or("0", |minor| minor.as_str()),
+            caps.get(3).map_or("0", |patch| patch.as_str()),
         ]
         .join(".");
 
@@ -162,7 +160,7 @@ mod tests {
         ];
         for (input, expected_str) in examples {
             let actual = Requirement::parse_go(input)
-                .expect(&format!("Failed to parse go input requirement: {input}"));
+                .unwrap_or_else(|_| panic!("Failed to parse go input requirement: {input}"));
             let actual_str = actual.to_string();
             let expected =
                 Requirement::parse(expected_str).expect("Failed to parse go expected requirement");

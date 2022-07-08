@@ -17,7 +17,7 @@ pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg> {
     let file = fs::File::open(gomod_path).context("failed to open go.mod")?;
     for line_result in BufReader::new(file).lines() {
         let line = line_result?;
-        let mut parts = line.trim().split_whitespace();
+        let mut parts = line.split_whitespace();
         match (parts.next(), parts.next(), parts.next(), parts.next()) {
             (Some("//"), Some("+heroku"), Some("install"), Some(pkg)) => {
                 let mut pkgs = vec![pkg.to_string()];

@@ -16,7 +16,7 @@ pub fn build_launch(pkgs: Vec<String>) -> Result<Launch, LaunchErr> {
     let mut launch = Launch::new();
     for pkg in &pkgs {
         let proc = pkg
-            .rsplit_once("/")
+            .rsplit_once('/')
             .map(|(_path, name)| name)
             .ok_or_else(|| LaunchErr::ImportPath(pkg.to_string()))?
             .parse::<ProcessType>()
@@ -27,7 +27,7 @@ pub fn build_launch(pkgs: Vec<String>) -> Result<Launch, LaunchErr> {
                 .build(),
         );
     }
-    if launch.processes.iter().find(|p| p.default).is_none() {
+    if !launch.processes.iter().any(|p| p.default) {
         if let Some(proc) = launch.processes.clone().get(0) {
             launch = launch.process(
                 ProcessBuilder::new(process_type!("web"), &proc.command)

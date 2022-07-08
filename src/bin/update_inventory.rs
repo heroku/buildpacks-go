@@ -36,14 +36,14 @@ fn main() {
     // Find versions from GitHub that are not in the local inventory.
     let new_versions: Vec<&str> = remote_versions
         .iter()
-        .map(|rv| rv.as_str())
+        .map(std::string::String::as_str)
         .filter(|rv| !local_versions.contains(rv))
         .collect();
 
     // Build new artifacts for the GitHub releases we don't have yet.
     let mut new_artifacts = vec![];
     for nv in &new_versions {
-        match Artifact::new(nv.to_string()) {
+        match Artifact::new((*nv).to_string()) {
             Ok(na) => {
                 new_artifacts.push(na);
             }

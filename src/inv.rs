@@ -27,7 +27,7 @@ pub struct Artifact {
 }
 
 impl Artifact {
-    pub fn mirror_tarball_url(&self) -> String {
+    #[must_use] pub fn mirror_tarball_url(&self) -> String {
         format!(
             "{}/{}.{}.tar.gz",
             GO_MIRROR_URL, self.go_version, self.architecture
@@ -73,7 +73,7 @@ impl Inventory {
         Ok(inv)
     }
 
-    pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
+    #[must_use] pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
         self.artifacts
             .iter()
             .find(|artifact| requirement.satisfies(&artifact.semantic_version))
@@ -98,7 +98,7 @@ pub fn list_github_go_versions() -> Result<Vec<String>, String> {
     .iter()
     .filter_map(|t| t.reference.strip_prefix("refs/tags/"))
     .filter(|t| t.starts_with("go"))
-    .map(|v| v.to_string())
+    .map(std::string::ToString::to_string)
     .collect();
     Ok(tag_names)
 }

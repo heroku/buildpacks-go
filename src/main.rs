@@ -74,7 +74,7 @@ impl Buildpack for GoBuildpack {
 
         let artifact = inv
             .resolve(&requirement)
-            .ok_or_else(|| GoBuildpackError::VersionResolution(requirement))?;
+            .ok_or(GoBuildpackError::VersionResolution(requirement))?;
         log_info(format!(
             "Resolved Go version: {}",
             artifact.semantic_version
@@ -119,7 +119,7 @@ impl Buildpack for GoBuildpack {
             gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        log_info(format!("Building packages:"));
+        log_info("Building packages:");
         for pkg in &packages {
             log_info(format!("  - {pkg}"));
         }
