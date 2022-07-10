@@ -15,6 +15,7 @@ use layers::{
 };
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
+use libcnb::data::launch::Launch;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
@@ -126,13 +127,15 @@ impl Buildpack for GoBuildpack {
         gocmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         log_header("Setting launch table");
-        let launch = proc::build_launch(&packages).map_err(GoBuildpackError::Launch)?;
+        let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
         log_info("Detected processes:");
-        for proc in &launch.processes {
+        for proc in &procs {
             log_info(format!("  - {}: {}", proc.r#type, proc.command));
         }
 
-        BuildResultBuilder::new().launch(launch).build()
+        BuildResultBuilder::new()
+            .launch(Launch::new().processes(procs))
+            .build()
     }
 
     fn on_error(&self, error: libcnb::Error<Self::Error>) {
@@ -149,7 +152,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::VersionResolution(_) => "version resolution",
                     GoBuildpackError::GoBuild(_) => "go build",
                     GoBuildpackError::GoList(_) => "go list",
-                    GoBuildpackError::Launch(_) => "launch process type",
+                    GoBuildpackError::Proc(_) => "launch process type",
                 };
                 log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
             }
@@ -181,7 +184,7 @@ pub enum GoBuildpackError {
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(Requirement),
     #[error("Launch process error: {0}")]
-    Launch(proc::LaunchErr),
+    Proc(proc::ProcErr),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {
