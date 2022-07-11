@@ -9,13 +9,12 @@ use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::log_info;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use thiserror::Error;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub struct DistLayer {
     pub artifact: Artifact,
-    pub tmp_dir: PathBuf,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]

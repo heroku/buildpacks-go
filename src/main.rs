@@ -11,7 +11,7 @@ use heroku_go_buildpack::proc;
 use heroku_go_buildpack::vrs::Requirement;
 use layers::{
     BuildLayer, BuildLayerError, DepsLayer, DepsLayerError, DistLayer, DistLayerError, TargetLayer,
-    TargetLayerError, TmpLayer,
+    TargetLayerError,
 };
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -81,11 +81,9 @@ impl Buildpack for GoBuildpack {
         ));
 
         log_header("Installing Go distribution");
-        let tmp_layer = context.handle_layer(layer_name!("go_tmp"), TmpLayer {})?;
         let dist_layer = context.handle_layer(
             layer_name!("go_dist"),
             DistLayer {
-                tmp_dir: tmp_layer.path,
                 artifact: artifact.clone(),
             },
         )?;
