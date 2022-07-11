@@ -4,8 +4,8 @@
 
 mod layers;
 
+use heroku_go_buildpack::cfg::read_gomod;
 use heroku_go_buildpack::gocmd::{self, GoCmdError};
-use heroku_go_buildpack::gomod::read_gomod_cfg;
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::proc;
 use heroku_go_buildpack::vrs::Requirement;
@@ -68,8 +68,7 @@ impl Buildpack for GoBuildpack {
 
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
-        let cfg =
-            read_gomod_cfg(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoMod)?;
+        let cfg = read_gomod(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoMod)?;
         let requirement = cfg.version.unwrap_or_else(Requirement::any);
         log_info(format!("Detected Go version requirement: {requirement}"));
 

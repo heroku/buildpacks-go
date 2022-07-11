@@ -4,16 +4,21 @@ use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path;
 
+/// Represents buildpack configuration found in a project's `go.mod`.
 pub struct GoModCfg {
-    pub version: Option<Requirement>,
     pub packages: Option<Vec<String>>,
+    pub version: Option<Requirement>,
 }
 
-pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg> {
-    let mut cfg = GoModCfg {
-        version: None,
-        packages: None,
-    };
+/// Build a `GoModCfg` from a `go.mod` file.
+///
+/// # Errors
+///
+/// Will return an error when the file cannot be read or the version strings
+/// within are not parseable.
+pub fn read_gomod<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg> {
+    let mut version: Option<Requirement> = None;
+    let mut packages: Option<Vec<String>> = None;
     let file = fs::File::open(gomod_path).context("failed to open go.mod")?;
     for line_result in BufReader::new(file).lines() {
         let line = line_result?;
@@ -24,18 +29,18 @@ pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg> {
                 for pkgn in parts {
                     pkgs.push(pkgn.to_string());
                 }
-                cfg.packages = Some(pkgs);
+                packages = Some(pkgs);
             }
             (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
-                cfg.version = Requirement::parse_go(vrs).map(Some)?;
+                version = Requirement::parse_go(vrs).map(Some)?;
             }
             (Some("go"), Some(vrs), None, None) => {
-                if cfg.version == None {
-                    cfg.version = Requirement::parse_go(&format!("={vrs}")).map(Some)?;
+                if version == None {
+                    version = Requirement::parse_go(&format!("={vrs}")).map(Some)?;
                 }
             }
             _ => (),
         }
     }
-    Ok(cfg)
+    Ok(GoModCfg { packages, version })
 }
