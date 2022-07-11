@@ -31,9 +31,13 @@ pub enum TgzError {
 }
 
 /// Fetches a tarball from a url, strips component paths, filters path prefixes,
-/// and verifies a sha256 checksum. Care is taken not to write temporary files
-/// or read the entire contents into memory. In an error scenario, any archive
-/// contents already extracted will not be removed.
+/// extracts files to a location, and verifies a sha256 checksum. Care is taken
+/// not to write temporary files or read the entire contents into memory. In an
+/// error scenario, any archive contents already extracted will not be removed.
+///
+/// # Errors
+///
+/// See `TgzError` for an enumeration of error scenarios.
 pub fn fetch_strip_filter_extract_verify<'a>(
     uri: impl AsRef<str>,
     strip_prefix: impl AsRef<str>,
