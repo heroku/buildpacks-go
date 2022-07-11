@@ -1,9 +1,4 @@
-mod build;
-mod deps;
-mod dist;
-mod target;
-
-pub use build::*;
-pub use deps::*;
-pub use dist::*;
-pub use target::*;
+pub(crate) mod build;
+pub(crate) mod deps;
+pub(crate) mod dist;
+pub(crate) mod target;

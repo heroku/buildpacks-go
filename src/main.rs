@@ -9,10 +9,10 @@ use heroku_go_buildpack::cmd::{self, CmdError};
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::proc;
 use heroku_go_buildpack::vrs::Requirement;
-use layers::{
-    BuildLayer, BuildLayerError, DepsLayer, DepsLayerError, DistLayer, DistLayerError, TargetLayer,
-    TargetLayerError,
-};
+use layers::build::{BuildLayer, BuildLayerError};
+use layers::deps::{DepsLayer, DepsLayerError};
+use layers::dist::{DistLayer, DistLayerError};
+use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::Launch;
