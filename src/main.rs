@@ -5,7 +5,7 @@
 mod layers;
 
 use heroku_go_buildpack::cfg::read_gomod;
-use heroku_go_buildpack::gocmd::{self, GoCmdError};
+use heroku_go_buildpack::cmd::{self, CmdError};
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::proc;
 use heroku_go_buildpack::vrs::Requirement;
@@ -116,14 +116,14 @@ impl Buildpack for GoBuildpack {
             // Use `go list` to determine packages to build. Do this eagerly,
             // even if the result is unused because it has the side effect of
             // downloading any required go modules.
-            gocmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
+            cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
         log_info("Building packages:");
         for pkg in &packages {
             log_info(format!("  - {pkg}"));
         }
-        gocmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
+        cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         log_header("Setting launch table");
         let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
@@ -167,9 +167,9 @@ pub enum GoBuildpackError {
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
     #[error("Couldn't run `go build`: {0}")]
-    GoBuild(GoCmdError),
+    GoBuild(CmdError),
     #[error("Couldn't run `go list`: {0}")]
-    GoList(GoCmdError),
+    GoList(CmdError),
     #[error("Couldn't read go.mod build configuration: {0}")]
     GoMod(anyhow::Error),
     #[error("{0}")]
