@@ -27,7 +27,8 @@ pub struct Artifact {
 }
 
 impl Artifact {
-    #[must_use] pub fn mirror_tarball_url(&self) -> String {
+    #[must_use]
+    pub fn mirror_tarball_url(&self) -> String {
         format!(
             "{}/{}.{}.tar.gz",
             GO_MIRROR_URL, self.go_version, self.architecture
@@ -35,14 +36,27 @@ impl Artifact {
     }
 }
 
+#[derive(Debug)]
 pub enum ArtifactError {
     Checksum(anyhow::Error),
     Version(anyhow::Error),
 }
 
 impl Artifact {
-    pub fn new<S: Into<String>>(goversion: S) -> Result<Artifact, ArtifactError> {
-        let go_version: String = goversion.into();
+    /// Build an artifact from a go version.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let art = heroku_go_buildpack::inv::Artifact::new("go1.16").unwrap();
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Will return an `Err` if the go version string is formatted incorrectly,
+    /// or there is an http error fetching the checksum.
+    pub fn new<S: Into<String>>(version: S) -> Result<Artifact, ArtifactError> {
+        let go_version: String = version.into();
         let semantic_version = Version::parse_go(&go_version).map_err(ArtifactError::Version)?;
         let sha_checksum = fetch_go_checksum(&go_version).map_err(ArtifactError::Checksum)?;
 
@@ -67,13 +81,22 @@ fn fetch_go_checksum(goversion: &str) -> anyhow::Result<String> {
 }
 
 impl Inventory {
+    /// Read inventory.toml to an `Inventory`.
+    ///
+    /// # Errors
+    ///
+    /// Will return an Err if the file is missing, not readable, or if the
+    /// file contents is not formatted properly.
     pub fn read(path: &str) -> anyhow::Result<Inventory> {
         let contents = fs::read_to_string(path)?;
         let inv = toml::from_str(&contents)?;
         Ok(inv)
     }
 
-    #[must_use] pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
+    /// Find the first artifact from the inventory that satisfies a
+    /// `Requirement`.
+    #[must_use]
+    pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
         self.artifacts
             .iter()
             .find(|artifact| requirement.satisfies(&artifact.semantic_version))
@@ -87,6 +110,16 @@ struct Tag {
 }
 
 /// List known go versions from tags on GitHub.
+///
+/// # Example
+///
+/// ```
+/// let versions = heroku_go_buildpack::inv::list_github_go_versions().unwrap();
+/// ```
+///
+/// # Errors
+///
+/// Http issues connecting to the GitHub tags endpoint will return an error.
 pub fn list_github_go_versions() -> Result<Vec<String>, String> {
     let tag_names = ureq::get(&format!(
         "{GITHUB_API_URL}/repos/{GO_REPO_NAME}/git/refs/tags"
