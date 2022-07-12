@@ -52,7 +52,7 @@ fn test_basic_http_116() {
 
 #[test]
 #[ignore]
-fn test_modules_gorilla_117() {
+fn test_vendor_gorilla_117() {
     test_go_fixture(
         "vendor_gorilla_117",
         &[
@@ -66,13 +66,13 @@ fn test_modules_gorilla_117() {
 
 #[test]
 #[ignore]
-fn test_vendor_gin_118() {
+fn test_modules_gin_118() {
     test_go_fixture(
         "modules_gin_118",
         &[
             "Detected Go version requirement: = 1.18",
             "Installing Go 1.18",
-            "downloading github.com/go-gin/gin v1.8.1",
+            "downloading github.com/gin-gonic/gin v1.8.1",
         ],
         &[],
     );
