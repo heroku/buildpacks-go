@@ -81,33 +81,41 @@ impl Buildpack for GoBuildpack {
         ));
 
         log_header("Installing Go distribution");
-        let dist_layer = context.handle_layer(
-            layer_name!("go_dist"),
-            DistLayer {
-                artifact: artifact.clone(),
-            },
-        )?;
-        go_env = dist_layer.env.apply(Scope::Build, &go_env);
+        go_env = context
+            .handle_layer(
+                layer_name!("go_dist"),
+                DistLayer {
+                    artifact: artifact.clone(),
+                },
+            )?
+            .env
+            .apply(Scope::Build, &go_env);
 
-        log_header("Building Go packages");
+        log_header("Building Go binaries");
 
         if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
             log_info("Using vendored Go modules");
         } else {
-            let deps_layer = context.handle_layer(layer_name!("go_deps"), DepsLayer {})?;
-            go_env = deps_layer.env.apply(Scope::Build, &go_env);
+            go_env = context
+                .handle_layer(layer_name!("go_deps"), DepsLayer {})?
+                .env
+                .apply(Scope::Build, &go_env);
         }
 
-        let target_layer = context.handle_layer(layer_name!("go_target"), TargetLayer {})?;
-        go_env = target_layer.env.apply(Scope::Build, &go_env);
+        go_env = context
+            .handle_layer(layer_name!("go_target"), TargetLayer {})?
+            .env
+            .apply(Scope::Build, &go_env);
 
-        let build_layer = context.handle_layer(
-            layer_name!("go_build"),
-            BuildLayer {
-                go_version: artifact.go_version.clone(),
-            },
-        )?;
-        go_env = build_layer.env.apply(Scope::Build, &go_env);
+        go_env = context
+            .handle_layer(
+                layer_name!("go_build"),
+                BuildLayer {
+                    go_version: artifact.go_version.clone(),
+                },
+            )?
+            .env
+            .apply(Scope::Build, &go_env);
 
         log_info("Resolving Go modules");
         let packages = cfg.packages.unwrap_or(
