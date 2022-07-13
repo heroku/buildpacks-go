@@ -9,7 +9,7 @@ pub enum ProcErr {
     #[error("Invalid Go package import path: {0}")]
     ImportPath(String),
     #[error("Invalid CNB process name: {0}")]
-    ProcessName(ProcessTypeError),
+    ProcessName(#[from] ProcessTypeError),
 }
 
 /// Turns a list of go packages into a CNB process list. Any package with
@@ -36,8 +36,7 @@ pub fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, ProcErr> {
             .rsplit_once('/')
             .map(|(_path, name)| name)
             .ok_or_else(|| ProcErr::ImportPath(pkg.to_string()))?
-            .parse::<ProcessType>()
-            .map_err(ProcErr::ProcessName)?;
+            .parse::<ProcessType>()?;
 
         procs.push(
             ProcessBuilder::new(proc_name.clone(), proc_name.to_string())
