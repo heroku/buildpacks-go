@@ -5,7 +5,7 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum CmdError {
     #[error("Command IO error: {0}")]
-    IO(std::io::Error),
+    IO(#[from] std::io::Error),
     #[error("Command did not exit successfully: {0}")]
     Exit(ExitStatus),
 }
@@ -23,13 +23,7 @@ pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Cmd
     for pkg in packages {
         args.push(pkg.as_ref());
     }
-    let mut build_cmd = Command::new("go")
-        .args(args)
-        .envs(go_env)
-        .spawn()
-        .map_err(CmdError::IO)?;
-
-    let status = build_cmd.wait().map_err(CmdError::IO)?;
+    let status = Command::new("go").args(args).envs(go_env).spawn()?.wait()?;
 
     status.success().then(|| ()).ok_or(CmdError::Exit(status))
 }
@@ -44,7 +38,7 @@ pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Cmd
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
 pub fn go_list(go_env: &Env) -> Result<Vec<String>, CmdError> {
-    let list_cmd = Command::new("go")
+    let result = Command::new("go")
         .args(vec![
             "list",
             "-tags",
@@ -55,10 +49,8 @@ pub fn go_list(go_env: &Env) -> Result<Vec<String>, CmdError> {
         ])
         .envs(go_env)
         .stdout(Stdio::piped())
-        .spawn()
-        .map_err(CmdError::IO)?;
-
-    let result = list_cmd.wait_with_output().map_err(CmdError::IO)?;
+        .spawn()?
+        .wait_with_output()?;
 
     result
         .status
