@@ -11,9 +11,6 @@ keywords = ["go", "golang", "heroku"]
 type = "BSD-3-Clause"
 
 [[stacks]]
-id = "*"
-
-[[stacks]]
 id = "heroku-20"
 
 [[stacks]]
