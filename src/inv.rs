@@ -1,7 +1,7 @@
-use crate::vrs::{Requirement, Version};
-use anyhow::Context;
+use crate::vrs::{Requirement, Version, VersionParseError};
 use serde::{Deserialize, Serialize};
 use std::fs;
+use thiserror::Error;
 use toml;
 
 pub const GITHUB_API_URL: &str = "https://api.github.com";
@@ -36,10 +36,12 @@ impl Artifact {
     }
 }
 
-#[derive(Debug)]
-pub enum ArtifactError {
-    Checksum(anyhow::Error),
-    Version(anyhow::Error),
+#[derive(Error, Debug)]
+pub enum ArtifactBuildError {
+    #[error("Couldn't build Go artifact: {0}")]
+    Checksum(#[from] FetchGoChecksumError),
+    #[error("Couldn't build Go artifact: {0}")]
+    Version(#[from] VersionParseError),
 }
 
 impl Artifact {
@@ -48,36 +50,46 @@ impl Artifact {
     /// # Examples
     ///
     /// ```
-    /// let art = heroku_go_buildpack::inv::Artifact::new("go1.16").unwrap();
+    /// let art = heroku_go_buildpack::inv::Artifact::build("go1.16").unwrap();
     /// ```
     ///
     /// # Errors
     ///
     /// Will return an `Err` if the go version string is formatted incorrectly,
     /// or there is an http error fetching the checksum.
-    pub fn new<S: Into<String>>(version: S) -> Result<Artifact, ArtifactError> {
+    pub fn build<S: Into<String>>(version: S) -> Result<Artifact, ArtifactBuildError> {
         let go_version: String = version.into();
-        let semantic_version = Version::parse_go(&go_version).map_err(ArtifactError::Version)?;
-        let sha_checksum = fetch_go_checksum(&go_version).map_err(ArtifactError::Checksum)?;
-
         Ok(Artifact {
-            sha_checksum,
+            semantic_version: Version::parse_go(&go_version)?,
+            sha_checksum: fetch_go_checksum(&go_version)?,
             go_version,
-            semantic_version,
             architecture: ARCH.to_string(),
         })
     }
 }
 
-fn fetch_go_checksum(goversion: &str) -> anyhow::Result<String> {
-    let url = format!("{}/{}.{}.tar.gz.sha256", GO_HOST_URL, goversion, ARCH);
-    ureq::get(&url)
-        .call()
-        .context(format!(
-            "failed to download to remote checksum file from {url}"
-        ))?
-        .into_string()
-        .context(format!("failed to read checksum value from {url}"))
+#[derive(Error, Debug)]
+pub enum FetchGoChecksumError {
+    #[error("Couldn't download Go checksum file: {0}")]
+    Http(#[from] ureq::Error),
+    #[error("Failed to read checksum value from Go checksum file: {0}")]
+    Io(#[from] std::io::Error),
+}
+fn fetch_go_checksum(goversion: &str) -> Result<String, FetchGoChecksumError> {
+    Ok(ureq::get(&format!(
+        "{}/{}.{}.tar.gz.sha256",
+        GO_HOST_URL, goversion, ARCH
+    ))
+    .call()?
+    .into_string()?)
+}
+
+#[derive(Error, Debug)]
+pub enum ReadInventoryError {
+    #[error("Couldn't read Go artifact inventory.toml: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("Couldn't parse Go artifact inventory.toml: {0}")]
+    Parse(#[from] toml::de::Error),
 }
 
 impl Inventory {
@@ -87,10 +99,8 @@ impl Inventory {
     ///
     /// Will return an Err if the file is missing, not readable, or if the
     /// file contents is not formatted properly.
-    pub fn read(path: &str) -> anyhow::Result<Inventory> {
-        let contents = fs::read_to_string(path)?;
-        let inv = toml::from_str(&contents)?;
-        Ok(inv)
+    pub fn read(path: &str) -> Result<Self, ReadInventoryError> {
+        Ok(toml::from_str(&fs::read_to_string(path)?)?)
     }
 
     /// Find the first artifact from the inventory that satisfies a

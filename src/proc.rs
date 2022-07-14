@@ -5,7 +5,7 @@ use libcnb::data::{
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum ProcErr {
+pub enum ProcError {
     #[error("Invalid Go package import path: {0}")]
     ImportPath(String),
     #[error("Invalid CNB process name: {0}")]
@@ -29,13 +29,13 @@ pub enum ProcErr {
 ///
 /// Invalid go packages (those without a `'/'`) and go packages with suffixes
 /// that don't satisfy CNB process naming conventions will error.
-pub fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, ProcErr> {
+pub fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, ProcError> {
     let mut procs: Vec<Process> = vec![];
     for pkg in pkgs {
         let proc_name = pkg
             .rsplit_once('/')
             .map(|(_path, name)| name)
-            .ok_or_else(|| ProcErr::ImportPath(pkg.to_string()))?
+            .ok_or_else(|| ProcError::ImportPath(pkg.to_string()))?
             .parse::<ProcessType>()?;
 
         procs.push(

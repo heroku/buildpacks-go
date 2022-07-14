@@ -1,8 +1,8 @@
-use anyhow::Context;
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, fmt};
+use thiserror::Error;
 
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
 /// - `Deserialize` and `Serialize` traits
@@ -10,6 +10,9 @@ use std::{borrow::Cow, fmt};
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
+#[derive(Error, Debug)]
+#[error("Couldn't parse Go version requirement: {0}")]
+pub struct RequirementParseError(#[from] semver::ReqParseError);
 impl Requirement {
     /// Parses a semver requirement `&str` as a `Requirement`.
     ///
@@ -22,7 +25,7 @@ impl Requirement {
     /// # Errors
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
-    pub fn parse(input: &str) -> anyhow::Result<Self> {
+    pub fn parse(input: &str) -> Result<Self, RequirementParseError> {
         Ok(semver::VersionReq::parse(input).map(Self)?)
     }
 
@@ -37,7 +40,7 @@ impl Requirement {
     /// # Errors
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
-    pub fn parse_go(go_req: &str) -> anyhow::Result<Self> {
+    pub fn parse_go(go_req: &str) -> Result<Self, RequirementParseError> {
         let stripped_req = go_req
             .strip_prefix("go")
             .map_or(Cow::Borrowed(go_req), |req| Cow::Owned(format!("={req}")));
@@ -58,7 +61,7 @@ impl Requirement {
 }
 
 impl TryFrom<String> for Requirement {
-    type Error = anyhow::Error;
+    type Error = RequirementParseError;
     fn try_from(val: String) -> Result<Self, Self::Error> {
         Requirement::parse(&val)
     }
@@ -82,6 +85,15 @@ impl fmt::Display for Requirement {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(try_from = "String", into = "String")]
 pub struct Version(semver::Version);
+#[derive(Error, Debug)]
+pub enum VersionParseError {
+    #[error("Couldn't parse go version: {0}")]
+    SemVer(#[from] semver::SemVerError),
+    #[error("Internal buildpack issue parsing go version regex: {0}")]
+    Regex(#[from] regex::Error),
+    #[error("Couldn't parse version. Unable to capture values from regex.")]
+    Captures,
+}
 impl Version {
     /// Parses a semver `&str` as a `Version`
     ///
@@ -94,9 +106,8 @@ impl Version {
     /// # Errors
     ///
     /// Invalid semver `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse(version: &str) -> anyhow::Result<Version> {
-        let vrs = semver::Version::parse(version.trim()).map(Version)?;
-        Ok(vrs)
+    pub fn parse(version: &str) -> Result<Version, VersionParseError> {
+        Ok(semver::Version::parse(version.trim()).map(Version)?)
     }
 
     /// Parses a go version `&str` as a `Version`
@@ -110,13 +121,13 @@ impl Version {
     /// # Errors
     ///
     /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse_go(go_version: &str) -> anyhow::Result<Version> {
+    pub fn parse_go(go_version: &str) -> Result<Version, VersionParseError> {
         let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
         let re = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?;
         let caps = re
             .captures(stripped_version)
-            .context(format!("couldn't find version identifiers in {go_version}"))?;
+            .ok_or(VersionParseError::Captures)?;
 
         let mut composed_version = vec![
             caps.get(1).map_or("0", |major| major.as_str()),
@@ -130,12 +141,12 @@ impl Version {
             composed_version.push_str(pre.as_str());
         };
 
-        Version::parse(&composed_version).context(format!("couldn't parse semver for {go_version}"))
+        Version::parse(&composed_version)
     }
 }
 
 impl TryFrom<String> for Version {
-    type Error = anyhow::Error;
+    type Error = VersionParseError;
     fn try_from(val: String) -> Result<Self, Self::Error> {
         Version::parse(&val)
     }

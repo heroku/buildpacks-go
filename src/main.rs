@@ -4,10 +4,10 @@
 
 mod layers;
 
-use heroku_go_buildpack::cfg::read_gomod;
+use heroku_go_buildpack::cfg::{read_gomod_cfg, ReadGoModCfgError};
 use heroku_go_buildpack::cmd::{self, CmdError};
 use heroku_go_buildpack::inv::Inventory;
-use heroku_go_buildpack::proc;
+use heroku_go_buildpack::proc::{self, ProcError};
 use heroku_go_buildpack::vrs::Requirement;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
@@ -68,7 +68,8 @@ impl Buildpack for GoBuildpack {
 
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
-        let cfg = read_gomod(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoMod)?;
+        let cfg =
+            read_gomod_cfg(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoModCfg)?;
         let requirement = cfg.version.unwrap_or_else(Requirement::any);
         log_info(format!("Detected Go version requirement: {requirement}"));
 
@@ -152,7 +153,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::DepsLayer(_) => "dependency layer",
                     GoBuildpackError::DistLayer(_) => "distribution layer",
                     GoBuildpackError::TargetLayer(_) => "target layer",
-                    GoBuildpackError::GoMod(_) => "go.mod",
+                    GoBuildpackError::GoModCfg(_) => "go.mod",
                     GoBuildpackError::InventoryParse(_) => "inventory parse",
                     GoBuildpackError::VersionResolution(_) => "version resolution",
                     GoBuildpackError::GoBuild(_) => "go build",
@@ -176,8 +177,8 @@ pub enum GoBuildpackError {
     GoBuild(CmdError),
     #[error("Couldn't run `go list`: {0}")]
     GoList(CmdError),
-    #[error("Couldn't read go.mod build configuration: {0}")]
-    GoMod(anyhow::Error),
+    #[error("{0}")]
+    GoModCfg(#[from] ReadGoModCfgError),
     #[error("{0}")]
     DepsLayer(#[from] DepsLayerError),
     #[error("{0}")]
@@ -189,7 +190,7 @@ pub enum GoBuildpackError {
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(Requirement),
     #[error("Launch process error: {0}")]
-    Proc(proc::ProcErr),
+    Proc(ProcError),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {

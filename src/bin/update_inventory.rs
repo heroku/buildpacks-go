@@ -1,7 +1,7 @@
 #![warn(clippy::pedantic)]
 #![allow(clippy::module_name_repetitions)]
 
-use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, ArtifactError, Inventory};
+use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, Inventory};
 use std::collections::HashSet;
 use std::{env, fs, process};
 
@@ -43,20 +43,13 @@ fn main() {
     // Build new artifacts for the GitHub releases we don't have yet.
     let mut new_artifacts = vec![];
     for nv in &new_versions {
-        match Artifact::new((*nv).to_string()) {
+        match Artifact::build((*nv).to_string()) {
             Ok(na) => {
                 new_artifacts.push(na);
             }
-            Err(err) => match err {
-                ArtifactError::Checksum(e) => {
-                    // Some older versions of go don't seem to have published sha256 files.
-                    eprintln!("Error getting new go version checksum: {e}");
-                }
-                ArtifactError::Version(e) => {
-                    eprintln!("Error parsing new go version: {e}");
-                    process::exit(5);
-                }
-            },
+            Err(err) => {
+                eprintln!("{err}");
+            }
         }
     }
 

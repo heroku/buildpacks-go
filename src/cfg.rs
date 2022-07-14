@@ -1,13 +1,21 @@
-use crate::vrs::Requirement;
-use anyhow::{Context, Result};
+use crate::vrs::{Requirement, RequirementParseError};
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path;
+use thiserror::Error;
 
 /// Represents buildpack configuration found in a project's `go.mod`.
 pub struct GoModCfg {
     pub packages: Option<Vec<String>>,
     pub version: Option<Requirement>,
+}
+
+#[derive(Error, Debug)]
+pub enum ReadGoModCfgError {
+    #[error("Failed to read go.mod configuration: {0}")]
+    Io(#[from] std::io::Error),
+    #[error("Failed to parse go.mod configuration: {0}")]
+    Version(#[from] RequirementParseError),
 }
 
 /// Build a `GoModCfg` from a `go.mod` file.
@@ -16,10 +24,10 @@ pub struct GoModCfg {
 ///
 /// Will return an error when the file cannot be read or the version strings
 /// within are not parseable.
-pub fn read_gomod<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg> {
+pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg, ReadGoModCfgError> {
     let mut version: Option<Requirement> = None;
     let mut packages: Option<Vec<String>> = None;
-    let file = fs::File::open(gomod_path).context("failed to open go.mod")?;
+    let file = fs::File::open(gomod_path)?;
     for line_result in BufReader::new(file).lines() {
         let line = line_result?;
         let mut parts = line.split_whitespace();
