@@ -40,12 +40,10 @@ fn test_go_fixture(
     );
 }
 
-#[test]
-#[ignore]
-fn test_basic_http_116() {
+fn test_basic_http_116(builder: &str) {
     test_go_fixture(
         "basic_http_116",
-        "heroku/buildpacks:20",
+        builder,
         &[
             "Detected Go version requirement: ~1.16.2",
             "Installing Go 1.16.",
@@ -53,13 +51,21 @@ fn test_basic_http_116() {
         &[],
     );
 }
-
 #[test]
 #[ignore]
-fn test_vendor_gorilla_117() {
+fn basic_http_116_20() {
+    test_basic_http_116("heroku/buildpacks:20");
+}
+#[test]
+#[ignore]
+fn basic_http_116_22() {
+    test_basic_http_116("heroku/builder:22");
+}
+
+fn test_vendor_gorilla_117(builder: &str) {
     test_go_fixture(
         "vendor_gorilla_117",
-        "heroku/builder:22",
+        builder,
         &[
             "Detected Go version requirement: =1.17.8",
             "Installing Go 1.17.8",
@@ -68,13 +74,21 @@ fn test_vendor_gorilla_117() {
         &["downloading github.com/gorilla/mux v1.8.0"],
     );
 }
-
 #[test]
 #[ignore]
-fn test_modules_gin_118() {
+fn vendor_gorilla_117_20() {
+    test_vendor_gorilla_117("heroku/buildpacks:20");
+}
+#[test]
+#[ignore]
+fn vendor_gorilla_117_22() {
+    test_vendor_gorilla_117("heroku/builder:22");
+}
+
+fn test_modules_gin_118(builder: &str) {
     test_go_fixture(
         "modules_gin_118",
-        "heroku/buildpacks:20",
+        builder,
         &[
             "Detected Go version requirement: =1.18",
             "Installing Go 1.18",
@@ -83,13 +97,21 @@ fn test_modules_gin_118() {
         &[],
     );
 }
-
 #[test]
 #[ignore]
-fn test_worker_http_118() {
+fn modules_gin_118_20() {
+    test_modules_gin_118("heroku/buildpacks:20");
+}
+#[test]
+#[ignore]
+fn modules_gin_118_22() {
+    test_modules_gin_118("heroku/builder:22");
+}
+
+fn test_worker_http_118(builder: &str) {
     test_go_fixture(
         "worker_http_118",
-        "heroku/builder:22",
+        builder,
         &[
             "Detected Go version requirement: ^1.18.1",
             "Installing Go 1.18.",
@@ -98,4 +120,14 @@ fn test_worker_http_118() {
         ],
         &["example.com/worker_http_118/cmd/script"],
     );
+}
+#[test]
+#[ignore]
+fn worker_http_118_20() {
+    test_worker_http_118("heroku/buildpacks:20");
+}
+#[test]
+#[ignore]
+fn worker_http_118_22() {
+    test_worker_http_118("heroku/builder:22");
 }
