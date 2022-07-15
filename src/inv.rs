@@ -71,7 +71,7 @@ impl Artifact {
 #[derive(Error, Debug)]
 pub enum FetchGoChecksumError {
     #[error("Couldn't download Go checksum file: {0}")]
-    Http(#[from] ureq::Error),
+    Http(#[from] Box<ureq::Error>),
     #[error("Failed to read checksum value from Go checksum file: {0}")]
     Io(#[from] std::io::Error),
 }
@@ -80,7 +80,8 @@ fn fetch_go_checksum(goversion: &str) -> Result<String, FetchGoChecksumError> {
         "{}/{}.{}.tar.gz.sha256",
         GO_HOST_URL, goversion, ARCH
     ))
-    .call()?
+    .call()
+    .map_err(Box::new)?
     .into_string()?)
 }
 
