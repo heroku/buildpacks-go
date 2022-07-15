@@ -12,7 +12,7 @@ use thiserror::Error;
 pub struct Requirement(semver::VersionReq);
 #[derive(Error, Debug)]
 #[error("Couldn't parse Go version requirement: {0}")]
-pub struct RequirementParseError(#[from] semver::ReqParseError);
+pub struct RequirementParseError(#[from] semver::Error);
 impl Requirement {
     /// Parses a semver requirement `&str` as a `Requirement`.
     ///
@@ -49,8 +49,8 @@ impl Requirement {
 
     /// Creates a wildcard version `Requirement`
     #[must_use]
-    pub fn any() -> Self {
-        Self(semver::VersionReq::any())
+    pub fn default() -> Self {
+        Self(semver::VersionReq::default())
     }
 
     /// Determines if a `&Version` satifies a `Requirement`
@@ -88,7 +88,7 @@ pub struct Version(semver::Version);
 #[derive(Error, Debug)]
 pub enum VersionParseError {
     #[error("Couldn't parse go version: {0}")]
-    SemVer(#[from] semver::SemVerError),
+    SemVer(#[from] semver::Error),
     #[error("Internal buildpack issue parsing go version regex: {0}")]
     Regex(#[from] regex::Error),
     #[error("Couldn't parse version. Unable to capture values from regex.")]
@@ -202,13 +202,13 @@ mod tests {
     #[test]
     fn test_requirement_parsing() {
         let examples = [
-            ("go1", "= 1"),
+            ("go1", "=1"),
             ("1", "^1"),
-            ("=1", "= 1"),
-            ("go1.16", "= 1.16"),
+            ("=1", "=1"),
+            ("go1.16", "=1.16"),
             ("1.16", "^1.16"),
             ("~1.16", "~1.16"),
-            ("go1.18.2", "= 1.18.2"),
+            ("go1.18.2", "=1.18.2"),
             ("1.18.2", "^1.18.2"),
             ("^1.18.2", "^1.18.2"),
         ];

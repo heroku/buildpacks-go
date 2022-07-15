@@ -7,19 +7,19 @@ publish = false
 rust-version = "1.62"
 
 [dependencies]
-libcnb = "0.8"
-libherokubuildpack = "0.8"
+libcnb = "0.9"
+libherokubuildpack = "0.9"
 serde = "1.0"
 serde_json = "1.0"
 tempfile = "3.3"
 toml = "0.5"
 thiserror = "1.0"
 sha2 = "0.10.2"
-semver = "0.9"
+semver = "1.0"
 regex = "1.5"
 ureq = {version = "2.4", features = ["json"]}
 flate2 = { version = "1.0.23", default-features = false, features = ["zlib"] }
 tar = "0.4.38"
 
 [dev-dependencies]
-libcnb-test = "0.4"
+libcnb-test = "0.5"

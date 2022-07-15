@@ -70,7 +70,7 @@ impl Buildpack for GoBuildpack {
 
         let cfg =
             read_gomod_cfg(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoModCfg)?;
-        let requirement = cfg.version.unwrap_or_else(Requirement::any);
+        let requirement = cfg.version.unwrap_or_else(Requirement::default);
         log_info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = inv

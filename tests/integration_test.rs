@@ -56,7 +56,7 @@ fn test_vendor_gorilla_117() {
     test_go_fixture(
         "vendor_gorilla_117",
         &[
-            "Detected Go version requirement: = 1.17.8",
+            "Detected Go version requirement: =1.17.8",
             "Installing Go 1.17.8",
             "Using vendored Go modules",
         ],
@@ -70,7 +70,7 @@ fn test_modules_gin_118() {
     test_go_fixture(
         "modules_gin_118",
         &[
-            "Detected Go version requirement: = 1.18",
+            "Detected Go version requirement: =1.18",
             "Installing Go 1.18",
             "downloading github.com/gin-gonic/gin v1.8.1",
         ],

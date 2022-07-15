@@ -135,7 +135,7 @@ checksum = "3abb7553d5b9b8421c6de7cb02606ff15e0c6eea7d8eadd75ef013fd636bec36"
 dependencies = [
  "camino",
  "cargo-platform",
- "semver 1.0.12",
+ "semver",
  "serde",
  "serde_json",
 ]
@@ -406,7 +406,7 @@ dependencies = [
  "libcnb-test",
  "libherokubuildpack",
  "regex",
- "semver 0.9.0",
+ "semver",
  "serde",
  "serde_json",
  "sha2",
@@ -559,9 +559,9 @@ checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
 name = "libcnb"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dfa169a791c7c2d2670b9bd9a04a3f2b6881acf45c0a586fff03e83b32892778"
+checksum = "a4a8206c9c5004aa37c8369e27494cdda7744611f4b39f95b5bbbbd5a9365c20"
 dependencies = [
  "libcnb-data",
  "libcnb-proc-macros",
@@ -572,9 +572,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-data"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2864c190f2a8416a613de90f460bd26537e92821597bd96f191c6118fa9a2a6"
+checksum = "498e6ba7cfd2520053c75d1a3f4f98f09d0e45103f043f7f8cfe422b236b8e4b"
 dependencies = [
  "fancy-regex",
  "libcnb-proc-macros",
@@ -585,9 +585,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-package"
-version = "0.1.2"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe9901f401793ad97dde684665653ef06350a45083f2833a2dae55c6e87aea52"
+checksum = "ac843541f7874babc40106a52e35972931f66ca95e5adabbc8b20ca36063e5ea"
 dependencies = [
  "cargo_metadata",
  "libcnb-data",
@@ -597,9 +597,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-proc-macros"
-version = "0.2.2"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35bce19f9e6b1aea8b787c4a6358b42417fe215c120dace40d173a572ac81a76"
+checksum = "21023e1598df3f6fea1b188a34ce06ca41181f03ed3d71169ebaa58c8cfd278b"
 dependencies = [
  "cargo_metadata",
  "fancy-regex",
@@ -609,9 +609,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-test"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f19be17e6e4cc192c5118a5dd2c746ed287d83d37ac4ea573555d07dc2416e8a"
+checksum = "e98db975703e86a53466a064a39e9c22a9dd3ffaea51435d9dfd3255dd7d74c6"
 dependencies = [
  "bollard",
  "cargo_metadata",
@@ -626,9 +626,9 @@ dependencies = [
 
 [[package]]
 name = "libherokubuildpack"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "649579479983fe5938c84bf598fa34611be16fe29fd035a08ff6a6538b39e1a2"
+checksum = "896572dbc018df95e8539bfdadd8da6fc5646d41c2f8cadfe31075b0ef7bc57c"
 dependencies = [
  "flate2",
  "libcnb",
@@ -857,27 +857,12 @@ dependencies = [
 
 [[package]]
 name = "semver"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
-dependencies = [
- "semver-parser",
-]
-
-[[package]]
-name = "semver"
 version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2333e6df6d6598f2b1974829f853c2b4c5f4a6e503c10af918081aa6f8564e1"
 dependencies = [
  "serde",
 ]
-
-[[package]]
-name = "semver-parser"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "serde"
