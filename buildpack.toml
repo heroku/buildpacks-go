@@ -15,6 +15,3 @@ id = "heroku-20"
 
 [[stacks]]
 id = "heroku-22"
-
-[[stacks]]
-id = "io.buildpacks.stacks.bionic"
