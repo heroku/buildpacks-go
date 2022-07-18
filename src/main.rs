@@ -32,7 +32,7 @@ use libcnb_test as _;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
-pub struct GoBuildpack;
+pub(crate) struct GoBuildpack;
 
 impl Buildpack for GoBuildpack {
     type Platform = GenericPlatform;
@@ -170,7 +170,7 @@ impl Buildpack for GoBuildpack {
 }
 
 #[derive(Error, Debug)]
-pub enum GoBuildpackError {
+pub(crate) enum GoBuildpackError {
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
     #[error("Couldn't run `go build`: {0}")]
