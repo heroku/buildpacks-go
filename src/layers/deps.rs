@@ -11,16 +11,16 @@ use std::path::Path;
 use thiserror::Error;
 
 /// A layer that caches the go modules cache
-pub struct DepsLayer {}
+pub(crate) struct DepsLayer {}
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub struct DepsLayerMetadata {
+pub(crate) struct DepsLayerMetadata {
     layer_version: String,
 }
 
 #[derive(Error, Debug)]
 #[error("Couldn't write to build layer: {0}")]
-pub struct DepsLayerError(std::io::Error);
+pub(crate) struct DepsLayerError(std::io::Error);
 
 const LAYER_VERSION: &str = "1";
 

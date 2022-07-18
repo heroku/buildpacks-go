@@ -10,11 +10,11 @@ use std::path::Path;
 use thiserror::Error;
 
 /// An empty, run-only, layer for compiled Go app binaries.
-pub struct TargetLayer {}
+pub(crate) struct TargetLayer {}
 
 #[derive(Error, Debug)]
 #[error("Couldn't write to target layer: {0}")]
-pub struct TargetLayerError(io::Error);
+pub(crate) struct TargetLayerError(io::Error);
 
 impl Layer for TargetLayer {
     type Buildpack = GoBuildpack;

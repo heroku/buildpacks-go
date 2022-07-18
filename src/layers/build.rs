@@ -12,12 +12,12 @@ use std::path::Path;
 use thiserror::Error;
 
 /// A layer for go incremental build cache artifacts
-pub struct BuildLayer {
+pub(crate) struct BuildLayer {
     pub go_version: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub struct BuildLayerMetadata {
+pub(crate) struct BuildLayerMetadata {
     layer_version: String,
     go_version: String,
     stack_id: StackId,

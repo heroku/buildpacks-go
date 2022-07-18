@@ -13,23 +13,21 @@ use std::path::Path;
 use thiserror::Error;
 
 /// A layer that downloads and installs the Go distribution artifacts
-pub struct DistLayer {
+pub(crate) struct DistLayer {
     pub artifact: Artifact,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub struct DistLayerMetadata {
+pub(crate) struct DistLayerMetadata {
     layer_version: String,
     go_version: String,
     stack_id: StackId,
 }
 
 #[derive(Error, Debug)]
-pub enum DistLayerError {
+pub(crate) enum DistLayerError {
     #[error("Couldn't extract Go distribution archive: {0}")]
     Tgz(tgz::TgzError),
-    #[error("Couldn't create Go distribution directory: {0}")]
-    Dir(std::io::Error),
 }
 
 const LAYER_VERSION: &str = "1";
