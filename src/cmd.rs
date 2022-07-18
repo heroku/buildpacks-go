@@ -23,7 +23,7 @@ pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Cmd
     for pkg in packages {
         args.push(pkg.as_ref());
     }
-    let status = Command::new("go").args(args).envs(go_env).spawn()?.wait()?;
+    let status = Command::new("go").args(args).envs(go_env).status()?;
 
     status.success().then(|| ()).ok_or(CmdError::Exit(status))
 }
@@ -49,8 +49,7 @@ pub fn go_list(go_env: &Env) -> Result<Vec<String>, CmdError> {
         ])
         .envs(go_env)
         .stdout(Stdio::piped())
-        .spawn()?
-        .wait_with_output()?;
+        .output()?;
 
     result
         .status
