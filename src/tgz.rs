@@ -7,7 +7,7 @@ use std::{io::Read, path::StripPrefixError};
 use tar::Archive;
 
 #[derive(thiserror::Error, Debug)]
-pub enum TgzError {
+pub(crate) enum Error {
     #[error("HTTP error while fetching archive: {0}")]
     Http(#[from] Box<ureq::Error>),
 
@@ -37,14 +37,14 @@ pub enum TgzError {
 ///
 /// # Errors
 ///
-/// See `TgzError` for an enumeration of error scenarios.
-pub fn fetch_strip_filter_extract_verify<'a>(
+/// See `Error` for an enumeration of error scenarios.
+pub(crate) fn fetch_strip_filter_extract_verify<'a>(
     uri: impl AsRef<str>,
     strip_prefix: impl AsRef<str>,
     filter_prefixes: impl Iterator<Item = &'a str>,
     dest_dir: impl AsRef<std::path::Path>,
     sha256: impl AsRef<str>,
-) -> Result<(), TgzError> {
+) -> Result<(), Error> {
     let expected_digest = sha256.as_ref();
     let destination = dest_dir.as_ref();
     let body = ureq::get(uri.as_ref())
@@ -53,25 +53,25 @@ pub fn fetch_strip_filter_extract_verify<'a>(
         .into_reader();
     let mut archive = Archive::new(GzDecoder::new(DigestingReader::new(body, Sha256::new())));
     let filters: Vec<&str> = filter_prefixes.into_iter().collect();
-    for entry in archive.entries().map_err(TgzError::Entries)? {
-        let mut file = entry.map_err(TgzError::Entry)?;
+    for entry in archive.entries().map_err(Error::Entries)? {
+        let mut file = entry.map_err(Error::Entry)?;
         let path = destination.join(
             file.path()
-                .map_err(TgzError::Path)?
+                .map_err(Error::Path)?
                 .strip_prefix(strip_prefix.as_ref())
-                .map_err(TgzError::Prefix)?,
+                .map_err(Error::Prefix)?,
         );
         if filters
             .iter()
             .any(|prefix| path.starts_with(destination.join(prefix)))
         {
-            file.unpack(&path).map_err(TgzError::Unpack)?;
+            file.unpack(&path).map_err(Error::Unpack)?;
         }
     }
     let actual_digest = format!("{:x}", archive.into_inner().into_inner().finalize());
     (expected_digest == actual_digest)
         .then(|| ())
-        .ok_or_else(|| TgzError::Checksum(expected_digest.to_string(), actual_digest))
+        .ok_or_else(|| Error::Checksum(expected_digest.to_string(), actual_digest))
 }
 
 struct DigestingReader<R: Read, H: sha2::Digest> {

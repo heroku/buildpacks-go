@@ -4,13 +4,13 @@ use std::io::{BufRead, BufReader};
 use std::path;
 
 /// Represents buildpack configuration found in a project's `go.mod`.
-pub struct GoModConfig {
+pub(crate) struct GoModConfig {
     pub packages: Option<Vec<String>>,
     pub version: Option<Requirement>,
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum ReadGoModConfigError {
+pub(crate) enum ReadGoModConfigError {
     #[error("Failed to read go.mod configuration: {0}")]
     Io(#[from] std::io::Error),
     #[error("Failed to parse go.mod configuration: {0}")]
@@ -23,7 +23,7 @@ pub enum ReadGoModConfigError {
 ///
 /// Will return an error when the file cannot be read or the version strings
 /// within are not parseable.
-pub fn read_gomod_config<P: AsRef<path::Path>>(
+pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
     gomod_path: P,
 ) -> Result<GoModConfig, ReadGoModConfigError> {
     let mut version: Option<Requirement> = None;

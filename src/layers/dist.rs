@@ -26,7 +26,7 @@ pub(crate) struct DistLayerMetadata {
 #[derive(Error, Debug)]
 pub(crate) enum DistLayerError {
     #[error("Couldn't extract Go distribution archive: {0}")]
-    Tgz(tgz::TgzError),
+    Tgz(tgz::Error),
 }
 
 const LAYER_VERSION: &str = "1";

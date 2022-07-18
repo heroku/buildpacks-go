@@ -1,9 +1,8 @@
 use libcnb::Env;
 use std::process::{Command, ExitStatus, Stdio};
-use thiserror::Error;
 
-#[derive(Error, Debug)]
-pub enum CmdError {
+#[derive(thiserror::Error, Debug)]
+pub(crate) enum Error {
     #[error("Command IO error: {0}")]
     IO(#[from] std::io::Error),
     #[error("Command did not exit successfully: {0}")]
@@ -18,14 +17,14 @@ pub enum CmdError {
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), CmdError> {
+pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Error> {
     let mut args = vec!["install", "-tags", "heroku"];
     for pkg in packages {
         args.push(pkg.as_ref());
     }
     let status = Command::new("go").args(args).envs(go_env).status()?;
 
-    status.success().then(|| ()).ok_or(CmdError::Exit(status))
+    status.success().then(|| ()).ok_or(Error::Exit(status))
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
@@ -37,7 +36,7 @@ pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Cmd
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub fn go_list(go_env: &Env) -> Result<Vec<String>, CmdError> {
+pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
     let result = Command::new("go")
         .args(vec![
             "list",
@@ -55,7 +54,7 @@ pub fn go_list(go_env: &Env) -> Result<Vec<String>, CmdError> {
         .status
         .success()
         .then(|| ())
-        .ok_or(CmdError::Exit(result.status))?;
+        .ok_or(Error::Exit(result.status))?;
 
     Ok(String::from_utf8_lossy(&result.stdout)
         .split_whitespace()

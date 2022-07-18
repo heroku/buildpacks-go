@@ -9,7 +9,6 @@ use libherokubuildpack::log_info;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
-use thiserror::Error;
 
 /// A layer for go incremental build cache artifacts
 pub(crate) struct BuildLayer {
@@ -23,9 +22,9 @@ pub(crate) struct BuildLayerMetadata {
     stack_id: StackId,
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 #[error("Couldn't write to build layer: {0}")]
-pub struct BuildLayerError(std::io::Error);
+pub(crate) struct BuildLayerError(std::io::Error);
 
 const LAYER_VERSION: &str = "1";
 

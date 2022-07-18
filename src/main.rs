@@ -1,6 +1,5 @@
 #![warn(clippy::pedantic)]
 #![warn(clippy::cargo)]
-#![allow(clippy::module_name_repetitions)]
 
 mod cfg;
 mod cmd;
@@ -171,9 +170,9 @@ pub(crate) enum GoBuildpackError {
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
     #[error("Couldn't run `go build`: {0}")]
-    GoBuild(cmd::CmdError),
+    GoBuild(cmd::Error),
     #[error("Couldn't run `go list`: {0}")]
-    GoList(cmd::CmdError),
+    GoList(cmd::Error),
     #[error("{0}")]
     GoModConfig(#[from] cfg::ReadGoModConfigError),
     #[error("{0}")]
@@ -187,7 +186,7 @@ pub(crate) enum GoBuildpackError {
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(Requirement),
     #[error("Launch process error: {0}")]
-    Proc(proc::ProcError),
+    Proc(proc::Error),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {
