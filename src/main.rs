@@ -8,8 +8,6 @@ mod layers;
 mod proc;
 mod tgz;
 
-use cfg::{read_gomod_cfg, ReadGoModCfgError};
-use cmd::CmdError;
 use heroku_go_buildpack::inv::Inventory;
 use heroku_go_buildpack::vrs::Requirement;
 use layers::build::{BuildLayer, BuildLayerError};
@@ -26,10 +24,8 @@ use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::{log_error, log_header, log_info};
-use proc::ProcError;
 use std::env;
 use std::path::Path;
-use thiserror::Error;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
@@ -69,8 +65,8 @@ impl Buildpack for GoBuildpack {
 
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
-        let cfg =
-            read_gomod_cfg(context.app_dir.join("go.mod")).map_err(GoBuildpackError::GoModCfg)?;
+        let cfg = cfg::read_gomod_cfg(context.app_dir.join("go.mod"))
+            .map_err(GoBuildpackError::GoModCfg)?;
         let requirement = cfg.version.unwrap_or_else(Requirement::default);
         log_info(format!("Detected Go version requirement: {requirement}"));
 
@@ -170,16 +166,16 @@ impl Buildpack for GoBuildpack {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub(crate) enum GoBuildpackError {
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
     #[error("Couldn't run `go build`: {0}")]
-    GoBuild(CmdError),
+    GoBuild(cmd::CmdError),
     #[error("Couldn't run `go list`: {0}")]
-    GoList(CmdError),
+    GoList(cmd::CmdError),
     #[error("{0}")]
-    GoModCfg(#[from] ReadGoModCfgError),
+    GoModCfg(#[from] cfg::ReadGoModCfgError),
     #[error("{0}")]
     DepsLayer(#[from] DepsLayerError),
     #[error("{0}")]
@@ -191,7 +187,7 @@ pub(crate) enum GoBuildpackError {
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(Requirement),
     #[error("Launch process error: {0}")]
-    Proc(ProcError),
+    Proc(proc::ProcError),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {
