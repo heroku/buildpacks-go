@@ -7,7 +7,7 @@ use toml;
 pub const GITHUB_API_URL: &str = "https://api.github.com";
 pub const GO_REPO_NAME: &str = "golang/go";
 pub const GO_HOST_URL: &str = "https://dl.google.com/go";
-pub const GO_MIRROR_URL: &str = "https://heroku-golang-prod.s3.amazonaws.com";
+pub const GO_MIRROR_URL: &str = "https://heroku-golang-prod.s3.us-east-1.amazonaws.com";
 pub const REGION: &str = "us-east-1";
 pub const ARCH: &str = "linux-amd64";
 
