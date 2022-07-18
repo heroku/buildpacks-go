@@ -65,9 +65,9 @@ impl Buildpack for GoBuildpack {
 
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
-        let cfg = cfg::read_gomod_cfg(context.app_dir.join("go.mod"))
-            .map_err(GoBuildpackError::GoModCfg)?;
-        let requirement = cfg.version.unwrap_or_else(Requirement::default);
+        let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
+            .map_err(GoBuildpackError::GoModConfig)?;
+        let requirement = config.version.unwrap_or_else(Requirement::default);
         log_info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = inv
@@ -116,7 +116,7 @@ impl Buildpack for GoBuildpack {
             .apply(Scope::Build, &go_env);
 
         log_info("Resolving Go modules");
-        let packages = cfg.packages.unwrap_or(
+        let packages = config.packages.unwrap_or(
             // Use `go list` to determine packages to build. Do this eagerly,
             // even if the result is unused because it has the side effect of
             // downloading any required go modules.
@@ -150,7 +150,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::DepsLayer(_) => "dependency layer",
                     GoBuildpackError::DistLayer(_) => "distribution layer",
                     GoBuildpackError::TargetLayer(_) => "target layer",
-                    GoBuildpackError::GoModCfg(_) => "go.mod",
+                    GoBuildpackError::GoModConfig(_) => "go.mod",
                     GoBuildpackError::InventoryParse(_) => "inventory parse",
                     GoBuildpackError::VersionResolution(_) => "version resolution",
                     GoBuildpackError::GoBuild(_) => "go build",
@@ -175,7 +175,7 @@ pub(crate) enum GoBuildpackError {
     #[error("Couldn't run `go list`: {0}")]
     GoList(cmd::CmdError),
     #[error("{0}")]
-    GoModCfg(#[from] cfg::ReadGoModCfgError),
+    GoModConfig(#[from] cfg::ReadGoModConfigError),
     #[error("{0}")]
     DepsLayer(#[from] DepsLayerError),
     #[error("{0}")]

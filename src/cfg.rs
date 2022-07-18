@@ -2,29 +2,30 @@ use heroku_go_buildpack::vrs::{Requirement, RequirementParseError};
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path;
-use thiserror::Error;
 
 /// Represents buildpack configuration found in a project's `go.mod`.
-pub struct GoModCfg {
+pub struct GoModConfig {
     pub packages: Option<Vec<String>>,
     pub version: Option<Requirement>,
 }
 
-#[derive(Error, Debug)]
-pub enum ReadGoModCfgError {
+#[derive(thiserror::Error, Debug)]
+pub enum ReadGoModConfigError {
     #[error("Failed to read go.mod configuration: {0}")]
     Io(#[from] std::io::Error),
     #[error("Failed to parse go.mod configuration: {0}")]
     Version(#[from] RequirementParseError),
 }
 
-/// Build a `GoModCfg` from a `go.mod` file.
+/// Build a `GoModConfig` from a `go.mod` file.
 ///
 /// # Errors
 ///
 /// Will return an error when the file cannot be read or the version strings
 /// within are not parseable.
-pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg, ReadGoModCfgError> {
+pub fn read_gomod_config<P: AsRef<path::Path>>(
+    gomod_path: P,
+) -> Result<GoModConfig, ReadGoModConfigError> {
     let mut version: Option<Requirement> = None;
     let mut packages: Option<Vec<String>> = None;
     let file = fs::File::open(gomod_path)?;
@@ -46,5 +47,5 @@ pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg, R
             _ => (),
         }
     }
-    Ok(GoModCfg { packages, version })
+    Ok(GoModConfig { packages, version })
 }
