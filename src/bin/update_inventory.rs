@@ -7,16 +7,12 @@ use std::{env, fs, process};
 
 /// Updates the local go inventory.toml with versions published on GitHub.
 fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() < 2 {
+    let filename = env::args().nth(1).unwrap_or_else(|| {
         eprintln!("Usage: update_inventory <path/to/inventory.toml>");
         process::exit(2);
-    }
+    });
 
-    let filename = &args[1];
-
-    let mut inventory = Inventory::read(filename).unwrap_or_else(|e| {
+    let mut inventory = Inventory::read(&filename).unwrap_or_else(|e| {
         eprintln!("Error reading inventory '{}': {}", filename, e);
         process::exit(3);
     });
