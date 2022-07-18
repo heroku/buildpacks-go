@@ -28,7 +28,7 @@ pub struct DistLayerMetadata {
 pub enum DistLayerError {
     #[error("Couldn't extract Go distribution archive: {0}")]
     Tgz(tgz::TgzError),
-    #[error("Couldn't create Go distribiton directory: {0}")]
+    #[error("Couldn't create Go distribution directory: {0}")]
     Dir(std::io::Error),
 }
 

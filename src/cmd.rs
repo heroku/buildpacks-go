@@ -29,7 +29,7 @@ pub fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Cmd
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
-/// `main` packages in a go project to deterimine which packages to build.
+/// `main` packages in a go project to determine which packages to build.
 /// This command is module aware, and will download required modules as a
 /// side-effect.
 ///

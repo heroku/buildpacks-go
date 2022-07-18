@@ -53,7 +53,7 @@ impl Requirement {
         Self(semver::VersionReq::default())
     }
 
-    /// Determines if a `&Version` satifies a `Requirement`
+    /// Determines if a `&Version` satisfies a `Requirement`
     #[must_use]
     pub fn satisfies(&self, version: &Version) -> bool {
         self.0.matches(&version.0)
