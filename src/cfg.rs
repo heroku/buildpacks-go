@@ -30,14 +30,10 @@ pub fn read_gomod_cfg<P: AsRef<path::Path>>(gomod_path: P) -> Result<GoModCfg, R
     let file = fs::File::open(gomod_path)?;
     for line_result in BufReader::new(file).lines() {
         let line = line_result?;
-        let mut parts = line.split_whitespace();
-        match (parts.next(), parts.next(), parts.next(), parts.next()) {
-            (Some("//"), Some("+heroku"), Some("install"), Some(pkg)) => {
-                let mut pkgs = vec![pkg.to_string()];
-                for pkgn in parts {
-                    pkgs.push(pkgn.to_string());
-                }
-                packages = Some(pkgs);
+        let mut parts = line.split_whitespace().peekable();
+        match (parts.next(), parts.next(), parts.next(), parts.peek()) {
+            (Some("//"), Some("+heroku"), Some("install"), Some(_)) => {
+                packages = Some(parts.map(ToString::to_string).collect());
             }
             (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
                 version = Requirement::parse_go(vrs).map(Some)?;
