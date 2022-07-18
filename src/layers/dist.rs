@@ -1,6 +1,5 @@
-use crate::{GoBuildpack, GoBuildpackError};
+use crate::{tgz, GoBuildpack, GoBuildpackError};
 use heroku_go_buildpack::inv::Artifact;
-use heroku_go_buildpack::tgz;
 use libcnb::build::BuildContext;
 use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;

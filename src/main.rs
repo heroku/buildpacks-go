@@ -2,12 +2,15 @@
 #![warn(clippy::cargo)]
 #![allow(clippy::module_name_repetitions)]
 
+mod cfg;
+mod cmd;
 mod layers;
+mod proc;
+mod tgz;
 
-use heroku_go_buildpack::cfg::{read_gomod_cfg, ReadGoModCfgError};
-use heroku_go_buildpack::cmd::{self, CmdError};
+use cfg::{read_gomod_cfg, ReadGoModCfgError};
+use cmd::CmdError;
 use heroku_go_buildpack::inv::Inventory;
-use heroku_go_buildpack::proc::{self, ProcError};
 use heroku_go_buildpack::vrs::Requirement;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
@@ -23,12 +26,10 @@ use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::{log_error, log_header, log_info};
+use proc::ProcError;
 use std::env;
 use std::path::Path;
 use thiserror::Error;
-
-#[cfg(test)]
-use libcnb_test as _;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
