@@ -10,21 +10,21 @@ use std::fs;
 use std::path::Path;
 use thiserror::Error;
 
+const LAYER_VERSION: &str = "1";
+const MAX_CACHE_USAGE_COUNT: f32 = 100.0;
+const CACHE_ENV: &str = "GOMODCACHE";
+const CACHE_DIR: &str = "cache";
+
 /// A layer that caches the go modules cache
 pub(crate) struct DepsLayer {
     pub(crate) go_env: Env,
 }
 
-const LAYER_VERSION: f32 = 1.0;
-const MAX_CACHE_USAGE_COUNT: f32 = 3.0;
-const CACHE_ENV: &str = "GOMODCACHE";
-const CACHE_DIR: &str = "cache";
-
-// Using float fields here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
 #[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct DepsLayerMetadata {
+    // Using float here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
     cache_usage_count: f32,
-    layer_version: f32,
+    layer_version: String,
 }
 
 #[derive(Error, Debug)]
@@ -57,7 +57,7 @@ impl Layer for DepsLayer {
         fs::create_dir(&cache_dir).map_err(DepsLayerError::Create)?;
         LayerResultBuilder::new(DepsLayerMetadata {
             cache_usage_count: 1.0,
-            layer_version: LAYER_VERSION,
+            layer_version: LAYER_VERSION.to_string(),
         })
         .env(LayerEnv::new().chainable_insert(
             Scope::Build,
@@ -75,7 +75,7 @@ impl Layer for DepsLayer {
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         LayerResultBuilder::new(DepsLayerMetadata {
             cache_usage_count: layer.content_metadata.metadata.cache_usage_count + 1.0,
-            layer_version: LAYER_VERSION,
+            layer_version: LAYER_VERSION.to_string(),
         })
         .build()
     }
