@@ -94,7 +94,12 @@ impl Buildpack for GoBuildpack {
             log_info("Using vendored Go modules");
         } else {
             go_env = context
-                .handle_layer(layer_name!("go_deps"), DepsLayer {})?
+                .handle_layer(
+                    layer_name!("go_deps"),
+                    DepsLayer {
+                        go_env: go_env.clone(),
+                    },
+                )?
                 .env
                 .apply(Scope::Build, &go_env);
         }
