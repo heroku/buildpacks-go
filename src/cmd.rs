@@ -38,7 +38,6 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
         args.push(pkg.as_ref());
     }
     let status = Command::new("go").args(args).envs(go_env).status()?;
-
     status.success().then(|| ()).ok_or(Error::Exit(status))
 }
 
@@ -62,6 +61,7 @@ pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
             "./...",
         ])
         .envs(go_env)
+        .stderr(Stdio::inherit())
         .stdout(Stdio::piped())
         .output()?;
 
