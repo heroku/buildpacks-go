@@ -34,7 +34,7 @@ impl Layer for BuildLayer {
 
     fn types(&self) -> LayerTypes {
         LayerTypes {
-            build: false,
+            build: true,
             launch: false,
             cache: true,
         }

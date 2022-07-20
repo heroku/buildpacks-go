@@ -22,7 +22,7 @@ impl Layer for TargetLayer {
 
     fn types(&self) -> LayerTypes {
         LayerTypes {
-            build: false,
+            build: true,
             launch: true,
             cache: false,
         }
