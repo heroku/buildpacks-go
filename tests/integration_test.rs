@@ -1,6 +1,6 @@
 #![warn(clippy::pedantic)]
 
-use libcnb_test::{assert_contains, assert_not_contains, TestConfig, TestRunner};
+use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerConfig, TestRunner};
 use std::time::Duration;
 
 fn test_go_fixture(
@@ -9,8 +9,8 @@ fn test_go_fixture(
     expect_loglines: &[&str],
     refute_loglines: &[&str],
 ) {
-    TestRunner::default().run_test(
-        TestConfig::new(builder, format!("tests/fixtures/{fixture}")),
+    TestRunner::default().build(
+        BuildConfig::new(builder, format!("tests/fixtures/{fixture}")),
         |ctx| {
             let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
             for expect_line in expect_loglines {
@@ -21,21 +21,19 @@ fn test_go_fixture(
             }
 
             let port = 8080;
-            ctx.prepare_container()
-                .expose_port(port)
-                .start_with_default_process(|container| {
-                    std::thread::sleep(Duration::from_secs(5));
-                    let addr = container
-                        .address_for_port(port)
-                        .expect("couldn't get container address");
-                    let resp = ureq::get(&format!("http://{addr}"))
-                        .call()
-                        .expect("request to container failed")
-                        .into_string()
-                        .expect("response read error");
+            ctx.start_container(ContainerConfig::new().expose_port(port), |container| {
+                std::thread::sleep(Duration::from_secs(5));
+                let addr = container
+                    .address_for_port(port)
+                    .expect("couldn't get container address");
+                let resp = ureq::get(&format!("http://{addr}"))
+                    .call()
+                    .expect("request to container failed")
+                    .into_string()
+                    .expect("response read error");
 
-                    assert_contains!(resp, fixture);
-                });
+                assert_contains!(resp, fixture);
+            });
         },
     );
 }
