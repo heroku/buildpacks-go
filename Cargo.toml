@@ -16,9 +16,9 @@ toml = "0.5"
 thiserror = "1.0"
 sha2 = "0.10.2"
 semver = "1.0"
-regex = "1.5"
-ureq = {version = "2.4", features = ["json"]}
-flate2 = { version = "1.0.23", default-features = false, features = ["zlib"] }
+regex = "1.6"
+ureq = {version = "2.5", features = ["json"]}
+flate2 = { version = "1.0.24", default-features = false, features = ["zlib"] }
 tar = "0.4.38"
 
 [dev-dependencies]
