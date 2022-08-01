@@ -2,7 +2,6 @@ use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, fmt};
-use thiserror::Error;
 
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
 /// - `Deserialize` and `Serialize` traits
@@ -10,7 +9,7 @@ use thiserror::Error;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 #[error("Couldn't parse Go version requirement: {0}")]
 pub struct RequirementParseError(#[from] semver::Error);
 impl Requirement {
@@ -85,7 +84,7 @@ impl fmt::Display for Requirement {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(try_from = "String", into = "String")]
 pub struct Version(semver::Version);
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum VersionParseError {
     #[error("Couldn't parse go version: {0}")]
     SemVer(#[from] semver::Error),

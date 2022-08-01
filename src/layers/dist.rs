@@ -8,7 +8,6 @@ use libcnb::Buildpack;
 use libherokubuildpack::log_info;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use thiserror::Error;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub(crate) struct DistLayer {
@@ -21,7 +20,7 @@ pub(crate) struct DistLayerMetadata {
     go_version: String,
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub(crate) enum DistLayerError {
     #[error("Couldn't extract Go distribution archive: {0}")]
     Tgz(tgz::Error),

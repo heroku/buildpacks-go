@@ -8,7 +8,6 @@ use libherokubuildpack::log_info;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
-use thiserror::Error;
 
 const LAYER_VERSION: &str = "1";
 const MAX_CACHE_USAGE_COUNT: f32 = 100.0;
@@ -27,7 +26,7 @@ pub(crate) struct DepsLayerMetadata {
     layer_version: String,
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub(crate) enum DepsLayerError {
     #[error("Couldn't create Go modules cache layer: {0}")]
     Create(std::io::Error),

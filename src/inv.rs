@@ -1,7 +1,6 @@
 use crate::vrs::{Requirement, Version, VersionParseError};
 use serde::{Deserialize, Serialize};
 use std::fs;
-use thiserror::Error;
 use toml;
 
 pub const GITHUB_API_URL: &str = "https://api.github.com";
@@ -36,7 +35,7 @@ impl Artifact {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ArtifactBuildError {
     #[error("Couldn't build Go artifact: {0}")]
     Checksum(#[from] FetchGoChecksumError),
@@ -68,7 +67,7 @@ impl Artifact {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum FetchGoChecksumError {
     #[error("Couldn't download Go checksum file: {0}")]
     Http(#[from] Box<ureq::Error>),
@@ -85,7 +84,7 @@ fn fetch_go_checksum(goversion: &str) -> Result<String, FetchGoChecksumError> {
     .into_string()?)
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ReadInventoryError {
     #[error("Couldn't read Go artifact inventory.toml: {0}")]
     Io(#[from] std::io::Error),

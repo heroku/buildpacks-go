@@ -7,12 +7,11 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use std::fs;
 use std::io;
 use std::path::Path;
-use thiserror::Error;
 
 /// An empty, run-only, layer for compiled Go app binaries.
 pub(crate) struct TargetLayer {}
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 #[error("Couldn't write to target layer: {0}")]
 pub(crate) struct TargetLayerError(io::Error);
 
