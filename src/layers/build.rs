@@ -25,6 +25,8 @@ pub(crate) struct BuildLayerMetadata {
 #[error("Couldn't write to build layer: {0}")]
 pub(crate) struct BuildLayerError(std::io::Error);
 
+const CACHE_ENV: &str = "GOCACHE";
+const CACHE_DIR: &str = "cache";
 const LAYER_VERSION: &str = "1";
 const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 
@@ -46,7 +48,7 @@ impl Layer for BuildLayer {
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         log_info("Creating Go build cache");
-        let cache_dir = layer_path.join("cache");
+        let cache_dir = layer_path.join(CACHE_DIR);
         fs::create_dir(&cache_dir).map_err(BuildLayerError)?;
         LayerResultBuilder::new(BuildLayerMetadata {
             go_version: self.go_version.clone(),
@@ -56,7 +58,7 @@ impl Layer for BuildLayer {
         .env(LayerEnv::new().chainable_insert(
             Scope::Build,
             libcnb::layer_env::ModificationBehavior::Override,
-            "GOCACHE",
+            CACHE_ENV,
             cache_dir,
         ))
         .build()
@@ -72,6 +74,12 @@ impl Layer for BuildLayer {
             layer_version: LAYER_VERSION.to_string(),
             cache_usage_count: layer.content_metadata.metadata.cache_usage_count + 1.0,
         })
+        .env(LayerEnv::new().chainable_insert(
+            Scope::Build,
+            libcnb::layer_env::ModificationBehavior::Override,
+            CACHE_ENV,
+            layer.path.join(CACHE_DIR),
+        ))
         .build()
     }
 
