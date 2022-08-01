@@ -77,6 +77,12 @@ impl Layer for DepsLayer {
             cache_usage_count: layer.content_metadata.metadata.cache_usage_count + 1.0,
             layer_version: LAYER_VERSION.to_string(),
         })
+        .env(LayerEnv::new().chainable_insert(
+            Scope::Build,
+            libcnb::layer_env::ModificationBehavior::Override,
+            CACHE_ENV,
+            layer.path.join(CACHE_DIR),
+        ))
         .build()
     }
 
