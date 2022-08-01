@@ -1,6 +1,5 @@
 use crate::{GoBuildpack, GoBuildpackError};
 use libcnb::build::BuildContext;
-use libcnb::data::buildpack::StackId;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, Scope};
@@ -15,11 +14,11 @@ pub(crate) struct BuildLayer {
     pub go_version: String,
 }
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct BuildLayerMetadata {
     layer_version: String,
     go_version: String,
-    stack_id: StackId,
+    cache_usage_count: f32,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -27,6 +26,7 @@ pub(crate) struct BuildLayerMetadata {
 pub(crate) struct BuildLayerError(std::io::Error);
 
 const LAYER_VERSION: &str = "1";
+const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 
 impl Layer for BuildLayer {
     type Buildpack = GoBuildpack;
@@ -42,42 +42,53 @@ impl Layer for BuildLayer {
 
     fn create(
         &self,
-        context: &BuildContext<Self::Buildpack>,
+        _ctx: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         log_info("Creating Go build cache");
         let cache_dir = layer_path.join("cache");
         fs::create_dir(&cache_dir).map_err(BuildLayerError)?;
-        LayerResultBuilder::new(BuildLayerMetadata::current(self, context))
-            .env(LayerEnv::new().chainable_insert(
-                Scope::Build,
-                libcnb::layer_env::ModificationBehavior::Override,
-                "GOCACHE",
-                cache_dir,
-            ))
-            .build()
+        LayerResultBuilder::new(BuildLayerMetadata {
+            go_version: self.go_version.clone(),
+            layer_version: LAYER_VERSION.to_string(),
+            cache_usage_count: 1.0,
+        })
+        .env(LayerEnv::new().chainable_insert(
+            Scope::Build,
+            libcnb::layer_env::ModificationBehavior::Override,
+            "GOCACHE",
+            cache_dir,
+        ))
+        .build()
+    }
+
+    fn update(
+        &self,
+        _ctx: &BuildContext<Self::Buildpack>,
+        layer: &LayerData<Self::Metadata>,
+    ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
+        LayerResultBuilder::new(BuildLayerMetadata {
+            go_version: self.go_version.clone(),
+            layer_version: LAYER_VERSION.to_string(),
+            cache_usage_count: layer.content_metadata.metadata.cache_usage_count + 1.0,
+        })
+        .build()
     }
 
     fn existing_layer_strategy(
         &self,
-        context: &BuildContext<Self::Buildpack>,
-        layer_data: &LayerData<Self::Metadata>,
+        _ctx: &BuildContext<Self::Buildpack>,
+        layer: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        if layer_data.content_metadata.metadata == BuildLayerMetadata::current(self, context) {
-            log_info("Reusing Go build cache");
-            Ok(ExistingLayerStrategy::Keep)
-        } else {
-            Ok(ExistingLayerStrategy::Recreate)
+        let mdata = &layer.content_metadata.metadata;
+        if mdata.cache_usage_count >= MAX_CACHE_USAGE_COUNT
+            || mdata.layer_version != LAYER_VERSION
+            || mdata.go_version != self.go_version
+        {
+            log_info("Expired Go build cache");
+            return Ok(ExistingLayerStrategy::Recreate);
         }
-    }
-}
-
-impl BuildLayerMetadata {
-    fn current(layer: &BuildLayer, context: &BuildContext<GoBuildpack>) -> Self {
-        BuildLayerMetadata {
-            go_version: layer.go_version.clone(),
-            layer_version: String::from(LAYER_VERSION),
-            stack_id: context.stack_id.clone(),
-        }
+        log_info("Reusing Go build cache");
+        Ok(ExistingLayerStrategy::Update)
     }
 }
