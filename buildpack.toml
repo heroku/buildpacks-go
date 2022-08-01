@@ -1,0 +1,18 @@
+api = "0.6"
+
+[buildpack]
+id = "heroku/go"
+version = "0.1.0"
+name = "Heroku Go"
+homepage = "https://github.com/heroku/buildpacks-go"
+keywords = ["go", "golang", "heroku"]
+clear-env = true
+
+[[buildpack.licenses]]
+type = "BSD-3-Clause"
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "heroku-22"

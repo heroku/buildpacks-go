@@ -1,0 +1,25 @@
+[package]
+name = "heroku-go-buildpack"
+version = "0.0.0"
+description = "Heroku Go Cloud Native Buildpack"
+edition = "2021"
+publish = false
+rust-version = "1.62"
+
+[dependencies]
+libcnb = "0.9"
+libherokubuildpack = "0.9"
+serde = "1.0"
+serde_json = "1.0"
+tempfile = "3.3"
+toml = "0.5"
+thiserror = "1.0"
+sha2 = "0.10.2"
+semver = "1.0"
+regex = "1.6"
+ureq = {version = "2.5", features = ["json"]}
+flate2 = { version = "1.0.24", default-features = false, features = ["zlib"] }
+tar = "0.4.38"
+
+[dev-dependencies]
+libcnb-test = "0.6"
