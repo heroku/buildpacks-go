@@ -8,7 +8,7 @@ Heroku's official [Cloud Native Buildpack](cnb) for the Go language ecosystem.
 
 ## Classic Go Buildpack for Heroku
 
-This project is a [Cloud Native Buildback](cnb). If you are instead looking
+This project is a [Cloud Native Buildpack](cnb). If you are instead looking
 for the classic (v2) buildpack (a.k.a. heroku/go), which is used during
 Go builds on the Heroku platform, see [heroku/heroku-buildpack-go](classic).
 
