@@ -15,7 +15,7 @@ use layers::dist::{DistLayer, DistLayerError};
 use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::Launch;
+use libcnb::data::launch::LaunchBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
@@ -141,7 +141,7 @@ impl Buildpack for GoBuildpack {
         }
 
         BuildResultBuilder::new()
-            .launch(Launch::new().processes(procs))
+            .launch(LaunchBuilder::new().processes(procs).build())
             .build()
     }
 
