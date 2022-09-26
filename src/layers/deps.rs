@@ -4,7 +4,7 @@ use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Env};
-use libherokubuildpack::log_info;
+use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;

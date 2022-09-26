@@ -40,7 +40,7 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
                 version = Requirement::parse_go(vrs).map(Some)?;
             }
             (Some("go"), Some(vrs), None, None) => {
-                if version == None {
+                if version.is_none() {
                     version = Requirement::parse_go(&format!("={vrs}")).map(Some)?;
                 }
             }
