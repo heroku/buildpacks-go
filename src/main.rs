@@ -22,7 +22,7 @@ use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
-use libherokubuildpack::{log_error, log_header, log_info};
+use libherokubuildpack::log::{log_error, log_header, log_info};
 use std::env;
 use std::path::Path;
 
