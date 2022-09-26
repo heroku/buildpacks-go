@@ -21,7 +21,7 @@ pub(crate) fn go_clean<S: AsRef<str>>(flag: S, go_env: &Env) -> Result<(), Error
         .envs(go_env)
         .status()?;
 
-    status.success().then(|| ()).ok_or(Error::Exit(status))
+    status.success().then_some(()).ok_or(Error::Exit(status))
 }
 
 /// Run `go install -tags heroku pkg [..pkgn]`. Useful for compiling a list
@@ -38,7 +38,7 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
         args.push(pkg.as_ref());
     }
     let status = Command::new("go").args(args).envs(go_env).status()?;
-    status.success().then(|| ()).ok_or(Error::Exit(status))
+    status.success().then_some(()).ok_or(Error::Exit(status))
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
@@ -68,7 +68,7 @@ pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
     result
         .status
         .success()
-        .then(|| ())
+        .then_some(())
         .ok_or(Error::Exit(result.status))?;
 
     Ok(String::from_utf8_lossy(&result.stdout)

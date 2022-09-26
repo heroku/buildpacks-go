@@ -70,7 +70,7 @@ pub(crate) fn fetch_strip_filter_extract_verify<'a>(
     }
     let actual_digest = format!("{:x}", archive.into_inner().into_inner().finalize());
     (expected_digest == actual_digest)
-        .then(|| ())
+        .then_some(())
         .ok_or_else(|| Error::Checksum(expected_digest.to_string(), actual_digest))
 }
 
