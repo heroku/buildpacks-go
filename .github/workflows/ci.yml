@@ -1,10 +1,21 @@
 name: CI
 
-on: push
+on:
+  push:
+    # Avoid duplicate builds on PRs.
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -15,10 +26,10 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --locked -- --deny warnings
       - name: rustfmt
-        run: cargo fmt -- --check --verbose
+        run: cargo fmt -- --check
 
   unit-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -26,11 +37,11 @@ jobs:
         run: rustup update
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.0.0
-      - name: Run tests
+      - name: Run unit tests
         run: cargo test --locked
 
   integration-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -45,4 +56,5 @@ jobs:
       - name: Install Pack CLI
         uses: buildpacks/github-actions/setup-pack@v4.8.1
       - name: Run integration tests
+        # Runs only tests annotated with the `ignore` attribute (which in this repo, are the integration tests).
         run: cargo test --locked -- --ignored
