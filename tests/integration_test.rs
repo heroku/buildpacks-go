@@ -50,12 +50,12 @@ fn test_basic_http_116(builder: &str) {
     );
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn basic_http_116_20() {
     test_basic_http_116("heroku/buildpacks:20");
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn basic_http_116_22() {
     test_basic_http_116("heroku/builder:22");
 }
@@ -73,12 +73,12 @@ fn test_vendor_gorilla_117(builder: &str) {
     );
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn vendor_gorilla_117_20() {
     test_vendor_gorilla_117("heroku/buildpacks:20");
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn vendor_gorilla_117_22() {
     test_vendor_gorilla_117("heroku/builder:22");
 }
@@ -96,12 +96,12 @@ fn test_modules_gin_118(builder: &str) {
     );
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn modules_gin_118_20() {
     test_modules_gin_118("heroku/buildpacks:20");
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn modules_gin_118_22() {
     test_modules_gin_118("heroku/builder:22");
 }
@@ -120,12 +120,12 @@ fn test_worker_http_118(builder: &str) {
     );
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn worker_http_118_20() {
     test_worker_http_118("heroku/buildpacks:20");
 }
 #[test]
-#[ignore]
+#[ignore = "integration test"]
 fn worker_http_118_22() {
     test_worker_http_118("heroku/builder:22");
 }
