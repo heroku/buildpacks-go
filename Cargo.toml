@@ -16,7 +16,7 @@ toml = "0.5"
 thiserror = "1.0"
 sha2 = "0.10.6"
 semver = "1.0"
-regex = "1.6"
+regex = "1.7"
 ureq = { version = "2.5", features = ["json"] }
 flate2 = { version = "1.0.24", default-features = false, features = ["zlib"] }
 tar = "0.4.38"
