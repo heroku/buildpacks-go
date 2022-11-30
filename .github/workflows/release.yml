@@ -2,6 +2,7 @@ name: Release Buildpack
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   release:
