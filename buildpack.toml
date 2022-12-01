@@ -21,5 +21,5 @@ id = "heroku-22"
 
 [metadata.release]
 
-[metadata.release.docker]
-repository = "public.ecr.aws/heroku-buildpacks/heroku-go-buildpack"
+[metadata.release.image]
+repository = "docker.io/heroku/buildpack-go"
