@@ -48,8 +48,8 @@ jobs:
           echo "buildpack_path=$BUILDPACK_PATH" >> $GITHUB_ENV
           echo "buildpack_id=$(yj -t < $BUILDPACK_PATH/buildpack.toml | jq -r .buildpack.id)" >> $GITHUB_ENV
           echo "buildpack_version=$(yj -t < $BUILDPACK_PATH/buildpack.toml | jq -r .buildpack.version)" >> $GITHUB_ENV
-          echo "buildpack_repo=$(yj -t < $BUILDPACK_PATH/buildpack.toml | jq -r .metadata.release.image.repository" >> $GITHUB_ENV
-          echo "buildpack_file=buildpack.cnb"
+          echo "buildpack_repo=$(yj -t < $BUILDPACK_PATH/buildpack.toml | jq -r .metadata.release.image.repository)" >> $GITHUB_ENV
+          echo "buildpack_file=heroku_go.cnb" >> $GITHUB_ENV
       - id: package-buildpack
         name: "Package buildpack"
         run: pack buildpack package --path "${{ env.buildpack_path }}" --format file "${{ env.buildpack_file}}"
