@@ -41,8 +41,8 @@ jobs:
       - id: compile
         name: "Compile buildpack"
         run: cargo libcnb package --release
-      - id: set-metadata
-        name: "Set buildpack metadata"
+      - id: metadata
+        name: "Read buildpack metadata"
         run: |
           export BUILDPACK_PATH="target/buildpack/release/heroku_go"
           echo "buildpack_path=$BUILDPACK_PATH" >> $GITHUB_ENV
@@ -56,6 +56,10 @@ jobs:
       - id: publish-image
         name: "Publish buildpack to image registry"
         run: pack buildpack package --path "${{ env.buildpack_path }}" --publish "${{ env.buildpack_repo }}:${{ env.buildpack_version }}"
+      - id: image-digest
+        name: "Calculate buildpack image digest"
+        run: |
+          echo "buildpack_digest=$(crane digest ${{ env.buildpack_repo }}:${{ env.buildpack_version }})" >> $GITHUB_ENV
       - id: add-registry-entry
         name: "Request Buildpack Registry Entry"
         uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.0
@@ -63,7 +67,7 @@ jobs:
           token: ${{ secrets.CNB_REGISTRY_RELEASE_BOT_GITHUB_TOKEN }}
           id: ${{ env.buildpack_id }}
           version: ${{ env.buildpack_version }}
-          address: ${{ env.buildpack_repo }}@$(crane digest "${{ env.buildpack_repo }}:${{ env.buildpack_version }}")
+          address: ${{ env.buildpack_repo }}@${{ env.buildpack_digest }}
       - id: create_release
         name: Create Release
         uses: actions/create-release@v1
