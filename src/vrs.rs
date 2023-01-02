@@ -6,12 +6,16 @@ use std::{borrow::Cow, fmt};
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
 /// - `Deserialize` and `Serialize` traits
 /// - Ability to parse go-flavored requirements
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+///
+/// The derived `Default` implementation creates a wildcard version `Requirement`.
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
+
 #[derive(thiserror::Error, Debug)]
 #[error("Couldn't parse Go version requirement: {0}")]
 pub struct RequirementParseError(#[from] semver::Error);
+
 impl Requirement {
     /// Parses a semver requirement `&str` as a `Requirement`.
     ///
@@ -46,12 +50,6 @@ impl Requirement {
         Self::parse(&stripped_req)
     }
 
-    /// Creates a wildcard version `Requirement`
-    #[must_use]
-    pub fn default() -> Self {
-        Self(semver::VersionReq::default())
-    }
-
     /// Determines if a `&Version` satisfies a `Requirement`
     #[must_use]
     pub fn satisfies(&self, version: &Version) -> bool {
@@ -84,6 +82,7 @@ impl fmt::Display for Requirement {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(try_from = "String", into = "String")]
 pub struct Version(semver::Version);
+
 #[derive(thiserror::Error, Debug)]
 pub enum VersionParseError {
     #[error("Couldn't parse go version: {0}")]
@@ -93,6 +92,7 @@ pub enum VersionParseError {
     #[error("Couldn't parse version. Unable to capture values from regex.")]
     Captures,
 }
+
 impl Version {
     /// Parses a semver `&str` as a `Version`
     ///
@@ -150,11 +150,13 @@ impl TryFrom<String> for Version {
         Version::parse(&val)
     }
 }
+
 impl From<Version> for String {
     fn from(ver: Version) -> Self {
         format!("{ver}")
     }
 }
+
 impl fmt::Display for Version {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)

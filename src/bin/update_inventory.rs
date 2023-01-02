@@ -13,7 +13,7 @@ fn main() {
     });
 
     let mut inventory = Inventory::read(&filename).unwrap_or_else(|e| {
-        eprintln!("Error reading inventory '{}': {}", filename, e);
+        eprintln!("Error reading inventory '{filename}': {e}");
         process::exit(3);
     });
 
@@ -25,7 +25,7 @@ fn main() {
 
     // List available versions published to GitHub.
     let remote_versions = list_github_go_versions().unwrap_or_else(|e| {
-        eprintln!("Error listing go versions: {}", e);
+        eprintln!("Error listing go versions: {e}");
         process::exit(4);
     });
 

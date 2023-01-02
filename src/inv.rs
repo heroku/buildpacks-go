@@ -75,13 +75,12 @@ pub enum FetchGoChecksumError {
     Io(#[from] std::io::Error),
 }
 fn fetch_go_checksum(goversion: &str) -> Result<String, FetchGoChecksumError> {
-    Ok(ureq::get(&format!(
-        "{}/{}.{}.tar.gz.sha256",
-        GO_HOST_URL, goversion, ARCH
-    ))
-    .call()
-    .map_err(Box::new)?
-    .into_string()?)
+    Ok(
+        ureq::get(&format!("{GO_HOST_URL}/{goversion}.{ARCH}.tar.gz.sha256"))
+            .call()
+            .map_err(Box::new)?
+            .into_string()?,
+    )
 }
 
 #[derive(thiserror::Error, Debug)]
