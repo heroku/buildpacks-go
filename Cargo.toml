@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Heroku Go Cloud Native Buildpack"
 edition = "2021"
 publish = false
-rust-version = "1.64"
+rust-version = "1.66"
 
 [dependencies]
 libcnb = "0.11"
