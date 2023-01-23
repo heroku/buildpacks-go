@@ -111,7 +111,7 @@ fn test_worker_http_118(builder: &str) {
         "worker_http_118",
         builder,
         &[
-            "Detected Go version requirement: ^1.18.1",
+            "Detected Go version requirement: ~1.18.1",
             "Installing Go 1.18.",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",
@@ -128,4 +128,26 @@ fn worker_http_118_20() {
 #[ignore = "integration test"]
 fn worker_http_118_22() {
     test_worker_http_118("heroku/builder:22");
+}
+
+fn test_basic_http_119(builder: &str) {
+    test_go_fixture(
+        "basic_http_119",
+        builder,
+        &[
+            "Detected Go version requirement: ~1.19.4",
+            "Installing Go 1.19.",
+        ],
+        &[],
+    );
+}
+#[test]
+#[ignore = "integration test"]
+fn basic_http_119_20() {
+    test_basic_http_119("heroku/buildpacks:20");
+}
+#[test]
+#[ignore = "integration test"]
+fn basic_http_119_22() {
+    test_basic_http_119("heroku/builder:22");
 }
