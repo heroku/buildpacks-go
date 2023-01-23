@@ -111,7 +111,7 @@ fn test_worker_http_118(builder: &str) {
         "worker_http_118",
         builder,
         &[
-            "Detected Go version requirement: ^1.18.1",
+            "Detected Go version requirement: ~1.18.1",
             "Installing Go 1.18.",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",
