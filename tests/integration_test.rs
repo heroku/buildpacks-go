@@ -151,3 +151,26 @@ fn basic_http_119_20() {
 fn basic_http_119_22() {
     test_basic_http_119("heroku/builder:22");
 }
+
+fn test_vendor_fasthttp_120(builder: &str) {
+    test_go_fixture(
+        "vendor_fasthttp_120",
+        builder,
+        &[
+            "Detected Go version requirement: =1.20",
+            "Installing Go 1.20.",
+            "Using vendored Go modules",
+        ],
+        &["downloading github.com/valyala/fasthttp"],
+    );
+}
+#[test]
+#[ignore = "integration test"]
+fn vendor_fasthttp_120_20() {
+    test_vendor_fasthttp_120("heroku/buildpacks:20");
+}
+#[test]
+#[ignore = "integration test"]
+fn vendor_fasthttp_120_22() {
+    test_vendor_fasthttp_120("heroku/builder:22");
+}
