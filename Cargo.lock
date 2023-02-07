@@ -234,9 +234,9 @@ checksum = "90e5c1c8368803113bf0c9584fc495a58b86dc8a29edbf8fe877d21d9507e797"
 
 [[package]]
 name = "fancy-regex"
-version = "0.10.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0678ab2d46fa5195aaf59ad034c083d351377d4af57f3e073c074d0da3e3c766"
+checksum = "b95f7c0680e4142284cf8b22c14a476e87d61b004a3a0861872b32ef7ead40a2"
 dependencies = [
  "bit-set",
  "regex",
@@ -546,28 +546,28 @@ checksum = "201de327520df007757c1f0adce6e827fe8562fbc28bfd9c15571c66ca1f5f79"
 
 [[package]]
 name = "libcnb"
-version = "0.11.4"
+version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a69d45189983fb0a9996ded95236bb8689437b0e1e636dddf2500e9ec27ab4c0"
+checksum = "4e4fd7573558173267930e31446da65a0275770bde88847cad4b4cf9a6ff8375"
 dependencies = [
  "libcnb-data",
  "libcnb-proc-macros",
  "serde",
  "thiserror",
- "toml 0.5.11",
+ "toml 0.7.2",
 ]
 
 [[package]]
 name = "libcnb-data"
-version = "0.11.4"
+version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3a065640c66df2a6e54aedbb805d264c87020937323b90eea7397108b73d3aa"
+checksum = "8c0112478d479c8900929894426818bea8e769ce923536a58baac719d3ca4dcb"
 dependencies = [
  "fancy-regex",
  "libcnb-proc-macros",
  "serde",
  "thiserror",
- "toml 0.5.11",
+ "toml 0.7.2",
 ]
 
 [[package]]
@@ -584,9 +584,9 @@ dependencies = [
 
 [[package]]
 name = "libcnb-proc-macros"
-version = "0.11.4"
+version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25b3879fd4fc4338421de1ec797ab5ef0abe6d0e90f843dbf3b56c25bc703ebe"
+checksum = "5930cea22615255081c0c44b902e6e8b37a824ebe1374a7c7d52724d5b7d6e4e"
 dependencies = [
  "cargo_metadata",
  "fancy-regex",
