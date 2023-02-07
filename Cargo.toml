@@ -18,7 +18,7 @@ sha2 = "0.10"
 tar = "0.4"
 tempfile = "3"
 thiserror = "1"
-toml = "0.5"
+toml = "0.7"
 ureq = { version = "2", features = ["json"] }
 
 [dev-dependencies]
