@@ -31,4 +31,4 @@ jobs:
           commit-message: "Update Inventory for heroku/go\n\n${{ steps.set-diff-msg.outputs.DIFF_MSG }}"
           branch: update-go-inventory
           labels: "automation"
-          body: "Automated pull-request to update heroku/go inventory:\n\n${{ steps.set-diff-msg.outputs.msg }}"
+          body: "Automated pull-request to update heroku/go inventory:\n\n${{ steps.set-diff-msg.outputs.DIFF_MSG }}"
