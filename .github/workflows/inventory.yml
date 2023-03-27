@@ -1,0 +1,38 @@
+name: Update Inventory
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '00 4 * * 1-5'
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-go-inventory:
+    name: Update Go Inventory
+    runs-on: pub-hk-ubuntu-22.04-small
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - id: install-rust-toolchain
+        name: Install Rust Toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - id: set-diff-msg
+        name: Set Diff Message
+        run: echo "DIFF_MSG=$(cargo run --bin diff_inventory inventory.toml)" >> $GITHUB_OUTPUT
+      - name: Rebuild Inventory
+        run: "cargo run --bin update_inventory inventory.toml"
+      - name: Update Changelog
+        run: echo "${{ steps.set-diff-msg.outputs.DIFF_MSG }}" | xargs -r -I '{}' perl -i -p -e 's/\[Unreleased\]\s+/[Unreleased]\n\n- {}/' CHANGELOG.md
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Update Go Inventory"
+          commit-message: "Update Inventory for heroku/go\n\n${{ steps.set-diff-msg.outputs.DIFF_MSG }}"
+          branch: update-go-inventory
+          labels: "automation"
+          body: "Automated pull-request to update heroku/go inventory:\n\n${{ steps.set-diff-msg.outputs.DIFF_MSG }}"
