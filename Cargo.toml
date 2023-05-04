@@ -8,6 +8,7 @@ rust-version = "1.66"
 
 [dependencies]
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
+indoc = "2"
 libcnb = "0.11"
 libherokubuildpack = { version = "0.11", default-features = false, features = ["log"] }
 regex = "1"

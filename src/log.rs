@@ -15,22 +15,22 @@ impl<'p, W: WriteColor> Logger<'p, W> {
     where
         F: FnOnce(&mut Logger<&mut W>) -> T,
     {
-        writeln!(self.writer, "┏[{}]", header.as_ref()).unwrap();
+        writeln!(self.writer, "{}┏[{}]", self.prefix, header.as_ref()).unwrap();
         let mut logger = Logger {
             writer: &mut self.writer,
             prefix: &format!("{}┃", self.prefix),
         };
         let ret = f(&mut logger);
-        writeln!(self.writer, "┗DONE").unwrap();
+        writeln!(self.writer, "{}┗done", self.prefix).unwrap();
         ret
     }
 
-    pub(crate) fn header(&mut self, message: &str) {
+    pub(crate) fn header(&mut self, hdr: impl AsRef<str>) {
         write!(self.writer, "{}", self.prefix).unwrap();
         self.writer
             .set_color(ColorSpec::new().set_fg(Some(Color::Magenta)).set_bold(true))
             .unwrap();
-        write!(self.writer, "[{message}]").unwrap();
+        write!(self.writer, "[{}]", hdr.as_ref()).unwrap();
         self.writer.reset().unwrap();
         writeln!(self.writer).unwrap();
     }
@@ -47,25 +47,32 @@ impl<'p, W: WriteColor> Logger<'p, W> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use indoc::indoc;
 
     #[test]
     fn with_block_works() {
         let mut buffer = termcolor::Buffer::no_color();
         let mut logger = Logger::new(&mut buffer);
-        logger
-            .with_block("Setting up", |setup_log| {
-                setup_log.info("Creating widget").unwrap();
-                setup_log
-                    .with_block("Reconfiguring sprite", |reconfigure_log| {
-                        reconfigure_log.info("writing default")
-                    })
-                    .unwrap();
-                setup_log.info("whatchamacalit unwrapped")
-            })
-            .unwrap();
+        logger.with_block("Setting up", |setup_log| {
+            setup_log.info("Creating widget");
+            setup_log.with_block("Reconfiguring sprite", |reconf_log| {
+                reconf_log.info("writing default");
+            });
+            setup_log.info("whatchamacalit unwrapped");
+        });
 
         let actual = String::from_utf8(buffer.into_inner()).expect("Couldn't parse log output");
-        let expected = "┏[Setting up]\n┃Creating widget\n┏[Reconfiguring sprite]\n┃┃writing default\n┗DONE\n┃whatchamacalit unwrapped\n┗DONE\n".to_string();
-        assert_eq!(expected, actual);
+        assert_eq!(
+            actual,
+            indoc! {"
+                ┏[Setting up]
+                ┃Creating widget
+                ┃┏[Reconfiguring sprite]
+                ┃┃writing default
+                ┃┗done
+                ┃whatchamacalit unwrapped
+                ┗done
+            "}
+        );
     }
 }
