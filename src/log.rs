@@ -1,42 +1,35 @@
-use std::io;
-use std::io::Write;
+use std::io::{self, Write};
 
-impl<'l> Write for BaseLogger<'l> {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        self.0.write(buf)
-    }
-    fn flush(&mut self) -> io::Result<()> {
-        self.0.flush()
-    }
+struct Logger<'p, W: Write> {
+    writer: W,
+    prefix: &'p str,
 }
 
-struct BaseLogger<'b>(&'b mut dyn io::Write);
-struct BlockLogger<'b> {
-    logger: &'b mut BaseLogger<'b>,
-    prefix: &'static str,
-}
+impl<'p, W: Write> Logger<'p, W> {
+    fn new(writer: W) -> Logger<'p, W> {
+        Logger { writer, prefix: "" }
+    }
 
-impl<'b> BaseLogger<'b> {
-    fn log_block<F>(&'b mut self, heading: &str, f: F)
+    fn with_block<F>(&mut self, heading: &str, f: F) -> io::Result<()>
     where
-        F: FnOnce(&mut BlockLogger),
+        F: FnOnce(&mut Logger<&mut W>) -> io::Result<()>,
     {
-        self.info(&format!("- [{heading}]"));
-        f(&mut BlockLogger {
-            logger: self,
-            prefix: "|",
-        });
-        self.info(&format!("- [{heading}]"));
-        // self.info(&format!("- [{heading}]"));
+        writeln!(self.writer, "┏ [{heading}]")?;
+        let mut logger = Logger {
+            writer: &mut self.writer,
+            prefix: &format!("{}┃", self.prefix),
+        };
+        f(&mut logger)?;
+        writeln!(self.writer, "┗ DONE")?;
+        Ok(())
     }
-    fn info(&mut self, msg: &str) {
-        writeln!(self.0, "{msg}").unwrap();
-    }
-}
 
-impl<'l> BlockLogger<'l> {
-    fn info(&mut self, text: &str) {
-        self.logger.info(&format!("{}{text}", self.prefix));
+    fn info(&mut self, message: &str) -> io::Result<()> {
+        writeln!(self.writer, "{} {message}", self.prefix)
+    }
+
+    fn error(&mut self, message: &str) -> io::Result<()> {
+        writeln!(self.writer, "{} {message}", self.prefix)
     }
 }
 
@@ -45,12 +38,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn log_block_works() {
+    fn with_block_works() {
         let mut bytes: Vec<u8> = vec![];
-        BaseLogger(&mut bytes).log_block("HEADING", |log| {
-            log.info("SOME");
-            log.info("STUFF");
-        });
+        let mut logger = Logger::new(&mut bytes);
+        logger
+            .with_block("Setting up", |setup_log| {
+                setup_log.info("Creating widget").unwrap();
+                setup_log
+                    .with_block("Reconfiguring sprite", |reconfigure_log| {
+                        reconfigure_log.info("writing default")
+                    })
+                    .unwrap();
+                setup_log.info("whatchamacalit unwrapped")
+            })
+            .unwrap();
 
         let actual = String::from_utf8(bytes).expect("Couldn't parse log output");
         let expected = "HEADINGSOMESTUFF".to_string();
