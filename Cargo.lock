@@ -481,6 +481,7 @@ dependencies = [
  "sha2",
  "tar",
  "tempfile",
+ "termcolor",
  "thiserror",
  "toml",
  "ureq",

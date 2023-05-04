@@ -4,6 +4,7 @@
 mod cfg;
 mod cmd;
 mod layers;
+mod log;
 mod proc;
 mod tgz;
 
@@ -25,6 +26,7 @@ use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::log::{log_error, log_header, log_info};
 use std::env;
 use std::path::Path;
+use termcolor::{ColorChoice, StandardStream};
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
@@ -53,7 +55,8 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Reading build configuration");
+        let mut log = log::Logger::new(StandardStream::stderr(ColorChoice::Auto));
+        log.header("Reading build configuration");
 
         let mut go_env = Env::new();
         env::vars()
@@ -67,17 +70,17 @@ impl Buildpack for GoBuildpack {
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
             .map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
-        log_info(format!("Detected Go version requirement: {requirement}"));
+        log.info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = inv
             .resolve(&requirement)
             .ok_or(GoBuildpackError::VersionResolution(requirement))?;
-        log_info(format!(
+        log.info(format!(
             "Resolved Go version: {}",
             artifact.semantic_version
         ));
 
-        log_header("Installing Go distribution");
+        log.header("Installing Go distribution");
         go_env = context
             .handle_layer(
                 layer_name!("go_dist"),
@@ -88,10 +91,10 @@ impl Buildpack for GoBuildpack {
             .env
             .apply(Scope::Build, &go_env);
 
-        log_header("Building Go binaries");
+        log.header("Building Go binaries");
 
         if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
-            log_info("Using vendored Go modules");
+            log.info("Using vendored Go modules");
         } else {
             go_env = context
                 .handle_layer(
@@ -119,7 +122,7 @@ impl Buildpack for GoBuildpack {
             .env
             .apply(Scope::Build, &go_env);
 
-        log_info("Resolving Go modules");
+        log.info("Resolving Go modules");
         let packages = config.packages.unwrap_or(
             // Use `go list` to determine packages to build. Do this eagerly,
             // even if the result is unused because it has the side effect of
@@ -127,18 +130,23 @@ impl Buildpack for GoBuildpack {
             cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        log_info("Building packages:");
+        log.info("Building packages:");
         for pkg in &packages {
-            log_info(format!("  - {pkg}"));
+            log.info(format!("  - {pkg}"));
         }
         cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
-        log_header("Setting launch table");
-        let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-        log_info("Detected processes:");
-        for proc in &procs {
-            log_info(format!("  - {}: {}", proc.r#type, proc.command));
-        }
+        let procs = log.with_block("Setting launch table", |launch_log| {
+            proc::build_procs(&packages)
+                .map_err(GoBuildpackError::Proc)
+                .map(|procs| {
+                    launch_log.info("Detected processes:");
+                    for proc in &procs {
+                        launch_log.info(format!("- {}: {}", proc.r#type, proc.command));
+                    }
+                    procs
+                })
+        })?;
 
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
