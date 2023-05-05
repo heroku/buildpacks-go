@@ -55,9 +55,7 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let mut log = log::Logger::new(StandardStream::stderr(ColorChoice::Auto));
-        log.header("Reading build configuration");
-
+        let mut log = log::Logger::new(StandardStream::stderr(ColorChoice::Always));
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -65,6 +63,7 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
+        log.header("Reading build configuration");
         let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
@@ -80,14 +79,16 @@ impl Buildpack for GoBuildpack {
             artifact.semantic_version
         ));
 
-        log.header("Installing Go distribution");
-        go_env = context
-            .handle_layer(
-                layer_name!("go_dist"),
-                DistLayer {
-                    artifact: artifact.clone(),
-                },
-            )?
+        let mut go_env = log
+            .with_block("Installing Go distribution", |log| {
+                context.handle_layer(
+                    layer_name!("go_dist"),
+                    DistLayer {
+                        artifact: artifact.clone(),
+                        log: *log,
+                    },
+                )
+            })?
             .env
             .apply(Scope::Build, &go_env);
 
@@ -130,11 +131,12 @@ impl Buildpack for GoBuildpack {
             cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        log.info("Building packages:");
-        for pkg in &packages {
-            log.info(format!("  - {pkg}"));
-        }
-        cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
+        log.with_block("Building packages", |log| {
+            for pkg in &packages {
+                log.info(pkg);
+            }
+            cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)
+        })?;
 
         let procs = log.with_block("Setting launch table", |launch_log| {
             proc::build_procs(&packages)

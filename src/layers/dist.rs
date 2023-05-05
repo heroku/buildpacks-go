@@ -1,3 +1,4 @@
+use crate::log::Logger;
 use crate::{tgz, GoBuildpack, GoBuildpackError};
 use heroku_go_buildpack::inv::Artifact;
 use libcnb::build::BuildContext;
@@ -8,10 +9,12 @@ use libcnb::Buildpack;
 use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
+use termcolor::WriteColor;
 
 /// A layer that downloads and installs the Go distribution artifacts
-pub(crate) struct DistLayer {
-    pub artifact: Artifact,
+pub(crate) struct DistLayer<'a, W: WriteColor> {
+    pub(crate) artifact: Artifact,
+    pub(crate) log: Logger<'a, W>,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
@@ -28,7 +31,7 @@ pub(crate) enum DistLayerError {
 
 const LAYER_VERSION: &str = "1";
 
-impl Layer for DistLayer {
+impl<'a, W: WriteColor> Layer for DistLayer<'a, W> {
     type Buildpack = GoBuildpack;
     type Metadata = DistLayerMetadata;
 
@@ -89,7 +92,7 @@ impl Layer for DistLayer {
 }
 
 impl DistLayerMetadata {
-    fn current(layer: &DistLayer) -> Self {
+    fn current<W: WriteColor>(layer: &DistLayer<W>) -> Self {
         DistLayerMetadata {
             go_version: layer.artifact.go_version.clone(),
             layer_version: String::from(LAYER_VERSION),
