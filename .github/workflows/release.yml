@@ -9,7 +9,7 @@ permissions:
 jobs:
   release:
     name: Release heroku/go
-    runs-on: ubuntu-20.04 # ubuntu-latest currently resolves to 18.04 which does not have aws-cli 2.x yet
+    runs-on: pub-hk-ubuntu-22.04-small
     steps:
 
       - id: checkout
