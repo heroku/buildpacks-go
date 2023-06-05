@@ -38,7 +38,7 @@ pub(crate) fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, Error> {
             .parse::<ProcessType>()?;
 
         procs.push(
-            ProcessBuilder::new(proc_name.clone(), proc_name.to_string())
+            ProcessBuilder::new(proc_name.clone(), [proc_name.to_string()])
                 .default(proc_name.to_string() == "web")
                 .build(),
         );
