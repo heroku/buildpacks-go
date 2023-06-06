@@ -4,6 +4,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Update to CNB Buildpack API version 0.9. ([#101](https://github.com/heroku/buildpacks-go/pull/101))
+
 ## [0.1.4] 2023/05/09
 
 - Added go1.19.9, go1.20.4.

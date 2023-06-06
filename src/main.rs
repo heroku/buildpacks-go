@@ -137,7 +137,7 @@ impl Buildpack for GoBuildpack {
         let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
         log_info("Detected processes:");
         for proc in &procs {
-            log_info(format!("  - {}: {}", proc.r#type, proc.command));
+            log_info(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
         }
 
         BuildResultBuilder::new()

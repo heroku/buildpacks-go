@@ -38,7 +38,7 @@ pub(crate) fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, Error> {
             .parse::<ProcessType>()?;
 
         procs.push(
-            ProcessBuilder::new(proc_name.clone(), proc_name.to_string())
+            ProcessBuilder::new(proc_name.clone(), [proc_name.to_string()])
                 .default(proc_name.to_string() == "web")
                 .build(),
         );
@@ -66,7 +66,7 @@ mod tests {
         for (i, name) in ["kubernetes", "web"].iter().enumerate() {
             let proc = procs.get(i).expect("missing process in build_procs");
             assert_eq!(*name, proc.r#type.to_string());
-            assert_eq!("kubernetes", proc.command);
+            assert_eq!("kubernetes", proc.command.join(" "));
         }
     }
 
@@ -75,7 +75,7 @@ mod tests {
         let procs = build_procs(&[String::from("example.com/web")])
             .expect("unexpected error with build_procs");
         assert_eq!(procs.len(), 1);
-        assert_eq!(procs[0].command, "web");
+        assert_eq!(procs[0].command, ["web"]);
     }
 
     #[test]
