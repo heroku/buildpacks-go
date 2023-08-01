@@ -1,4 +1,28 @@
 [[artifacts]]
+go_version = "go1.21rc3"
+semantic_version = "1.21.0-rc3"
+architecture = "linux-amd64"
+sha_checksum = "b5e3a28d10ba1109cf0549237f2739284a0db2ce6bdc76cd03c4b26304c1a921"
+
+[[artifacts]]
+go_version = "go1.21rc2"
+semantic_version = "1.21.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "8fe90332727c606019e80a7368e23f5e65ad59520e45ee4010692f15572e45c6"
+
+[[artifacts]]
+go_version = "go1.21rc1"
+semantic_version = "1.21.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "d3f54a95b085cd6745fb306910b36670dac4e9e985c8f2920e6bcc35b9d7feb9"
+
+[[artifacts]]
+go_version = "go1.20.6"
+semantic_version = "1.20.6"
+architecture = "linux-amd64"
+sha_checksum = "b945ae2bb5db01a0fb4786afde64e6fbab50b67f6fa0eb6cfa4924f16a7ff1eb"
+
+[[artifacts]]
 go_version = "go1.20.5"
 semantic_version = "1.20.5"
 architecture = "linux-amd64"
@@ -51,6 +75,12 @@ go_version = "go1.20rc1"
 semantic_version = "1.20.0-rc1"
 architecture = "linux-amd64"
 sha_checksum = "4757fb32d7514145e43d4f37713f98d8cc0ecbbb5b1737accfc84be50e1e2e32"
+
+[[artifacts]]
+go_version = "go1.19.11"
+semantic_version = "1.19.11"
+architecture = "linux-amd64"
+sha_checksum = "ee18f98a03386e2bf48ff75737ea17c953b1572f9b1114352f104ac5eef04bb4"
 
 [[artifacts]]
 go_version = "go1.19.10"
