@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added go1.19.12, go1.20.7, go1.21rc4.
 ## [0.1.6] - 2023-08-01
 
 - Added go1.19.11, go1.20.6, go1.21rc1, go1.21rc2, go1.21rc3.
