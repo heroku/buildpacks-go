@@ -1,4 +1,10 @@
 [[artifacts]]
+go_version = "go1.21.0"
+semantic_version = "1.21.0"
+architecture = "linux-amd64"
+sha_checksum = "d0398903a16ba2232b389fb31032ddf57cac34efda306a0eebac34f0965a0742"
+
+[[artifacts]]
 go_version = "go1.21rc4"
 semantic_version = "1.21.0-rc4"
 architecture = "linux-amd64"
