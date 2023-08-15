@@ -24,6 +24,8 @@ pub(crate) struct DistLayerMetadata {
 pub(crate) enum DistLayerError {
     #[error("Couldn't extract Go distribution archive: {0}")]
     Tgz(tgz::Error),
+    #[error("Couldn't create Go distribution directories: {0}")]
+    Dir(std::io::Error),
 }
 
 const LAYER_VERSION: &str = "1";
@@ -49,7 +51,7 @@ impl Layer for DistLayer {
         tgz::fetch_strip_filter_extract_verify(
             self.artifact.mirror_tarball_url(),
             "go",
-            ["bin", "src", "pkg", "LICENSE"].into_iter(),
+            ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
             layer_path,
             &self.artifact.sha_checksum,
         )
