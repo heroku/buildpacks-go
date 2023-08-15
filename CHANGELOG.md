@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Ensure $GOROOT/go.env is installed.
 - Added go1.21.0.
+
 ## [0.1.7] - 2023-08-07
 
 - Added go1.19.12, go1.20.7, go1.21rc4.
