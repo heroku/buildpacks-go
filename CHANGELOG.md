@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2023-08-15
+
 - Ensure $GOROOT/go.env is installed.
 - Added go1.21.0.
 
@@ -46,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.1.7...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/heroku/buildpacks-go/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/heroku/buildpacks-go/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/heroku/buildpacks-go/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/heroku/buildpacks-go/compare/v0.1.4...v0.1.5
