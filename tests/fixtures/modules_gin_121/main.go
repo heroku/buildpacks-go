@@ -7,7 +7,7 @@ import (
 func main() {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
-		c.String(200, "modules_gin_118")
+		c.String(200, "modules_gin_121")
 	})
 	r.Run()
 }

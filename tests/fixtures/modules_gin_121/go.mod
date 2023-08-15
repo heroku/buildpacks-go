@@ -1,6 +1,6 @@
 module example.com/modules_gin_118
 
-go 1.18
+go 1.21
 
 require github.com/gin-gonic/gin v1.8.1
 

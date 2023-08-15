@@ -83,13 +83,13 @@ fn vendor_gorilla_117_22() {
     test_vendor_gorilla_117("heroku/builder:22");
 }
 
-fn test_modules_gin_118(builder: &str) {
+fn test_modules_gin_121(builder: &str) {
     test_go_fixture(
-        "modules_gin_118",
+        "modules_gin_121",
         builder,
         &[
-            "Detected Go version requirement: =1.18",
-            "Installing Go 1.18",
+            "Detected Go version requirement: =1.21",
+            "Installing Go 1.21",
             "downloading github.com/gin-gonic/gin v1.8.1",
         ],
         &[],
@@ -97,13 +97,13 @@ fn test_modules_gin_118(builder: &str) {
 }
 #[test]
 #[ignore = "integration test"]
-fn modules_gin_118_20() {
-    test_modules_gin_118("heroku/buildpacks:20");
+fn modules_gin_121_20() {
+    test_modules_gin_121("heroku/buildpacks:20");
 }
 #[test]
 #[ignore = "integration test"]
-fn modules_gin_118_22() {
-    test_modules_gin_118("heroku/builder:22");
+fn modules_gin_121_22() {
+    test_modules_gin_121("heroku/builder:22");
 }
 
 fn test_worker_http_118(builder: &str) {
