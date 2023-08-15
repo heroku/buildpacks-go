@@ -3,7 +3,7 @@ use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest, Sha256,
 };
-use std::{io::Read, path::StripPrefixError};
+use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
 
 #[derive(thiserror::Error, Debug)]
@@ -22,6 +22,9 @@ pub(crate) enum Error {
 
     #[error("Failed to validate archive checksum; expected {0}, but found {1}")]
     Checksum(String, String),
+
+    #[error("Error creating archive directory: {0}")]
+    Directory(std::io::Error),
 
     #[error("Error writing archive entry: {0}")]
     Unpack(std::io::Error),
@@ -45,6 +48,7 @@ pub(crate) fn fetch_strip_filter_extract_verify<'a>(
     dest_dir: impl AsRef<std::path::Path>,
     sha256: impl AsRef<str>,
 ) -> Result<(), Error> {
+    eprintln!("fsfev: {}", uri.as_ref());
     let expected_digest = sha256.as_ref();
     let destination = dest_dir.as_ref();
     let body = ureq::get(uri.as_ref())
@@ -65,6 +69,9 @@ pub(crate) fn fetch_strip_filter_extract_verify<'a>(
             .iter()
             .any(|prefix| path.starts_with(destination.join(prefix)))
         {
+            if let Some(parent) = path.parent() {
+                fs::create_dir_all(parent).map_err(Error::Directory)?;
+            }
             file.unpack(&path).map_err(Error::Unpack)?;
         }
     }
