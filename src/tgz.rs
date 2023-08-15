@@ -48,7 +48,6 @@ pub(crate) fn fetch_strip_filter_extract_verify<'a>(
     dest_dir: impl AsRef<std::path::Path>,
     sha256: impl AsRef<str>,
 ) -> Result<(), Error> {
-    eprintln!("fsfev: {}", uri.as_ref());
     let expected_digest = sha256.as_ref();
     let destination = dest_dir.as_ref();
     let body = ureq::get(uri.as_ref())
