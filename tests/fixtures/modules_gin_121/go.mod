@@ -1,4 +1,4 @@
-module example.com/modules_gin_118
+module example.com/modules_gin_121
 
 go 1.21
 
