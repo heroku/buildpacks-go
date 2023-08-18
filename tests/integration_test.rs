@@ -23,9 +23,7 @@ fn test_go_fixture(
             let port = 8080;
             ctx.start_container(ContainerConfig::new().expose_port(port), |container| {
                 std::thread::sleep(Duration::from_secs(5));
-                let addr = container
-                    .address_for_port(port)
-                    .expect("couldn't get container address");
+                let addr = container.address_for_port(port);
                 let resp = ureq::get(&format!("http://{addr}"))
                     .call()
                     .expect("request to container failed")

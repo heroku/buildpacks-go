@@ -92,7 +92,7 @@ This buildpack relies on [heroku/libcnb.rs](libcnb) to compile buildpacks. All
 1. Run `cargo check` to download dependencies and ensure there are no
    compilation issues.
 1. Build the buildpack with `cargo libcnb package`.
-1. Use the buildpack to build an app: `pack build go-example --buildpack target/buildpack/debug/heroku_go --path /path/to/go-app`
+1. Use the buildpack to build an app: `pack build go-example --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path /path/to/go-app`
 
 ### Testing
 
