@@ -35,7 +35,7 @@ jobs:
           delimiter="$(openssl rand -hex 8)"
           {
             echo "msg<<${delimiter}"
-            cargo run --bin diff_versions "${{ inputs.distribution }}" "${{ inputs.buildpack_path }}/inventory.toml"
+            cargo run --bin diff_inventory inventory.toml
             echo "${delimiter}"
           } >> $GITHUB_OUTPUT
 
