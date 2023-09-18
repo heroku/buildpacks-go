@@ -128,7 +128,7 @@ impl Version {
             .captures(stripped_version)
             .ok_or(VersionParseError::Captures)?;
 
-        let mut composed_version = vec![
+        let mut composed_version = [
             caps.get(1).map_or("0", |major| major.as_str()),
             caps.get(2).map_or("0", |minor| minor.as_str()),
             caps.get(3).map_or("0", |patch| patch.as_str()),
