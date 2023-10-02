@@ -14,7 +14,7 @@ Go builds on the Heroku platform, see [heroku/heroku-buildpack-go](classic).
 
 ## Usage
 
-Build a go app image by using this buildpack with [`pack`](pack) and the [`heroku/builder`](builder) builder:
+Build a go app image by using this buildpack with [`pack`](pack) and the [`heroku/builder`](cnb-builder-images) builder:
 
 ```sh
 pack build go-example --path /path/to/go-app --builder heroku/builder:22 --buildpack heroku/go
@@ -110,5 +110,5 @@ Licensed under the BSD 3-clause License. See [LICENSE](./LICENSE) file.
 [classic]: https://github.com/heroku/heroku-buildpack-go
 [cnb]: https://buildpacks.io/
 [pack]: https://buildpacks.io/docs/tools/pack/
-[builder]: https://github.com/heroku/builder
+[cnb-builder-images]: https://github.com/heroku/cnb-builder-images
 [go-modules]: https://go.dev/ref/mod
