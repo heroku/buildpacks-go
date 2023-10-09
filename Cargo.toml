@@ -10,8 +10,8 @@ rust-version = "1.66"
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
 # libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
 # so it's pinned to an exact version to isolate it from lockfile refreshes.
-libcnb = "=0.14.0"
-libherokubuildpack = { version = "=0.14.0", default-features = false, features = ["log"] }
+libcnb = "=0.15.0"
+libherokubuildpack = { version = "=0.15.0", default-features = false, features = ["log"] }
 regex = "1"
 semver = "1"
 serde = "1"
@@ -24,4 +24,4 @@ toml = "0.7"
 ureq = { version = "2", features = ["json"] }
 
 [dev-dependencies]
-libcnb-test = "=0.14.0"
+libcnb-test = "=0.15.0"
