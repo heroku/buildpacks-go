@@ -5,6 +5,7 @@ id = "heroku/go"
 version = "0.1.10"
 name = "Heroku Go"
 homepage = "https://github.com/heroku/buildpacks-go"
+description = "Heroku's buildpack for Go applications."
 keywords = ["go", "golang", "heroku"]
 clear-env = true
 
@@ -17,7 +18,5 @@ id = "heroku-20"
 [[stacks]]
 id = "heroku-22"
 
-[metadata]
 [metadata.release]
-[metadata.release.image]
-repository = "docker.io/heroku/buildpack-go"
+image = { repository = "docker.io/heroku/buildpack-go" }
