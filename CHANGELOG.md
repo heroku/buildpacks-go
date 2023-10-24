@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.11] - 2023-10-24
+
 ### Added
 
 - Added buildpack description to metadata used by CNB registry. ([#178](https://github.com/heroku/buildpack-go/pull/178))
@@ -88,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs. ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.1.10...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.1.11...HEAD
+[0.1.11]: https://github.com/heroku/buildpacks-go/compare/v0.1.10...v0.1.11
 [0.1.10]: https://github.com/heroku/buildpacks-go/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/heroku/buildpacks-go/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/heroku/buildpacks-go/compare/v0.1.7...v0.1.8
