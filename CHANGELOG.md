@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added buildpack description to metadata used by CNB registry. ([#178](https://github.com/heroku/buildpack-go/pull/178))
+
 ## [0.1.10] - 2023-10-12
 
 ### Added
