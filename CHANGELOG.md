@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.12] - 2023-11-13
+
+- No changes.
+
 ## [0.1.11] - 2023-10-24
 
 - Added go1.20.11 and go1.21.4. ([#168](https://github.com/heroku/buildpacks-go/pull/184))
@@ -92,7 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs. ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.1.11...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.1.12...HEAD
+[0.1.12]: https://github.com/heroku/buildpacks-go/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/heroku/buildpacks-go/compare/v0.1.10...v0.1.11
 [0.1.10]: https://github.com/heroku/buildpacks-go/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/heroku/buildpacks-go/compare/v0.1.8...v0.1.9
