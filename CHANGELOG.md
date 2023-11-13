@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.11] - 2023-10-24
 
+- Added go1.20.11 and go1.21.4. ([#168](https://github.com/heroku/buildpacks-go/pull/184))
+
 ### Added
 
 - Added buildpack description to metadata used by CNB registry. ([#178](https://github.com/heroku/buildpack-go/pull/178))
