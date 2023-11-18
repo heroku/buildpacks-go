@@ -1,6 +1,3 @@
-#![warn(clippy::pedantic)]
-#![warn(clippy::cargo)]
-
 mod cfg;
 mod cmd;
 mod layers;

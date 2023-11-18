@@ -1,5 +1,3 @@
-#![warn(clippy::pedantic)]
-
 use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerConfig, TestRunner};
 use std::time::Duration;
 

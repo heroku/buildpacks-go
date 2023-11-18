@@ -1,5 +1,3 @@
-#![warn(clippy::pedantic)]
-
 use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, Inventory};
 use std::collections::HashSet;
 
