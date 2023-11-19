@@ -7,12 +7,16 @@ publish = false
 rust-version = "1.74"
 
 [lints.rust]
+unreachable_pub = "warn"
+unsafe_code = "warn"
 # TODO: Enable this lint once the lib target is split out to a shared code crate,
 # which will reduce the false positives and make using this lint viable.
 # unused_crate_dependencies = "warn"
 
 [lints.clippy]
+panic_in_result_fn = "warn"
 pedantic = "warn"
+unwrap_used = "warn"
 
 [dependencies]
 flate2 = { version = "1", default-features = false, features = ["zlib"] }

@@ -11,7 +11,7 @@ use std::path::Path;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub(crate) struct DistLayer {
-    pub artifact: Artifact,
+    pub(crate) artifact: Artifact,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]

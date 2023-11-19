@@ -25,7 +25,7 @@ use std::path::Path;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
-pub(crate) struct GoBuildpack;
+struct GoBuildpack;
 
 impl Buildpack for GoBuildpack {
     type Platform = GenericPlatform;
@@ -168,7 +168,7 @@ impl Buildpack for GoBuildpack {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub(crate) enum GoBuildpackError {
+enum GoBuildpackError {
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
     #[error("Couldn't run `go build`: {0}")]
