@@ -4,7 +4,15 @@ version = "0.0.0"
 description = "Heroku Go Cloud Native Buildpack"
 edition = "2021"
 publish = false
-rust-version = "1.66"
+rust-version = "1.74"
+
+[lints.rust]
+# TODO: Enable this lint once the lib target is split out to a shared code crate,
+# which will reduce the false positives and make using this lint viable.
+# unused_crate_dependencies = "warn"
+
+[lints.clippy]
+pedantic = "warn"
 
 [dependencies]
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
