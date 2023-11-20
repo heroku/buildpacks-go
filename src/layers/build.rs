@@ -11,7 +11,7 @@ use std::path::Path;
 
 /// A layer for go incremental build cache artifacts
 pub(crate) struct BuildLayer {
-    pub go_version: String,
+    pub(crate) go_version: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq)]

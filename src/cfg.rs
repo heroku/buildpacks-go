@@ -5,8 +5,8 @@ use std::path;
 
 /// Represents buildpack configuration found in a project's `go.mod`.
 pub(crate) struct GoModConfig {
-    pub packages: Option<Vec<String>>,
-    pub version: Option<Requirement>,
+    pub(crate) packages: Option<Vec<String>>,
+    pub(crate) version: Option<Requirement>,
 }
 
 #[derive(thiserror::Error, Debug)]

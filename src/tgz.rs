@@ -86,13 +86,13 @@ struct DigestingReader<R: Read, H: sha2::Digest> {
 }
 
 impl<R: Read, H: sha2::Digest> DigestingReader<R, H> {
-    pub fn new(reader: R, hasher: H) -> DigestingReader<R, H> {
+    pub(crate) fn new(reader: R, hasher: H) -> DigestingReader<R, H> {
         DigestingReader {
             r: reader,
             h: hasher,
         }
     }
-    pub fn finalize(self) -> GenericArray<u8, <H as OutputSizeUser>::OutputSize> {
+    pub(crate) fn finalize(self) -> GenericArray<u8, <H as OutputSizeUser>::OutputSize> {
         self.h.finalize()
     }
 }
