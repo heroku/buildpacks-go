@@ -44,7 +44,7 @@ pub(crate) fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, Error> {
         );
     }
     if !procs.iter().any(|p| p.default) {
-        if let Some(proc) = procs.clone().get(0) {
+        if let Some(proc) = procs.clone().first() {
             procs.push(
                 ProcessBuilder::new(process_type!("web"), &proc.command)
                     .default(true)
