@@ -1,0 +1,17 @@
+[package]
+name = "heroku-go-utils"
+description = "Libs and bins for the Heroku Go Buildpack"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+regex = "1"
+semver = "1"
+serde = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+ureq = { workspace = true }

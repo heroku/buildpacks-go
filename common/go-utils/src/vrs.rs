@@ -22,7 +22,7 @@ impl Requirement {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_buildpack::vrs::Requirement::parse("~1.0").unwrap();
+    /// let req = heroku_go_utils::vrs::Requirement::parse("~1.0").unwrap();
     /// ```
     ///
     /// # Errors
@@ -37,7 +37,7 @@ impl Requirement {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_buildpack::vrs::Requirement::parse_go("go1.0").unwrap();
+    /// let req = heroku_go_utils::vrs::Requirement::parse_go("go1.0").unwrap();
     /// ```
     ///
     /// # Errors
@@ -99,7 +99,7 @@ impl Version {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_buildpack::vrs::Version::parse("1.14.2").unwrap();
+    /// let req = heroku_go_utils::vrs::Version::parse("1.14.2").unwrap();
     /// ```
     ///
     /// # Errors
@@ -114,7 +114,7 @@ impl Version {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_buildpack::vrs::Version::parse_go("go1.12").unwrap();
+    /// let req = heroku_go_utils::vrs::Version::parse_go("go1.12").unwrap();
     /// ```
     ///
     /// # Errors

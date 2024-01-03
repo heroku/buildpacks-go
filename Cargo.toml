@@ -2,4 +2,32 @@
 resolver = "2"
 members = [
     "buildpacks/go",
+    "common/go-utils",
 ]
+
+[workspace.package]
+version = "0.0.0"
+rust-version = "1.75"
+edition = "2021"
+publish = false
+
+[workspace.lints.rust]
+unreachable_pub = "warn"
+unsafe_code = "warn"
+# TODO: Enable this lint once the heroku-go-utils binary targets are split into
+# their own crates. This should reduce false positives and make this lint viable.
+# unused_crate_dependencies = "warn"
+
+[workspace.lints.clippy]
+panic_in_result_fn = "warn"
+pedantic = "warn"
+unwrap_used = "warn"
+
+[workspace.dependencies]
+serde = "1"
+thiserror = "1"
+toml = "0.8"
+ureq = { version = "2", features = ["json"] }
+
+[profile.release]
+strip = true

@@ -4,8 +4,8 @@ mod layers;
 mod proc;
 mod tgz;
 
-use heroku_go_buildpack::inv::Inventory;
-use heroku_go_buildpack::vrs::Requirement;
+use heroku_go_utils::inv::Inventory;
+use heroku_go_utils::vrs::Requirement;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
 use layers::dist::{DistLayer, DistLayerError};

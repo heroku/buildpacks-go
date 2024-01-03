@@ -1,4 +1,4 @@
-use heroku_go_buildpack::vrs::{Requirement, RequirementParseError};
+use heroku_go_utils::vrs::{Requirement, RequirementParseError};
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path;

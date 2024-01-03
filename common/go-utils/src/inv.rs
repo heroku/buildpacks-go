@@ -48,7 +48,7 @@ impl Artifact {
     /// # Examples
     ///
     /// ```
-    /// let art = heroku_go_buildpack::inv::Artifact::build("go1.16").unwrap();
+    /// let art = heroku_go_utils::inv::Artifact::build("go1.16").unwrap();
     /// ```
     ///
     /// # Errors
@@ -122,7 +122,7 @@ struct Tag {
 /// # Example
 ///
 /// ```
-/// let versions = heroku_go_buildpack::inv::list_github_go_versions().unwrap();
+/// let versions = heroku_go_utils::inv::list_github_go_versions().unwrap();
 /// ```
 ///
 /// # Errors
