@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Enabled tracing/telemetry via libcnb `trace` flag. (#[198](https://github.com/heroku/buildpacks-go/pull/198))
 - Added go1.20.12, go1.21.5, and go1.22rc1. ([#196](https://github.com/heroku/buildpacks-go/pull/196))
 
 ## [0.1.12] - 2023-11-13
