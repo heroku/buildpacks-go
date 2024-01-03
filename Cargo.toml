@@ -22,7 +22,7 @@ unwrap_used = "warn"
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
 # libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
 # so it's pinned to an exact version to isolate it from lockfile refreshes.
-libcnb = "=0.17.0"
+libcnb = { version = "=0.17.0", features = ["trace"] }
 libherokubuildpack = { version = "=0.17.0", default-features = false, features = ["log"] }
 regex = "1"
 semver = "1"
