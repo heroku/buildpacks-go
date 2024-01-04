@@ -426,16 +426,27 @@ name = "heroku-go-buildpack"
 version = "0.0.0"
 dependencies = [
  "flate2",
+ "heroku-go-utils",
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",
- "regex",
- "semver",
  "serde",
  "serde_json",
  "sha2",
  "tar",
  "tempfile",
+ "thiserror",
+ "toml",
+ "ureq",
+]
+
+[[package]]
+name = "heroku-go-utils"
+version = "0.0.0"
+dependencies = [
+ "regex",
+ "semver",
+ "serde",
  "thiserror",
  "toml",
  "ureq",

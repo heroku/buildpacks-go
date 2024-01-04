@@ -1,4 +1,4 @@
-use heroku_go_buildpack::inv::{list_github_go_versions, Artifact, Inventory};
+use heroku_go_utils::inv::{list_github_go_versions, Artifact, Inventory};
 use std::collections::HashSet;
 use std::{env, fs, process};
 

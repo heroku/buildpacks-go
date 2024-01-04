@@ -19,7 +19,7 @@ pub(crate) enum Error {
 /// # Examples
 ///
 /// ```
-/// let procs = heroku_go_buildpack::proc::build_procs(
+/// let procs = heroku_go_utils::proc::build_procs(
 ///                &["github.com/heroku/maple".to_string()]
 ///              ).unwrap();
 /// ```

@@ -1,0 +1,17 @@
+[package]
+name = "heroku-go-utils"
+description = "Libs and bins for the Heroku Go Buildpack"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+regex = "1"
+semver = "1"
+serde = "1"
+thiserror = "1"
+toml = "0.8"
+ureq = { version = "2", features = ["json"] }

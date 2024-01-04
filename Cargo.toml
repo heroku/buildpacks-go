@@ -1,39 +1,27 @@
-[package]
-name = "heroku-go-buildpack"
+[workspace]
+resolver = "2"
+members = [
+    "buildpacks/go",
+    "common/go-utils",
+]
+
+[workspace.package]
 version = "0.0.0"
-description = "Heroku Go Cloud Native Buildpack"
+rust-version = "1.75"
 edition = "2021"
 publish = false
-rust-version = "1.74"
 
-[lints.rust]
+[workspace.lints.rust]
 unreachable_pub = "warn"
 unsafe_code = "warn"
-# TODO: Enable this lint once the lib target is split out to a shared code crate,
-# which will reduce the false positives and make using this lint viable.
+# TODO: Enable this lint once the heroku-go-utils binary targets are split into
+# their own crates. This should reduce false positives and make this lint viable.
 # unused_crate_dependencies = "warn"
 
-[lints.clippy]
+[workspace.lints.clippy]
 panic_in_result_fn = "warn"
 pedantic = "warn"
 unwrap_used = "warn"
 
-[dependencies]
-flate2 = { version = "1", default-features = false, features = ["zlib"] }
-# libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
-# so it's pinned to an exact version to isolate it from lockfile refreshes.
-libcnb = { version = "=0.17.0", features = ["trace"] }
-libherokubuildpack = { version = "=0.17.0", default-features = false, features = ["log"] }
-regex = "1"
-semver = "1"
-serde = "1"
-serde_json = "1"
-sha2 = "0.10"
-tar = "0.4"
-tempfile = "3"
-thiserror = "1"
-toml = "0.8"
-ureq = { version = "2", features = ["json"] }
-
-[dev-dependencies]
-libcnb-test = "=0.17.0"
+[profile.release]
+strip = true
