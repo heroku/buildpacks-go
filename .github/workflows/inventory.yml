@@ -43,7 +43,7 @@ jobs:
         run: "cargo run --bin update_inventory buildpacks/go/inventory.toml"
 
       - name: Update Changelog
-        run: echo "${{ steps.set-diff-msg.outputs.DIFF_MSG }}" | xargs -r -I '{}' perl -i -p -e 's/\[Unreleased\]\s+/[Unreleased]\n\n- {}/' CHANGELOG.md
+        run: echo "${{ steps.set-diff-msg.outputs.msg }}" | xargs -r -I '{}' perl -i -p -e 's/\[Unreleased\]\s+/[Unreleased]\n\n- {}/' CHANGELOG.md
 
       - name: Create Pull Request
         id: pr
