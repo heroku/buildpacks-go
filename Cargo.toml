@@ -23,11 +23,5 @@ panic_in_result_fn = "warn"
 pedantic = "warn"
 unwrap_used = "warn"
 
-[workspace.dependencies]
-serde = "1"
-thiserror = "1"
-toml = "0.8"
-ureq = { version = "2", features = ["json"] }
-
 [profile.release]
 strip = true
