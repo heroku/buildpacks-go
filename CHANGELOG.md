@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added go1.20.13, go1.21.6.
 ### Changed
 
 - Separated buildpack and supplementary binaries into independent crates. ([#200](https://github.com/heroku/buildpacks-go/pull/200))
