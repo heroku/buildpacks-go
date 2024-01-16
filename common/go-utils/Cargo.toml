@@ -1,7 +1,5 @@
 [package]
 name = "heroku-go-utils"
-description = "Libs and bins for the Heroku Go Buildpack"
-version.workspace = true
 rust-version.workspace = true
 edition.workspace = true
 

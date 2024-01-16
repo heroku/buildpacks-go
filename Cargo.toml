@@ -6,10 +6,8 @@ members = [
 ]
 
 [workspace.package]
-version = "0.0.0"
 rust-version = "1.75"
 edition = "2021"
-publish = false
 
 [workspace.lints.rust]
 unreachable_pub = "warn"
