@@ -5,6 +5,12 @@ architecture = "linux-amd64"
 sha_checksum = "fbe9d0585b9322d44008f6baf78b391b22f64294338c6ce2b9eb6040d6373c52"
 
 [[artifacts]]
+go_version = "go1.21.6"
+semantic_version = "1.21.6"
+architecture = "linux-amd64"
+sha_checksum = "3f934f40ac360b9c01f616a9aa1796d227d8b0328bf64cb045c7b8c4ee9caea4"
+
+[[artifacts]]
 go_version = "go1.21.5"
 semantic_version = "1.21.5"
 architecture = "linux-amd64"
@@ -63,6 +69,12 @@ go_version = "go1.21rc1"
 semantic_version = "1.21.0-rc1"
 architecture = "linux-amd64"
 sha_checksum = "d3f54a95b085cd6745fb306910b36670dac4e9e985c8f2920e6bcc35b9d7feb9"
+
+[[artifacts]]
+go_version = "go1.20.13"
+semantic_version = "1.20.13"
+architecture = "linux-amd64"
+sha_checksum = "9a9d3dcae2b6a638b1f2e9bd4db08ffb39c10e55d9696914002742d90f0047b5"
 
 [[artifacts]]
 go_version = "go1.20.12"
