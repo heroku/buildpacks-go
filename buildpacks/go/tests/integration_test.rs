@@ -170,3 +170,25 @@ fn vendor_fasthttp_120_20() {
 fn vendor_fasthttp_120_22() {
     test_vendor_fasthttp_120("heroku/builder:22");
 }
+
+fn test_basic_http_122(builder: &str) {
+    test_go_fixture(
+        "basic_http_122",
+        builder,
+        &[
+            "Detected Go version requirement: ~1.22.0",
+            "Installing Go 1.22.",
+        ],
+        &[],
+    );
+}
+#[test]
+#[ignore = "integration test"]
+fn basic_http_122_20() {
+    test_basic_http_122("heroku/builder:20");
+}
+#[test]
+#[ignore = "integration test"]
+fn basic_http_122_22() {
+    test_basic_http_122("heroku/builder:22");
+}
