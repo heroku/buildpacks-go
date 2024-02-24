@@ -6,7 +6,6 @@ use toml;
 const GITHUB_API_URL: &str = "https://api.github.com";
 const GO_REPO_NAME: &str = "golang/go";
 const GO_HOST_URL: &str = "https://dl.google.com/go";
-const GO_MIRROR_URL: &str = "https://heroku-golang-prod.s3.us-east-1.amazonaws.com";
 const ARCH: &str = "linux-amd64";
 
 /// Represents a collection of known go release artifacts.
@@ -26,10 +25,10 @@ pub struct Artifact {
 
 impl Artifact {
     #[must_use]
-    pub fn mirror_tarball_url(&self) -> String {
+    pub fn tarball_url(&self) -> String {
         format!(
             "{}/{}.{}.tar.gz",
-            GO_MIRROR_URL, self.go_version, self.architecture
+            GO_HOST_URL, self.go_version, self.architecture
         )
     }
 }
