@@ -1283,6 +1283,12 @@ architecture = "linux-amd64"
 sha_checksum = "de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b"
 
 [[artifacts]]
+go_version = "go1.9.2rc2"
+semantic_version = "1.9.2-rc2"
+architecture = "linux-amd64"
+sha_checksum = "bf28294bc9ac1fe2102a139c49b52d3947953a7aaa2cd52e6bb9772d25611faa"
+
+[[artifacts]]
 go_version = "go1.9.1"
 semantic_version = "1.9.1"
 architecture = "linux-amd64"

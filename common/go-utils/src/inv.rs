@@ -3,8 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use toml;
 
-const GITHUB_API_URL: &str = "https://api.github.com";
-const GO_REPO_NAME: &str = "golang/go";
+const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://dl.google.com/go";
 const ARCH: &str = "linux-amd64";
 
@@ -111,34 +110,30 @@ impl Inventory {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
-struct Tag {
-    #[serde(alias = "ref")]
-    reference: String,
+struct GoRelease {
+    version: String,
 }
 
-/// List known go versions from tags on GitHub.
+/// List known go versions from releases on gov.dev.
 ///
 /// # Example
 ///
 /// ```
-/// let versions = heroku_go_utils::inv::list_github_go_versions().unwrap();
+/// let versions = heroku_go_utils::inv::list_upstream_go_versions().unwrap();
 /// ```
 ///
 /// # Errors
 ///
-/// Http issues connecting to the GitHub tags endpoint will return an error.
-pub fn list_github_go_versions() -> Result<Vec<String>, String> {
-    let tag_names = ureq::get(&format!(
-        "{GITHUB_API_URL}/repos/{GO_REPO_NAME}/git/refs/tags"
-    ))
-    .call()
-    .map_err(|e| e.to_string())?
-    .into_json::<Vec<Tag>>()
-    .map_err(|e| e.to_string())?
-    .iter()
-    .filter_map(|t| t.reference.strip_prefix("refs/tags/"))
-    .filter(|t| t.starts_with("go"))
-    .map(std::string::ToString::to_string)
-    .collect();
+/// Http issues connecting to the Go releases endpoint will return an error.
+pub fn list_upstream_go_versions() -> Result<Vec<String>, String> {
+    let tag_names = ureq::get(GO_RELEASES_URL)
+        .call()
+        .map_err(|e| e.to_string())?
+        .into_json::<Vec<GoRelease>>()
+        .map_err(|e| e.to_string())?
+        .iter()
+        .map(|t| t.version.clone())
+        .filter(|t| t.starts_with("go"))
+        .collect();
     Ok(tag_names)
 }

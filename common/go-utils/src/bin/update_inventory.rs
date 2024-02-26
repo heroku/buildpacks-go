@@ -1,11 +1,11 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use heroku_go_utils::inv::{list_github_go_versions, Artifact, Inventory};
+use heroku_go_utils::inv::{list_upstream_go_versions, Artifact, Inventory};
 use std::collections::HashSet;
 use std::{env, fs, process};
 
-/// Updates the local go inventory.toml with versions published on GitHub.
+/// Updates the local go inventory.toml with versions published on go.dev.
 fn main() {
     let filename = env::args().nth(1).unwrap_or_else(|| {
         eprintln!("Usage: update_inventory <path/to/inventory.toml>");
@@ -23,13 +23,13 @@ fn main() {
         .map(|a| a.go_version.as_str())
         .collect();
 
-    // List available versions published to GitHub.
-    let remote_versions = list_github_go_versions().unwrap_or_else(|e| {
+    // List available upstrean release versions.
+    let remote_versions = list_upstream_go_versions().unwrap_or_else(|e| {
         eprintln!("Error listing go versions: {e}");
         process::exit(4);
     });
 
-    // Find versions from GitHub that are not in the local inventory.
+    // Find versions from upstream Go releases that are not in the local inventory.
     let new_versions: Vec<&str> = remote_versions
         .iter()
         .map(std::string::String::as_str)
