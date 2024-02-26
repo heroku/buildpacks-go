@@ -112,6 +112,14 @@ impl Inventory {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct GoRelease {
     version: String,
+    files: Vec<GoFiles>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+struct GoFiles {
+    os: String,
+    arch: String,
+    sha256: String,
 }
 
 /// List known go versions from releases on gov.dev.
