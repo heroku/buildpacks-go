@@ -133,7 +133,6 @@ pub fn list_upstream_go_versions() -> Result<Vec<String>, String> {
         .map_err(|e| e.to_string())?
         .iter()
         .map(|t| t.version.clone())
-        .filter(|t| t.starts_with("go"))
         .collect();
     Ok(tag_names)
 }
