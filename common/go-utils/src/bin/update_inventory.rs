@@ -11,18 +11,16 @@ fn main() {
         process::exit(2);
     });
 
-    let mut inventory = Inventory::read(&filename).unwrap_or_else(|e| {
-        eprintln!("Error reading inventory '{filename}': {e}");
-        process::exit(3);
-    });
-
     // List available upstrean release versions.
     let remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
         eprintln!("Error listing go versions: {e}");
         process::exit(4);
     });
 
-    inventory.artifacts = remote_artifacts;
+    let mut inventory = Inventory {
+        artifacts: remote_artifacts,
+    };
+
     // Sort artifacts in reverse semver order, to make it easier to resolve
     // to the most recent version for a semver constraint.
     inventory
