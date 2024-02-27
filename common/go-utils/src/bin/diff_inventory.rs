@@ -15,7 +15,7 @@ fn main() {
 
     let upstream_versions: HashSet<String> = list_upstream_artifacts()
         .unwrap_or_else(|e| {
-            eprintln!("Failed to fetch upstream go versions on GitHub: {e}");
+            eprintln!("Failed to fetch upstream go versions: {e}");
             std::process::exit(1)
         })
         .into_iter()
