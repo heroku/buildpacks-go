@@ -1505,7 +1505,37 @@ architecture = "linux-amd64"
 sha_checksum = "6d894da8b4ad3f7f6c295db0d73ccc3646bce630e1c43e662a0120681d47e988"
 
 [[artifacts]]
+go_version = "go1.6"
+semantic_version = "1.6.0"
+architecture = "linux-amd64"
+sha_checksum = "5470eac05d273c74ff8bac7bef5bad0b5abbd1c4052efbdbc8db45332e836b0b"
+
+[[artifacts]]
+go_version = "go1.6rc2"
+semantic_version = "1.6.0-rc2"
+architecture = "linux-amd64"
+sha_checksum = "9c19fa0fe32ee9bff79123d47147a5fd15fec451806bf5644a01173a86a8a4b9"
+
+[[artifacts]]
+go_version = "go1.6rc1"
+semantic_version = "1.6.0-rc1"
+architecture = "linux-amd64"
+sha_checksum = "6a8aeab9548faf933a66dafeb809bd8623c5bba1ca9626c2f28ef619b5723218"
+
+[[artifacts]]
+go_version = "go1.6beta2"
+semantic_version = "1.6.0-beta2"
+architecture = "linux-amd64"
+sha_checksum = "7ddf9797c7baaac2c16eed1a8d42f9a446223301c7dc8771ea805f211828e6a5"
+
+[[artifacts]]
 go_version = "go1.5.4"
 semantic_version = "1.5.4"
 architecture = "linux-amd64"
 sha_checksum = "a3358721210787dc1e06f5ea1460ae0564f22a0fbd91be9dcd947fb1d19b9560"
+
+[[artifacts]]
+go_version = "go1.5.3"
+semantic_version = "1.5.3"
+architecture = "linux-amd64"
+sha_checksum = "43afe0c5017e502630b1aea4d44b8a7f059bf60d7f29dfd58db454d4e4e0ae53"
