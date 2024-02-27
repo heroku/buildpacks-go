@@ -64,11 +64,11 @@ impl Inventory {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct GoRelease {
     version: String,
-    files: Vec<GoFiles>,
+    files: Vec<GoFile>,
 }
 
 impl GoRelease {
-    fn get_go_release_file(&self) -> Option<&GoFiles> {
+    fn get_go_release_file(&self) -> Option<&GoFile> {
         self.files
             .iter()
             .filter(|f| !f.sha256.is_empty() && ARCH == f.get_target_arch())
@@ -76,13 +76,13 @@ impl GoRelease {
     }
 }
 #[derive(Debug, Deserialize, Serialize, Clone)]
-struct GoFiles {
+struct GoFile {
     os: String,
     arch: String,
     sha256: String,
 }
 
-impl GoFiles {
+impl GoFile {
     fn get_target_arch(&self) -> String {
         format!("{}-{}", self.os, self.arch)
     }
