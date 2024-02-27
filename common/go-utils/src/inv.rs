@@ -119,7 +119,7 @@ impl GoRelease {
     fn get_go_release_file(&self) -> Option<&GoFiles> {
         self.files
             .iter()
-            .filter(|f| ARCH == f.get_target_arch())
+            .filter(|f| !f.sha256.is_empty() && ARCH == f.get_target_arch())
             .nth(0)
     }
 }
