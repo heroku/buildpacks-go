@@ -100,7 +100,7 @@ impl GoFile {
 ///
 /// Http issues connecting to the Go releases endpoint will return an error.
 pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
-    let tag_names = ureq::get(GO_RELEASES_URL)
+    let artifacts = ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| e.to_string())?
         .into_json::<Vec<GoRelease>>()
@@ -116,5 +116,5 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
             })
         })
         .collect();
-    Ok(tag_names)
+    Ok(artifacts)
 }
