@@ -11,7 +11,7 @@ fn main() {
         process::exit(2);
     });
 
-    // List available upstrean release versions.
+    // List available upstream release versions.
     let remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
         eprintln!("Error listing go versions: {e}");
         process::exit(4);
