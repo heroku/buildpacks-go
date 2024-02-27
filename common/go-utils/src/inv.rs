@@ -1,4 +1,4 @@
-use crate::vrs::{Requirement, Version, VersionParseError};
+use crate::vrs::{Requirement, Version};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use toml;
@@ -30,54 +30,6 @@ impl Artifact {
             GO_HOST_URL, self.go_version, self.architecture
         )
     }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum ArtifactBuildError {
-    #[error("Couldn't build Go artifact: {0}")]
-    Checksum(#[from] FetchGoChecksumError),
-    #[error("Couldn't build Go artifact: {0}")]
-    Version(#[from] VersionParseError),
-}
-
-impl Artifact {
-    /// Build an artifact from a go version.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let art = heroku_go_utils::inv::Artifact::build("go1.16").unwrap();
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Will return an `Err` if the go version string is formatted incorrectly,
-    /// or there is an http error fetching the checksum.
-    pub fn build<S: Into<String>>(version: S) -> Result<Artifact, ArtifactBuildError> {
-        let go_version: String = version.into();
-        Ok(Artifact {
-            semantic_version: Version::parse_go(&go_version)?,
-            sha_checksum: fetch_go_checksum(&go_version)?,
-            go_version,
-            architecture: ARCH.to_string(),
-        })
-    }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum FetchGoChecksumError {
-    #[error("Couldn't download Go checksum file: {0}")]
-    Http(#[from] Box<ureq::Error>),
-    #[error("Failed to read checksum value from Go checksum file: {0}")]
-    Io(#[from] std::io::Error),
-}
-fn fetch_go_checksum(goversion: &str) -> Result<String, FetchGoChecksumError> {
-    Ok(
-        ureq::get(&format!("{GO_HOST_URL}/{goversion}.{ARCH}.tar.gz.sha256"))
-            .call()
-            .map_err(Box::new)?
-            .into_string()?,
-    )
 }
 
 #[derive(thiserror::Error, Debug)]
