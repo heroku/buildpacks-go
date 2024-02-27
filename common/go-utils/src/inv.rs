@@ -61,7 +61,7 @@ impl Inventory {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize)]
 struct GoRelease {
     version: String,
     files: Vec<GoFile>,
@@ -75,7 +75,7 @@ impl GoRelease {
             .nth(0)
     }
 }
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize)]
 struct GoFile {
     os: String,
     arch: String,
