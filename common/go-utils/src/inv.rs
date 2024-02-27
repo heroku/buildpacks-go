@@ -68,6 +68,7 @@ struct GoRelease {
 }
 
 impl GoRelease {
+    // Update this to support multi-arch
     fn get_go_release_file(&self) -> Option<&GoFile> {
         self.files
             .iter()
@@ -83,12 +84,13 @@ struct GoFile {
 }
 
 impl GoFile {
+    // Update this to support multi-arch
     fn get_target_arch(&self) -> String {
         format!("{}-{}", self.os, self.arch)
     }
 }
 
-/// List known go artifacts from releases on gov.dev.
+/// List known go artifacts from releases on go.dev.
 ///
 /// # Example
 ///
@@ -98,7 +100,7 @@ impl GoFile {
 ///
 /// # Errors
 ///
-/// Http issues connecting to the Go releases endpoint will return an error.
+/// Http issues connecting to the go.dev releases endpoint will return an error.
 pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
     let artifacts = ureq::get(GO_RELEASES_URL)
         .call()
