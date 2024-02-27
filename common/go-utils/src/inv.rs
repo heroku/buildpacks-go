@@ -115,6 +115,14 @@ struct GoRelease {
     files: Vec<GoFiles>,
 }
 
+impl GoRelease {
+    fn get_go_release_file(&self) -> Option<&GoFiles> {
+        self.files
+            .iter()
+            .filter(|f| ARCH == f.get_target_arch())
+            .nth(0)
+    }
+}
 #[derive(Debug, Deserialize, Serialize, Clone)]
 struct GoFiles {
     os: String,
@@ -122,25 +130,38 @@ struct GoFiles {
     sha256: String,
 }
 
-/// List known go versions from releases on gov.dev.
+impl GoFiles {
+    fn get_target_arch(&self) -> String {
+        format!("{}-{}", self.os, self.arch)
+    }
+}
+
+/// List known go artifacts from releases on gov.dev.
 ///
 /// # Example
 ///
 /// ```
-/// let versions = heroku_go_utils::inv::list_upstream_go_versions().unwrap();
+/// let versions = heroku_go_utils::inv::list_upstream_artifacts().unwrap();
 /// ```
 ///
 /// # Errors
 ///
 /// Http issues connecting to the Go releases endpoint will return an error.
-pub fn list_upstream_go_versions() -> Result<Vec<String>, String> {
+pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
     let tag_names = ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| e.to_string())?
         .into_json::<Vec<GoRelease>>()
         .map_err(|e| e.to_string())?
         .iter()
-        .map(|t| t.version.clone())
+        .filter_map(|t| {
+            t.get_go_release_file().map(|gofile| Artifact {
+                go_version: t.version.clone(),
+                semantic_version: Version::parse_go(&t.version.clone()).unwrap(),
+                architecture: gofile.get_target_arch(),
+                sha_checksum: gofile.sha256.clone(),
+            })
+        })
         .collect();
     Ok(tag_names)
 }

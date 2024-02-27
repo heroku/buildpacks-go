@@ -1,7 +1,7 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use heroku_go_utils::inv::{list_upstream_go_versions, Artifact, Inventory};
+use heroku_go_utils::inv::{list_upstream_artifacts, Artifact, Inventory};
 use std::collections::HashSet;
 use std::{env, fs, process};
 
@@ -24,7 +24,7 @@ fn main() {
         .collect();
 
     // List available upstrean release versions.
-    let remote_versions = list_upstream_go_versions().unwrap_or_else(|e| {
+    let remote_versions = list_upstream_artifacts().unwrap_or_else(|e| {
         eprintln!("Error listing go versions: {e}");
         process::exit(4);
     });
@@ -32,7 +32,7 @@ fn main() {
     // Find versions from upstream Go releases that are not in the local inventory.
     let new_versions: Vec<&str> = remote_versions
         .iter()
-        .map(std::string::String::as_str)
+        .map(|a| a.go_version.as_str())
         .filter(|rv| !local_versions.contains(rv))
         .collect();
 
