@@ -109,7 +109,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .filter_map(|t| {
             t.get_go_release_file().map(|gofile| Artifact {
                 go_version: t.version.clone(),
-                semantic_version: Version::parse_go(&t.version.clone())
+                semantic_version: Version::parse_go(&t.version)
                     .expect("Go version couldn't be semver parsed"),
                 architecture: gofile.get_target_arch(),
                 sha_checksum: gofile.sha256.clone(),
