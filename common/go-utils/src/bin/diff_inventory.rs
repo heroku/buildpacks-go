@@ -1,3 +1,6 @@
+// Required due to: https://github.com/rust-lang/rust/issues/95513
+#![allow(unused_crate_dependencies)]
+
 use heroku_go_utils::inv::{list_github_go_versions, Artifact, Inventory};
 use std::collections::HashSet;
 
