@@ -23,6 +23,9 @@ use libherokubuildpack::log::{log_error, log_header, log_info};
 use std::env;
 use std::path::Path;
 
+#[cfg(test)]
+use libcnb_test as _;
+
 const INVENTORY: &str = include_str!("../inventory.toml");
 
 struct GoBuildpack;
