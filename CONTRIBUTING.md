@@ -47,7 +47,7 @@ first instead.
 ### Dependencies
 
 This buildpack relies on [heroku/libcnb.rs](libcnb) to compile buildpacks. All
-[libcnb.rs dependencies](https://https://github.com/heroku/libcnb.rs#development-environment-setup)
+[libcnb.rs dependencies](https://github.com/heroku/libcnb.rs#development-environment-setup)
 will need to be setup prior to building or testing this buildpack.
 
 ### Building
