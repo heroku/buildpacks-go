@@ -114,7 +114,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .flat_map(|release| &release.files)
         .filter(|f| !f.sha256.is_empty() && ARCH == f.target_arch())
         .map(Artifact::try_from)
-        .flat_map(|a| a.map_err(|e| e.to_string()))
+        .flat_map(|a| a.map_err(|e| eprintln!("Error parsing Go version: {e}")))
         .collect();
 
     Ok(artifacts)
