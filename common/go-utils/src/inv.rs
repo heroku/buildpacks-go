@@ -108,7 +108,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
                 sha_checksum: file.sha256.clone(),
             })
         })
-        .flat_map(|a| a.map_err(|e| eprintln!("Error parsing Go version: {e}")))
+        .flat_map(|a| a.map_err(|e| eprintln!("{e}")))
         .collect();
 
     Ok(artifacts)
