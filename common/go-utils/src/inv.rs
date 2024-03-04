@@ -1,4 +1,4 @@
-use crate::vrs::{Requirement, Version};
+use crate::vrs::{Requirement, Version, VersionParseError};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use toml;
@@ -29,6 +29,19 @@ impl Artifact {
             "{}/{}.{}.tar.gz",
             GO_HOST_URL, self.go_version, self.architecture
         )
+    }
+}
+
+impl TryFrom<&GoFile> for Artifact {
+    type Error = VersionParseError;
+
+    fn try_from(file: &GoFile) -> Result<Self, Self::Error> {
+        Version::parse_go(&file.version).map(|version| Artifact {
+            go_version: file.version.clone(),
+            semantic_version: version,
+            architecture: file.target_arch(),
+            sha_checksum: file.sha256.clone(),
+        })
     }
 }
 
@@ -63,29 +76,19 @@ impl Inventory {
 
 #[derive(Debug, Deserialize)]
 struct GoRelease {
-    version: String,
     files: Vec<GoFile>,
 }
 
-impl GoRelease {
-    // Update this to support multi-arch
-    fn get_go_release_file(&self) -> Option<&GoFile> {
-        self.files
-            .iter()
-            .filter(|f| !f.sha256.is_empty() && ARCH == f.get_target_arch())
-            .nth(0)
-    }
-}
 #[derive(Debug, Deserialize)]
 struct GoFile {
     os: String,
     arch: String,
     sha256: String,
+    version: String,
 }
 
 impl GoFile {
-    // Update this to support multi-arch
-    fn get_target_arch(&self) -> String {
+    fn target_arch(&self) -> String {
         format!("{}-{}", self.os, self.arch)
     }
 }
@@ -108,17 +111,11 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .into_json::<Vec<GoRelease>>()
         .map_err(|e| e.to_string())?
         .iter()
-        .filter_map(|t| {
-            t.get_go_release_file().map(|gofile| Artifact {
-                go_version: t.version.clone(),
-                semantic_version: Version::parse_go(&t.version).unwrap_or_else(|e| {
-                    eprintln!("Error parsing artifact version '{}': {e}", t.version);
-                    std::process::exit(1);
-                }),
-                architecture: gofile.get_target_arch(),
-                sha_checksum: gofile.sha256.clone(),
-            })
-        })
+        .flat_map(|release| &release.files)
+        .filter(|f| !f.sha256.is_empty() && ARCH == f.target_arch())
+        .map(Artifact::try_from)
+        .flat_map(|a| a.map_err(|e| e.to_string()))
         .collect();
+
     Ok(artifacts)
 }
