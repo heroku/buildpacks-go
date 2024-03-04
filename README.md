@@ -42,7 +42,7 @@ This buildpack does not support 3rd party dependency managers such as `dep`,
 ### Go Version
 
 This buildpack will read the Go version from the `go` line in `go.mod`. This
-is likely correct for most apps, but a different version may be selected using 
+is likely correct for most apps, but a different version may be selected using
 the `// +heroku goVersion [{constraint}]{version}` build directive in `go.mod`,
 if required.
 
@@ -79,29 +79,6 @@ binaries.
 ```
 // +heroku install example.com/example-server example.com/example-worker
 ```
-
-## Development
-
-### Dependencies
-
-This buildpack relies on [heroku/libcnb.rs](libcnb) to compile buildpacks. All
-[libcnb.rs dependencies](https://https://github.com/heroku/libcnb.rs#development-environment-setup) will need to be setup prior to building or testing this buildpack.
-
-### Building
-
-1. Run `cargo check` to download dependencies and ensure there are no
-   compilation issues.
-1. Build the buildpack with `cargo libcnb package`.
-1. Use the buildpack to build an app: `pack build go-example --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path /path/to/go-app`
-
-### Testing
-
-- `cargo test` performs Rust unit tests.
-- `cargo test -- --ignored` performs all integration tests.
-
-## Releasing
-
-[Deploy Cloud Native Buildpacks](https://github.com/heroku/languages-team/blob/main/languages/cnb/deploy.md)
 
 ## License
 
