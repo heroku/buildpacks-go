@@ -1,4 +1,4 @@
-use crate::vrs::{Requirement, Version, VersionParseError};
+use crate::vrs::{Requirement, Version};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use toml;
@@ -29,19 +29,6 @@ impl Artifact {
             "{}/{}.{}.tar.gz",
             GO_HOST_URL, self.go_version, self.architecture
         )
-    }
-}
-
-impl TryFrom<&GoFile> for Artifact {
-    type Error = VersionParseError;
-
-    fn try_from(file: &GoFile) -> Result<Self, Self::Error> {
-        Version::parse_go(&file.version).map(|version| Artifact {
-            go_version: file.version.clone(),
-            semantic_version: version,
-            architecture: file.target_arch(),
-            sha_checksum: file.sha256.clone(),
-        })
     }
 }
 
@@ -113,7 +100,14 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .iter()
         .flat_map(|release| &release.files)
         .filter(|f| !f.sha256.is_empty() && ARCH == f.target_arch())
-        .map(Artifact::try_from)
+        .map(|file| {
+            Version::parse_go(&file.version).map(|version| Artifact {
+                go_version: file.version.clone(),
+                semantic_version: version,
+                architecture: file.target_arch(),
+                sha_checksum: file.sha256.clone(),
+            })
+        })
         .flat_map(|a| a.map_err(|e| eprintln!("Error parsing Go version: {e}")))
         .collect();
 
