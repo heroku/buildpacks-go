@@ -91,7 +91,7 @@ Issues and pull requests are welcome. See our [contributing guidelines](./CONTRI
 [ci-badge]: https://github.com/heroku/buildpacks-go/actions/workflows/ci.yml/badge.svg
 [ci-url]: https://github.com/heroku/buildpacks-go/actions/workflows/ci.yml
 [cnb]: https://buildpacks.io
-[cnb-banner]: https://cloud.githubusercontent.com/assets/51578/13712789/9569dce4-e793-11e5-9147-1fe28dc802d6.png
+[cnb-banner]: https://cloud.githubusercontent.com/assets/51578/15877053/53506724-2cdf-11e6-878c-e2ef60ba741f.png
 [classic-buildpack]: https://github.com/heroku/heroku-buildpack-go
 [heroku-buildpacks]: https://github.com/heroku/buildpacks
 [pack-install]: https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/
