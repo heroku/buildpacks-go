@@ -32,14 +32,14 @@ fn main() {
         .map(|r| r.go_version.to_string())
         .collect();
 
-    let mut new_versions: Vec<String> = upstream_versions
+    let mut added_versions: Vec<String> = upstream_versions
         .difference(&local_versions)
         .map(String::to_string)
         .collect();
 
-    new_versions.sort();
+    added_versions.sort();
 
-    if !new_versions.is_empty() {
-        println!("Added {}.", new_versions.join(", "));
+    if !added_versions.is_empty() {
+        println!("Added {}.", added_versions.join(", "));
     }
 }
