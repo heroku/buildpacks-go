@@ -92,7 +92,7 @@ impl GoFile {
 ///
 /// Http issues connecting to the go.dev releases endpoint will return an error.
 pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
-    let artifacts = ureq::get(GO_RELEASES_URL)
+    ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| e.to_string())?
         .into_json::<Vec<GoRelease>>()
@@ -101,15 +101,14 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .flat_map(|release| &release.files)
         .filter(|file| !file.sha256.is_empty() && ARCH == file.target_arch())
         .map(|file| {
-            Version::parse_go(&file.version).map(|version| Artifact {
-                go_version: file.version.clone(),
-                semantic_version: version,
-                architecture: file.target_arch(),
-                sha_checksum: file.sha256.clone(),
-            })
+            Version::parse_go(&file.version)
+                .map(|version| Artifact {
+                    go_version: file.version.clone(),
+                    semantic_version: version,
+                    architecture: file.target_arch(),
+                    sha_checksum: file.sha256.clone(),
+                })
+                .map_err(|e| e.to_string())
         })
-        .flat_map(|result| result.map_err(|e| eprintln!("{e}")))
-        .collect();
-
-    Ok(artifacts)
+        .collect::<Result<Vec<_>, _>>()
 }

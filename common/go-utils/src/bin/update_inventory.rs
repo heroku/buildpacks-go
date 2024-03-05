@@ -13,7 +13,7 @@ fn main() {
 
     // List available upstream release versions.
     let remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
-        eprintln!("Error listing go versions: {e}");
+        eprintln!("Failed to fetch upstream go versions: {e}");
         process::exit(4);
     });
 
