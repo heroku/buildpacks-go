@@ -80,6 +80,10 @@ binaries.
 // +heroku install example.com/example-server example.com/example-worker
 ```
 
+## Contributing
+
+Issues and pull requests are welcome. See our [contributing guidelines](./CONTRIBUTING.md) if you would like to help.
+
 ## License
 
 Licensed under the BSD 3-clause License. See [LICENSE](./LICENSE.txt) file.
