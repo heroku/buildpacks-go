@@ -75,8 +75,11 @@ struct GoFile {
 }
 
 impl GoFile {
-    fn target_arch(&self) -> String {
-        format!("{}-{}", self.os, self.arch)
+    fn target_arch(&self) -> Option<String> {
+        if self.os.is_empty() || self.arch.is_empty() {
+            return None;
+        }
+        Some(format!("{}-{}", self.os, self.arch))
     }
 }
 
@@ -100,16 +103,20 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .map_err(|e| e.to_string())?
         .iter()
         .flat_map(|release| &release.files)
-        .filter(|file| !file.sha256.is_empty() && ARCH == file.target_arch())
-        .map(|file| {
-            Version::parse_go(&file.version)
-                .map(|version| Artifact {
-                    go_version: file.version.clone(),
-                    semantic_version: version,
-                    architecture: file.target_arch(),
-                    sha_checksum: file.sha256.clone(),
+        .filter(|file| !file.sha256.is_empty())
+        .filter_map(|file| {
+            file.target_arch()
+                .filter(|target| target == ARCH)
+                .map(|target| {
+                    Version::parse_go(&file.version)
+                        .map(|version| Artifact {
+                            go_version: file.version.clone(),
+                            semantic_version: version,
+                            architecture: target,
+                            sha_checksum: file.sha256.clone(),
+                        })
+                        .map_err(|e| e.to_string())
                 })
-                .map_err(|e| e.to_string())
         })
         .collect::<Result<Vec<_>, _>>()
 }
