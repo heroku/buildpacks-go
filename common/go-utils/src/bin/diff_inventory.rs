@@ -42,4 +42,15 @@ fn main() {
     if !added_versions.is_empty() {
         println!("Added {}.", added_versions.join(", "));
     }
+
+    let mut removed_versions: Vec<String> = local_versions
+        .difference(&upstream_versions)
+        .map(String::to_string)
+        .collect();
+
+    removed_versions.sort();
+
+    if !removed_versions.is_empty() {
+        println!("Removed {}.", removed_versions.join(", "));
+    }
 }
