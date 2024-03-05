@@ -82,7 +82,7 @@ binaries.
 
 ## License
 
-Licensed under the BSD 3-clause License. See [LICENSE](./LICENSE) file.
+Licensed under the BSD 3-clause License. See [LICENSE](./LICENSE.txt) file.
 
 [classic]: https://github.com/heroku/heroku-buildpack-go
 [cnb]: https://buildpacks.io/
