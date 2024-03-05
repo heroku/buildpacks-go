@@ -86,7 +86,7 @@ Issues and pull requests are welcome. See our [contributing guidelines](./CONTRI
 
 ## License
 
-Licensed under the BSD 3-clause License. See [LICENSE](./LICENSE.txt) file.
+Licensed under the BSD 3-clause License. See [LICENSE](./LICENSE) file.
 
 [classic]: https://github.com/heroku/heroku-buildpack-go
 [cnb]: https://buildpacks.io/
