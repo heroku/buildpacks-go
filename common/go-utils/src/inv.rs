@@ -99,7 +99,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .map_err(|e| e.to_string())?
         .iter()
         .flat_map(|release| &release.files)
-        .filter(|f| !f.sha256.is_empty() && ARCH == f.target_arch())
+        .filter(|file| !file.sha256.is_empty() && ARCH == file.target_arch())
         .map(|file| {
             Version::parse_go(&file.version).map(|version| Artifact {
                 go_version: file.version.clone(),
