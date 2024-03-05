@@ -90,7 +90,8 @@ impl GoFile {
 ///
 /// # Errors
 ///
-/// Http issues connecting to the go.dev releases endpoint will return an error.
+/// HTTP issues connecting to the upstream releases endpoint, as well
+/// as json and Go version parsing issues, will return an error.
 pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
     ureq::get(GO_RELEASES_URL)
         .call()
