@@ -19,16 +19,14 @@ pub struct Artifact {
     pub semantic_version: Version,
     pub os: String,
     pub arch: String,
+    pub url: String,
     pub sha_checksum: String,
 }
 
 impl Artifact {
     #[must_use]
     pub fn tarball_url(&self) -> String {
-        format!(
-            "{}/{}.{}-{}.tar.gz",
-            GO_HOST_URL, self.go_version, self.os, self.arch
-        )
+        self.url.clone()
     }
 }
 
@@ -104,6 +102,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
                     os: file.os.clone(),
                     arch: file.arch.clone(),
                     sha_checksum: file.sha256.clone(),
+                    url: format!("{}/{}", GO_HOST_URL, file.filename),
                 })
                 .map_err(|e| e.to_string())
         })
