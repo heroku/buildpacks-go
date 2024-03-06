@@ -92,8 +92,8 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
                 .map(|version| Artifact {
                     go_version: file.version.clone(),
                     semantic_version: version,
-                    os: file.os.clone(),
-                    arch: file.arch.clone(),
+                    os: String::from("linux"),
+                    arch: String::from("x86_64"),
                     sha_checksum: file.sha256.clone(),
                     url: format!("{}/{}", GO_HOST_URL, file.filename),
                 })
