@@ -1,6 +1,6 @@
 use crate::vrs::{Requirement, Version};
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::{env::consts, fs};
 use toml;
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
@@ -48,6 +48,7 @@ impl Inventory {
     pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
         self.artifacts
             .iter()
+            .filter(|artifact| artifact.os == consts::OS && artifact.arch == consts::ARCH)
             .find(|artifact| requirement.satisfies(&artifact.semantic_version))
     }
 }
