@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added go1.9.2rc2, go1.6rc2, go1.6rc1, go1.6beta2. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+
+### Changed
+
+- Changed inventory utils to use upstream release feed. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+- The buildpack now installs Go from upstream (rather than mirrored) binaries. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+
+### Removed
+
+- Removed go1.21rc1, go1.8.5rc4, go1.7.2, go1.5.2, go1.5.1, go1.5, go1.4.3, go1.4.2, go1.4.1, go1.4, go1.3.3, go1.3.2, go1.3.1, go1.3, go1.2.2, go1.2.1, go1.2, go1.1.2, go1.1.1, go1.1, go1.0.3, go1.0.2, go1.0.1. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+
 ## [0.1.16] - 2024-02-08
 
 - Added go1.20.14, go1.21.7, go1.22.0.

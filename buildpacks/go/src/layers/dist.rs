@@ -47,7 +47,7 @@ impl Layer for DistLayer {
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         log_info(format!("Installing Go {}", self.artifact.semantic_version));
         tgz::fetch_strip_filter_extract_verify(
-            self.artifact.mirror_tarball_url(),
+            self.artifact.tarball_url(),
             "go",
             ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
             layer_path,
