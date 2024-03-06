@@ -5,7 +5,6 @@ use toml;
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://dl.google.com/go";
-const ARCH: &str = "linux-amd64";
 
 /// Represents a collection of known go release artifacts.
 #[derive(Debug, Deserialize, Serialize)]
@@ -18,7 +17,8 @@ pub struct Inventory {
 pub struct Artifact {
     pub go_version: String,
     pub semantic_version: Version,
-    pub architecture: String,
+    pub os: String,
+    pub arch: String,
     pub sha_checksum: String,
 }
 
@@ -26,8 +26,8 @@ impl Artifact {
     #[must_use]
     pub fn tarball_url(&self) -> String {
         format!(
-            "{}/{}.{}.tar.gz",
-            GO_HOST_URL, self.go_version, self.architecture
+            "{}/{}.{}-{}.tar.gz",
+            GO_HOST_URL, self.go_version, self.os, self.arch
         )
     }
 }
@@ -74,15 +74,6 @@ struct GoFile {
     version: String,
 }
 
-impl GoFile {
-    fn target_arch(&self) -> Option<String> {
-        if self.os.is_empty() || self.arch.is_empty() {
-            return None;
-        }
-        Some(format!("{}-{}", self.os, self.arch))
-    }
-}
-
 /// List known go artifacts from releases on go.dev.
 ///
 /// # Example
@@ -103,20 +94,17 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .map_err(|e| e.to_string())?
         .iter()
         .flat_map(|release| &release.files)
-        .filter(|file| !file.sha256.is_empty())
-        .filter_map(|file| {
-            file.target_arch()
-                .filter(|target| target == ARCH)
-                .map(|target| {
-                    Version::parse_go(&file.version)
-                        .map(|version| Artifact {
-                            go_version: file.version.clone(),
-                            semantic_version: version,
-                            architecture: target,
-                            sha_checksum: file.sha256.clone(),
-                        })
-                        .map_err(|e| e.to_string())
+        .filter(|file| !file.sha256.is_empty() && file.os == "linux" && file.arch == "amd64")
+        .map(|file| {
+            Version::parse_go(&file.version)
+                .map(|version| Artifact {
+                    go_version: file.version.clone(),
+                    semantic_version: version,
+                    os: file.os.clone(),
+                    arch: file.arch.clone(),
+                    sha_checksum: file.sha256.clone(),
                 })
+                .map_err(|e| e.to_string())
         })
         .collect::<Result<Vec<_>, _>>()
 }
