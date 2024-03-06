@@ -70,6 +70,7 @@ struct GoRelease {
 struct GoFile {
     os: String,
     arch: String,
+    filename: String,
     sha256: String,
     version: String,
 }
