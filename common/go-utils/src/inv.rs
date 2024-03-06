@@ -23,13 +23,6 @@ pub struct Artifact {
     pub sha_checksum: String,
 }
 
-impl Artifact {
-    #[must_use]
-    pub fn tarball_url(&self) -> String {
-        self.url.clone()
-    }
-}
-
 #[derive(thiserror::Error, Debug)]
 pub enum ReadInventoryError {
     #[error("Couldn't read Go artifact inventory.toml: {0}")]
