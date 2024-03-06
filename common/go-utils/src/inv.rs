@@ -4,7 +4,7 @@ use std::fs;
 use toml;
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
-const GO_HOST_URL: &str = "https://dl.google.com/go";
+const GO_HOST_URL: &str = "https://go.dev/dl";
 
 /// Represents a collection of known go release artifacts.
 #[derive(Debug, Deserialize, Serialize)]
