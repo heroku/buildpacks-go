@@ -1,6 +1,8 @@
 use crate::vrs::{Requirement, Version, VersionParseError};
+use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
-use std::{env::consts, fmt::Display, fs, str::FromStr};
+use std::hash::Hash;
+use std::{env::consts, fs, str::FromStr};
 use toml;
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
@@ -13,7 +15,7 @@ pub struct Inventory {
 }
 
 /// Represents a known go release artifact in the inventory.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct Artifact {
     pub go_version: String,
     pub semantic_version: Version,
@@ -21,6 +23,18 @@ pub struct Artifact {
     pub arch: Arch,
     pub url: String,
     pub sha_checksum: String,
+}
+
+impl Hash for Artifact {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.sha_checksum.hash(state);
+    }
+}
+
+impl Display for Artifact {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.go_version)
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -71,7 +85,7 @@ struct GoFile {
     version: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Arch {
     X86_64,
@@ -103,7 +117,7 @@ impl FromStr for Arch {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
     Linux,
