@@ -1,4 +1,4 @@
-use crate::vrs::{Requirement, Version};
+use crate::vrs::{Requirement, Version, VersionParseError};
 use serde::{Deserialize, Serialize};
 use std::{env::consts, fs};
 use toml;
@@ -67,6 +67,22 @@ struct GoFile {
     version: String,
 }
 
+impl TryFrom<&GoFile> for Artifact {
+    type Error = VersionParseError;
+
+    fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
+        let version = Version::parse_go(&value.version)?;
+        Ok(Artifact {
+            go_version: value.version.clone(),
+            semantic_version: version,
+            os: String::from("linux"),
+            arch: String::from("x86_64"),
+            sha_checksum: value.sha256.clone(),
+            url: format!("{}/{}", GO_HOST_URL, value.filename),
+        })
+    }
+}
+
 /// List known go artifacts from releases on go.dev.
 ///
 /// # Example
@@ -88,17 +104,6 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
         .iter()
         .flat_map(|release| &release.files)
         .filter(|file| !file.sha256.is_empty() && file.os == "linux" && file.arch == "amd64")
-        .map(|file| {
-            Version::parse_go(&file.version)
-                .map(|version| Artifact {
-                    go_version: file.version.clone(),
-                    semantic_version: version,
-                    os: String::from("linux"),
-                    arch: String::from("x86_64"),
-                    sha_checksum: file.sha256.clone(),
-                    url: format!("{}/{}", GO_HOST_URL, file.filename),
-                })
-                .map_err(|e| e.to_string())
-        })
+        .map(|file| Artifact::try_from(file).map_err(|e| e.to_string()))
         .collect::<Result<Vec<_>, _>>()
 }
