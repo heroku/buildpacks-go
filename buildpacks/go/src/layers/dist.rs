@@ -41,7 +41,7 @@ impl Layer for DistLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         _ctx: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
@@ -75,7 +75,7 @@ impl Layer for DistLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
+        &mut self,
         _ctx: &BuildContext<Self::Buildpack>,
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {

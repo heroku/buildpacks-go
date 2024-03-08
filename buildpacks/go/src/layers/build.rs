@@ -43,7 +43,7 @@ impl Layer for BuildLayer {
     }
 
     fn create(
-        &self,
+        &mut self,
         _ctx: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
@@ -65,7 +65,7 @@ impl Layer for BuildLayer {
     }
 
     fn update(
-        &self,
+        &mut self,
         _ctx: &BuildContext<Self::Buildpack>,
         layer: &LayerData<Self::Metadata>,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
@@ -84,7 +84,7 @@ impl Layer for BuildLayer {
     }
 
     fn existing_layer_strategy(
-        &self,
+        &mut self,
         _ctx: &BuildContext<Self::Buildpack>,
         layer: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {

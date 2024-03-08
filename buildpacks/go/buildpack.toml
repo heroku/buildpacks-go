@@ -1,4 +1,4 @@
-api = "0.9"
+api = "0.10"
 
 [buildpack]
 id = "heroku/go"
@@ -12,11 +12,9 @@ clear-env = true
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
 
-[[stacks]]
-id = "heroku-20"
-
-[[stacks]]
-id = "heroku-22"
+[[targets]]
+os = "linux"
+arch = "amd64"
 
 [metadata.release]
 image = { repository = "docker.io/heroku/buildpack-go" }
