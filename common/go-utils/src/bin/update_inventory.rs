@@ -17,15 +17,9 @@ fn main() {
         process::exit(4);
     });
 
-    let mut inventory = Inventory {
+    let inventory = Inventory {
         artifacts: remote_artifacts,
     };
-
-    // Sort artifacts in reverse semver order, to make it easier to resolve
-    // to the most recent version for a semver constraint.
-    inventory
-        .artifacts
-        .sort_by(|b, a| a.semantic_version.cmp(&b.semantic_version));
 
     let toml = toml::to_string(&inventory).unwrap_or_else(|e| {
         eprintln!("Error serializing inventory as toml: {e}");
