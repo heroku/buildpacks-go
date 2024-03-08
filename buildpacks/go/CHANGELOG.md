@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implement Buildpack API 0.10. ([#231](https://github.com/heroku/buildpacks-go/pull/231))
 
+### Added
+
+- Added linux aarch64 artifacts for >= go1.8.5. ([#230](https://github.com/heroku/buildpacks-go/pull/230))
+
 ## [0.2.0] - 2024-03-06
 
 ### Added

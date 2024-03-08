@@ -33,7 +33,7 @@ impl Hash for Artifact {
 
 impl Display for Artifact {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.go_version)
+        write!(f, "{} ({} - {})", self.go_version, self.os, self.arch)
     }
 }
 
@@ -201,7 +201,11 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsE
         .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
         .iter()
         .flat_map(|release| &release.files)
-        .filter(|file| !file.sha256.is_empty() && file.os == "linux" && file.arch == "amd64")
+        .filter(|file| {
+            !file.sha256.is_empty()
+                && file.os == "linux"
+                && (file.arch == "amd64" || file.arch == "arm64")
+        })
         .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
         .collect::<Result<Vec<_>, _>>()
 }
