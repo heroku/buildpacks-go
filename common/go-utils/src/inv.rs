@@ -73,6 +73,8 @@ pub enum GoFileConversionError {
     Version(#[from] VersionParseError),
     #[error("Arch is not supported: {0}")]
     Arch(String),
+    #[error("OS is not supported: {0}")]
+    Os(String),
 }
 
 impl TryFrom<&GoFile> for Artifact {
@@ -82,7 +84,7 @@ impl TryFrom<&GoFile> for Artifact {
         Ok(Artifact {
             go_version: value.version.clone(),
             semantic_version: Version::parse_go(&value.version)?,
-            os: String::from("linux"),
+            os: parse_go_os(&value.os)?,
             arch: parse_go_arch(&value.arch)?,
             sha_checksum: value.sha256.clone(),
             url: format!("{}/{}", GO_HOST_URL, value.filename),
@@ -94,6 +96,13 @@ fn parse_go_arch(arch: &str) -> Result<String, GoFileConversionError> {
     match arch {
         "amd64" => Ok(String::from("x86_64")),
         _ => Err(GoFileConversionError::Arch(arch.to_string())),
+    }
+}
+
+fn parse_go_os(os: &str) -> Result<String, GoFileConversionError> {
+    match os {
+        "linux" => Ok(String::from("linux")),
+        _ => Err(GoFileConversionError::Os(os.to_string())),
     }
 }
 
