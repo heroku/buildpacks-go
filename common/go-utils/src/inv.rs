@@ -110,7 +110,7 @@ fn parse_go_os(os: &str) -> Result<String, GoFileConversionError> {
 #[derive(Debug, thiserror::Error)]
 pub enum ListUpstreamArtifactsError {
     #[error("Invalid response fetching {0}")]
-    InvalidResponse(ureq::Error),
+    InvalidResponse(Box<ureq::Error>),
     #[error(transparent)]
     ParseJsonResponse(std::io::Error),
     #[error(transparent)]
@@ -132,7 +132,7 @@ pub enum ListUpstreamArtifactsError {
 pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsError> {
     Ok(ureq::get(GO_RELEASES_URL)
         .call()
-        .map_err(ListUpstreamArtifactsError::InvalidResponse)?
+        .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
         .into_json::<Vec<GoRelease>>()
         .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
         .iter()
