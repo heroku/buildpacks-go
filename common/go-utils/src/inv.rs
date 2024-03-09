@@ -95,6 +95,7 @@ impl TryFrom<&GoFile> for Artifact {
 fn parse_go_arch(arch: &str) -> Result<String, GoFileConversionError> {
     match arch {
         "amd64" => Ok(String::from("x86_64")),
+        "arm64" => Ok(String::from("aarch64")),
         _ => Err(GoFileConversionError::Arch(arch.to_string())),
     }
 }
