@@ -30,37 +30,22 @@ fn main() {
         .into_iter()
         .collect();
 
-    let mut added_artifacts: Vec<&Artifact> = upstream_artifacts
-        .difference(&inventory_artifacts)
-        .collect();
-
-    added_artifacts.sort_by_cached_key(|a| &a.semantic_version);
-
-    if !added_artifacts.is_empty() {
+    [
+        ("Added", &upstream_artifacts - &inventory_artifacts),
+        ("Removed", &inventory_artifacts - &upstream_artifacts),
+    ]
+    .iter()
+    .filter(|x| !x.1.is_empty())
+    .for_each(|f| {
+        let mut list: Vec<&Artifact> = f.1.iter().collect();
+        list.sort_by_key(|a| &a.semantic_version);
         println!(
-            "Added {}.",
-            added_artifacts
-                .iter()
+            "{} {}.",
+            f.0,
+            list.iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>()
                 .join(", ")
         );
-    }
-
-    let mut removed_artifacts: Vec<&Artifact> = inventory_artifacts
-        .difference(&upstream_artifacts)
-        .collect();
-
-    removed_artifacts.sort_by_cached_key(|a| &a.semantic_version);
-
-    if !removed_artifacts.is_empty() {
-        println!(
-            "Removed {}.",
-            removed_artifacts
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
-    }
+    });
 }
