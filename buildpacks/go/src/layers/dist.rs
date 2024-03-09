@@ -17,7 +17,7 @@ pub(crate) struct DistLayer {
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
     layer_version: String,
-    go_version: String,
+    artifact: Artifact,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -45,7 +45,10 @@ impl Layer for DistLayer {
         _ctx: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        log_info(format!("Installing Go {}", self.artifact.semantic_version));
+        log_info(format!(
+            "Installing Go {} from {}",
+            self.artifact.semantic_version, self.artifact.url
+        ));
         tgz::fetch_strip_filter_extract_verify(
             self.artifact.url.clone(),
             "go",
@@ -80,7 +83,10 @@ impl Layer for DistLayer {
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
         if layer_data.content_metadata.metadata == DistLayerMetadata::current(self) {
-            log_info(format!("Reusing Go {}", self.artifact.semantic_version));
+            log_info(format!(
+                "Reusing Go {} ({}-{})",
+                self.artifact.go_version, self.artifact.os, self.artifact.arch
+            ));
             Ok(ExistingLayerStrategy::Keep)
         } else {
             Ok(ExistingLayerStrategy::Recreate)
@@ -91,7 +97,7 @@ impl Layer for DistLayer {
 impl DistLayerMetadata {
     fn current(layer: &DistLayer) -> Self {
         DistLayerMetadata {
-            go_version: layer.artifact.go_version.clone(),
+            artifact: layer.artifact.clone(),
             layer_version: String::from(LAYER_VERSION),
         }
     }

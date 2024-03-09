@@ -113,7 +113,7 @@ impl Buildpack for GoBuildpack {
             .handle_layer(
                 layer_name!("go_build"),
                 BuildLayer {
-                    go_version: artifact.go_version.clone(),
+                    artifact: artifact.clone(),
                 },
             )?
             .env
