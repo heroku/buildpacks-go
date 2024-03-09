@@ -79,14 +79,11 @@ impl TryFrom<&GoFile> for Artifact {
     type Error = GoFileConversionError;
 
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
-        let version = Version::parse_go(&value.version)?;
-        let arch = parse_go_arch(&value.arch)?;
-
         Ok(Artifact {
             go_version: value.version.clone(),
-            semantic_version: version,
+            semantic_version: Version::parse_go(&value.version)?,
             os: String::from("linux"),
-            arch: arch.to_string(),
+            arch: parse_go_arch(&value.arch)?,
             sha_checksum: value.sha256.clone(),
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
