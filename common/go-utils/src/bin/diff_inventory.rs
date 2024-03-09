@@ -21,7 +21,7 @@ fn main() {
         .into_iter()
         .collect();
 
-    let local_artifacts: HashSet<Artifact> = Inventory::read(&inventory_path)
+    let inventory_artifacts: HashSet<Artifact> = Inventory::read(&inventory_path)
         .unwrap_or_else(|e| {
             eprintln!("Error reading inventory at '{inventory_path}': {e}");
             std::process::exit(1);
@@ -30,15 +30,16 @@ fn main() {
         .into_iter()
         .collect();
 
-    let mut added_versions: Vec<&Artifact> =
-        upstream_artifacts.difference(&local_artifacts).collect();
+    let mut added_artifacts: Vec<&Artifact> = upstream_artifacts
+        .difference(&inventory_artifacts)
+        .collect();
 
-    added_versions.sort_by_cached_key(|a| &a.semantic_version);
+    added_artifacts.sort_by_cached_key(|a| &a.semantic_version);
 
-    if !added_versions.is_empty() {
+    if !added_artifacts.is_empty() {
         println!(
             "Added {}.",
-            added_versions
+            added_artifacts
                 .iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>()
@@ -46,15 +47,16 @@ fn main() {
         );
     }
 
-    let mut removed_versions: Vec<&Artifact> =
-        local_artifacts.difference(&upstream_artifacts).collect();
+    let mut removed_artifacts: Vec<&Artifact> = inventory_artifacts
+        .difference(&upstream_artifacts)
+        .collect();
 
-    removed_versions.sort_by_cached_key(|a| &a.semantic_version);
+    removed_artifacts.sort_by_cached_key(|a| &a.semantic_version);
 
-    if !removed_versions.is_empty() {
+    if !removed_artifacts.is_empty() {
         println!(
             "Removed {}.",
-            removed_versions
+            removed_artifacts
                 .iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>()
