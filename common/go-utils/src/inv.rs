@@ -107,6 +107,16 @@ fn parse_go_os(os: &str) -> Result<String, GoFileConversionError> {
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+pub enum ListUpstreamArtifactsError {
+    #[error("Invalid response fetching {0}")]
+    InvalidResponse(ureq::Error),
+    #[error(transparent)]
+    ParseJsonResponse(std::io::Error),
+    #[error(transparent)]
+    Conversion(#[from] GoFileConversionError),
+}
+
 /// List known go artifacts from releases on go.dev.
 ///
 /// # Example
@@ -119,15 +129,15 @@ fn parse_go_os(os: &str) -> Result<String, GoFileConversionError> {
 ///
 /// HTTP issues connecting to the upstream releases endpoint, as well
 /// as json and Go version parsing issues, will return an error.
-pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, String> {
-    ureq::get(GO_RELEASES_URL)
+pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsError> {
+    Ok(ureq::get(GO_RELEASES_URL)
         .call()
-        .map_err(|e| e.to_string())?
+        .map_err(ListUpstreamArtifactsError::InvalidResponse)?
         .into_json::<Vec<GoRelease>>()
-        .map_err(|e| e.to_string())?
+        .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
         .iter()
         .flat_map(|release| &release.files)
         .filter(|file| !file.sha256.is_empty() && file.os == "linux" && file.arch == "amd64")
-        .map(|file| Artifact::try_from(file).map_err(|e| e.to_string()))
-        .collect::<Result<Vec<_>, _>>()
+        .map(Artifact::try_from)
+        .collect::<Result<Vec<_>, _>>()?)
 }
