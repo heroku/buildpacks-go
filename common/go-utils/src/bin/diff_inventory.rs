@@ -36,12 +36,12 @@ fn main() {
     ]
     .iter()
     .filter(|x| !x.1.is_empty())
-    .for_each(|f| {
-        let mut list: Vec<&Artifact> = f.1.iter().collect();
+    .for_each(|(action, artifacts)| {
+        let mut list: Vec<&Artifact> = artifacts.iter().collect();
         list.sort_by_key(|a| &a.semantic_version);
         println!(
             "{} {}.",
-            f.0,
+            action,
             list.iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>()
