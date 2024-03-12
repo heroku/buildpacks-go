@@ -33,7 +33,7 @@ impl Hash for Artifact {
 
 impl Display for Artifact {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} ({} - {})", self.go_version, self.os, self.arch)
+        write!(f, "{} ({}-{})", self.go_version, self.os, self.arch)
     }
 }
 
