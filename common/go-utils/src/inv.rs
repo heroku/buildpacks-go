@@ -187,5 +187,10 @@ mod tests {
         for (input, expected) in archs {
             assert_eq!(expected, input.parse::<Arch>().unwrap());
         }
+
+        assert!(matches!(
+            "foo".parse::<Arch>().unwrap_err(),
+            UnsupportedArchError(..)
+        ));
     }
 }
