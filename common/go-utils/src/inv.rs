@@ -180,4 +180,12 @@ mod tests {
             assert_eq!(expected, input.to_string());
         }
     }
+
+    #[test]
+    fn test_arch_parsing() {
+        let archs = [("amd64", Arch::X86_64), ("arm64", Arch::Aarch64)];
+        for (input, expected) in archs {
+            assert_eq!(expected, input.parse::<Arch>().unwrap());
+        }
+    }
 }
