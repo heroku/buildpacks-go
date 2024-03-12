@@ -222,4 +222,9 @@ mod tests {
             UnsupportedArchError(..)
         ));
     }
+
+    #[test]
+    fn test_os_display_format() {
+        assert_eq!("linux", Os::Linux.to_string());
+    }
 }
