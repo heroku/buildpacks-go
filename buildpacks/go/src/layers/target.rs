@@ -29,7 +29,7 @@ impl Layer for TargetLayer {
 
     // This layer creates the `GOBIN` directory, which is the target for `go install` later.
     fn create(
-        &self,
+        &mut self,
         _context: &BuildContext<Self::Buildpack>,
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
