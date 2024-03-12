@@ -17,7 +17,7 @@ pub struct Inventory {
 pub struct Artifact {
     pub go_version: String,
     pub semantic_version: Version,
-    pub os: String,
+    pub os: Os,
     pub arch: Arch,
     pub url: String,
     pub sha_checksum: String,
@@ -46,13 +46,13 @@ impl Inventory {
     /// `Requirement`.
     #[must_use]
     pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
-        match consts::ARCH.parse::<Arch>() {
-            Ok(arch) => self
+        match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
+            (Ok(os), Ok(arch)) => self
                 .artifacts
                 .iter()
-                .filter(|artifact| artifact.os == consts::OS && artifact.arch == arch)
+                .filter(|artifact| artifact.os == os && artifact.arch == arch)
                 .find(|artifact| requirement.satisfies(&artifact.semantic_version)),
-            Err(_) => None,
+            (_, _) => None,
         }
     }
 }
@@ -103,14 +103,43 @@ impl FromStr for Arch {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum Os {
+    Linux,
+}
+
+impl Display for Os {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Os::Linux => write!(f, "linux"),
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("OS is not supported: {0}")]
+pub struct UnsupportedOsError(String);
+
+impl FromStr for Os {
+    type Err = UnsupportedOsError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "linux" => Ok(Os::Linux),
+            _ => Err(UnsupportedOsError(s.to_string())),
+        }
+    }
+}
+
 #[derive(thiserror::Error, Debug)]
 pub enum GoFileConversionError {
     #[error(transparent)]
     Version(#[from] VersionParseError),
     #[error(transparent)]
     Arch(#[from] UnsupportedArchError),
-    #[error("OS is not supported: {0}")]
-    Os(String),
+    #[error(transparent)]
+    Os(#[from] UnsupportedOsError),
 }
 
 impl TryFrom<&GoFile> for Artifact {
@@ -120,18 +149,11 @@ impl TryFrom<&GoFile> for Artifact {
         Ok(Artifact {
             go_version: value.version.clone(),
             semantic_version: Version::parse_go(&value.version)?,
-            os: parse_go_os(&value.os)?,
+            os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
             sha_checksum: value.sha256.clone(),
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
-    }
-}
-
-fn parse_go_os(os: &str) -> Result<String, GoFileConversionError> {
-    match os {
-        "linux" => Ok(String::from("linux")),
-        _ => Err(GoFileConversionError::Os(os.to_string())),
     }
 }
 
