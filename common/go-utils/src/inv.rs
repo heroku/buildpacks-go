@@ -167,3 +167,17 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsE
         .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
         .collect::<Result<Vec<_>, _>>()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_arch_display_format() {
+        let archs = [(Arch::X86_64, "x86_64"), (Arch::Aarch64, "aarch64")];
+
+        for (input, expected) in archs {
+            assert_eq!(expected, input.to_string());
+        }
+    }
+}
