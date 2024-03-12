@@ -46,12 +46,14 @@ impl Inventory {
     /// `Requirement`.
     #[must_use]
     pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
-        self.artifacts
-            .iter()
-            .filter(|artifact| {
-                artifact.os == consts::OS && artifact.arch.to_string() == consts::ARCH
-            })
-            .find(|artifact| requirement.satisfies(&artifact.semantic_version))
+        match consts::ARCH.parse::<Arch>() {
+            Ok(arch) => self
+                .artifacts
+                .iter()
+                .filter(|artifact| artifact.os == consts::OS && artifact.arch == arch)
+                .find(|artifact| requirement.satisfies(&artifact.semantic_version)),
+            Err(_) => None,
+        }
     }
 }
 
