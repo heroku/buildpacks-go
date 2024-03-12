@@ -255,4 +255,24 @@ mod tests {
             UnsupportedOsError(..)
         ));
     }
+
+    #[test]
+    fn test_artifact_display_format() {
+        let artifact = Artifact {
+            go_version: "go1.7.2".to_string(),
+            semantic_version: Version::parse("1.7.2").unwrap(),
+            os: Os::Linux,
+            arch: Arch::X86_64,
+            url: String::new(),
+            sha_checksum: String::new(),
+        };
+
+        assert_eq!(
+            format!(
+                "{} ({}-{})",
+                artifact.go_version, artifact.os, artifact.arch
+            ),
+            artifact.to_string()
+        );
+    }
 }
