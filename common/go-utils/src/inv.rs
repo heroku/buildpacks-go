@@ -227,4 +227,14 @@ mod tests {
     fn test_os_display_format() {
         assert_eq!("linux", Os::Linux.to_string());
     }
+
+    #[test]
+    fn test_os_parsing() {
+        assert_eq!(Os::Linux, "linux".parse::<Os>().unwrap());
+
+        assert!(matches!(
+            "foo".parse::<Os>().unwrap_err(),
+            UnsupportedOsError(..)
+        ));
+    }
 }
