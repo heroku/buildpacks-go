@@ -1,6 +1,6 @@
 use crate::vrs::{Requirement, Version, VersionParseError};
 use serde::{Deserialize, Serialize};
-use std::{env::consts, fs};
+use std::{env::consts, fmt::Display, fs, str::FromStr};
 use toml;
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
@@ -18,7 +18,7 @@ pub struct Artifact {
     pub go_version: String,
     pub semantic_version: Version,
     pub os: String,
-    pub arch: String,
+    pub arch: Arch,
     pub url: String,
     pub sha_checksum: String,
 }
@@ -48,7 +48,9 @@ impl Inventory {
     pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
         self.artifacts
             .iter()
-            .filter(|artifact| artifact.os == consts::OS && artifact.arch == consts::ARCH)
+            .filter(|artifact| {
+                artifact.os == consts::OS && artifact.arch.to_string() == consts::ARCH
+            })
             .find(|artifact| requirement.satisfies(&artifact.semantic_version))
     }
 }
@@ -67,12 +69,44 @@ struct GoFile {
     version: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum Arch {
+    X86_64,
+    Aarch64,
+}
+
+impl Display for Arch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Arch::X86_64 => write!(f, "x86_64"),
+            Arch::Aarch64 => write!(f, "aarch64"),
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("Arch is not supported: {0}")]
+pub struct UnsupportedArchError(String);
+
+impl FromStr for Arch {
+    type Err = UnsupportedArchError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "amd64" => Ok(Arch::X86_64),
+            "arm64" => Ok(Arch::Aarch64),
+            _ => Err(UnsupportedArchError(s.to_string())),
+        }
+    }
+}
+
 #[derive(thiserror::Error, Debug)]
 pub enum GoFileConversionError {
     #[error(transparent)]
     Version(#[from] VersionParseError),
-    #[error("Arch is not supported: {0}")]
-    Arch(String),
+    #[error(transparent)]
+    Arch(#[from] UnsupportedArchError),
     #[error("OS is not supported: {0}")]
     Os(String),
 }
@@ -85,18 +119,10 @@ impl TryFrom<&GoFile> for Artifact {
             go_version: value.version.clone(),
             semantic_version: Version::parse_go(&value.version)?,
             os: parse_go_os(&value.os)?,
-            arch: parse_go_arch(&value.arch)?,
+            arch: value.arch.parse::<Arch>()?,
             sha_checksum: value.sha256.clone(),
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
-    }
-}
-
-fn parse_go_arch(arch: &str) -> Result<String, GoFileConversionError> {
-    match arch {
-        "amd64" => Ok(String::from("x86_64")),
-        "arm64" => Ok(String::from("aarch64")),
-        _ => Err(GoFileConversionError::Arch(arch.to_string())),
     }
 }
 
