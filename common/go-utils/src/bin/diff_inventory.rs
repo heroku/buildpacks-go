@@ -35,7 +35,7 @@ fn main() {
         ("Removed", &inventory_artifacts - &upstream_artifacts),
     ]
     .iter()
-    .filter(|x| !x.1.is_empty())
+    .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
     .for_each(|(action, artifacts)| {
         let mut list: Vec<&Artifact> = artifacts.iter().collect();
         list.sort_by_key(|a| &a.semantic_version);
