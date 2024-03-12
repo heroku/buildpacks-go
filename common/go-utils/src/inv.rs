@@ -94,8 +94,8 @@ impl FromStr for Arch {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "amd64" => Ok(Arch::X86_64),
-            "arm64" => Ok(Arch::Aarch64),
+            "amd64" | "x86_64" => Ok(Arch::X86_64),
+            "arm64" | "aarch64" => Ok(Arch::Aarch64),
             _ => Err(UnsupportedArchError(s.to_string())),
         }
     }
@@ -183,7 +183,12 @@ mod tests {
 
     #[test]
     fn test_arch_parsing() {
-        let archs = [("amd64", Arch::X86_64), ("arm64", Arch::Aarch64)];
+        let archs = [
+            ("amd64", Arch::X86_64),
+            ("arm64", Arch::Aarch64),
+            ("x86_64", Arch::X86_64),
+            ("aarch64", Arch::Aarch64),
+        ];
         for (input, expected) in archs {
             assert_eq!(expected, input.parse::<Arch>().unwrap());
         }
