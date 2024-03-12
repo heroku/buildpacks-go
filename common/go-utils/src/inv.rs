@@ -130,7 +130,7 @@ pub enum ListUpstreamArtifactsError {
 /// HTTP issues connecting to the upstream releases endpoint, as well
 /// as json and Go version parsing issues, will return an error.
 pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsError> {
-    Ok(ureq::get(GO_RELEASES_URL)
+    ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
         .into_json::<Vec<GoRelease>>()
@@ -138,6 +138,6 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsE
         .iter()
         .flat_map(|release| &release.files)
         .filter(|file| !file.sha256.is_empty() && file.os == "linux" && file.arch == "amd64")
-        .map(Artifact::try_from)
-        .collect::<Result<Vec<_>, _>>()?)
+        .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
+        .collect::<Result<Vec<_>, _>>()
 }
