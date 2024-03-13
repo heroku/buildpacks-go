@@ -213,6 +213,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsE
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::hash::{BuildHasher, RandomState};
 
     #[test]
     fn test_arch_display_format() {
@@ -273,6 +274,24 @@ mod tests {
                 artifact.go_version, artifact.os, artifact.arch
             ),
             artifact.to_string()
+        );
+    }
+
+    #[test]
+    fn test_artifact_hash_implementation() {
+        let artifact = Artifact {
+            go_version: "go1.7.2".to_string(),
+            semantic_version: Version::parse("1.7.2").unwrap(),
+            os: Os::Linux,
+            arch: Arch::X86_64,
+            url: "foo".to_string(),
+            sha_checksum: "bar".to_string(),
+        };
+
+        let state = RandomState::new();
+        assert_eq!(
+            state.hash_one(&artifact.sha_checksum),
+            state.hash_one(&artifact)
         );
     }
 }
