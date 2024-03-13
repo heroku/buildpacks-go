@@ -257,16 +257,22 @@ mod tests {
         ));
     }
 
+    impl Default for Artifact {
+        fn default() -> Self {
+            Self {
+                go_version: String::from("go1.7.2"),
+                semantic_version: Version::parse("1.7.2").unwrap(),
+                os: Os::Linux,
+                arch: Arch::X86_64,
+                url: String::from("foo"),
+                sha_checksum: String::from("bar"),
+            }
+        }
+    }
+
     #[test]
     fn test_artifact_display_format() {
-        let artifact = Artifact {
-            go_version: "go1.7.2".to_string(),
-            semantic_version: Version::parse("1.7.2").unwrap(),
-            os: Os::Linux,
-            arch: Arch::X86_64,
-            url: String::new(),
-            sha_checksum: String::new(),
-        };
+        let artifact = Artifact::default();
 
         assert_eq!(
             format!(
@@ -279,14 +285,7 @@ mod tests {
 
     #[test]
     fn test_artifact_hash_implementation() {
-        let artifact = Artifact {
-            go_version: "go1.7.2".to_string(),
-            semantic_version: Version::parse("1.7.2").unwrap(),
-            os: Os::Linux,
-            arch: Arch::X86_64,
-            url: "foo".to_string(),
-            sha_checksum: "bar".to_string(),
-        };
+        let artifact = Artifact::default();
 
         let state = RandomState::new();
         assert_eq!(
