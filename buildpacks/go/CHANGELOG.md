@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added linux aarch64 artifacts for >= go1.8.5. ([#230](https://github.com/heroku/buildpacks-go/pull/230))
+- Added linux/arm64 buildpack target. ([#233](https://github.com/heroku/buildpacks-go/pull/233))
 
 ## [0.2.0] - 2024-03-06
 
