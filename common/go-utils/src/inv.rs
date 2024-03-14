@@ -1,6 +1,8 @@
 use crate::vrs::{Requirement, Version, VersionParseError};
+use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
-use std::{env::consts, fmt::Display, fs, str::FromStr};
+use std::hash::Hash;
+use std::{env::consts, fs, str::FromStr};
 use toml;
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
@@ -13,7 +15,7 @@ pub struct Inventory {
 }
 
 /// Represents a known go release artifact in the inventory.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct Artifact {
     pub go_version: String,
     pub semantic_version: Version,
@@ -21,6 +23,18 @@ pub struct Artifact {
     pub arch: Arch,
     pub url: String,
     pub sha_checksum: String,
+}
+
+impl Hash for Artifact {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.sha_checksum.hash(state);
+    }
+}
+
+impl Display for Artifact {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} ({}-{})", self.go_version, self.os, self.arch)
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -71,7 +85,7 @@ struct GoFile {
     version: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Arch {
     X86_64,
@@ -103,7 +117,7 @@ impl FromStr for Arch {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
     Linux,
@@ -187,7 +201,11 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsE
         .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
         .iter()
         .flat_map(|release| &release.files)
-        .filter(|file| !file.sha256.is_empty() && file.os == "linux" && file.arch == "amd64")
+        .filter(|file| {
+            !file.sha256.is_empty()
+                && file.os == "linux"
+                && (file.arch == "amd64" || file.arch == "arm64")
+        })
         .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
         .collect::<Result<Vec<_>, _>>()
 }
@@ -195,6 +213,7 @@ pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsE
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::hash::{BuildHasher, RandomState};
 
     #[test]
     fn test_arch_display_format() {
@@ -236,5 +255,34 @@ mod tests {
             "foo".parse::<Os>().unwrap_err(),
             UnsupportedOsError(..)
         ));
+    }
+
+    fn create_artifact() -> Artifact {
+        Artifact {
+            go_version: String::from("go1.7.2"),
+            semantic_version: Version::parse("1.7.2").unwrap(),
+            os: Os::Linux,
+            arch: Arch::X86_64,
+            url: String::from("foo"),
+            sha_checksum: String::from("bar"),
+        }
+    }
+
+    #[test]
+    fn test_artifact_display_format() {
+        let artifact = create_artifact();
+
+        assert_eq!("go1.7.2 (linux-x86_64)", artifact.to_string());
+    }
+
+    #[test]
+    fn test_artifact_hash_implementation() {
+        let artifact = create_artifact();
+
+        let state = RandomState::new();
+        assert_eq!(
+            state.hash_one(&artifact.sha_checksum),
+            state.hash_one(&artifact)
+        );
     }
 }
