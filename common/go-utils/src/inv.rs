@@ -272,13 +272,7 @@ mod tests {
     fn test_artifact_display_format() {
         let artifact = create_artifact();
 
-        assert_eq!(
-            format!(
-                "{} ({}-{})",
-                artifact.go_version, artifact.os, artifact.arch
-            ),
-            artifact.to_string()
-        );
+        assert_eq!("go1.7.2 (linux-x86_64)", artifact.to_string());
     }
 
     #[test]
