@@ -22,12 +22,12 @@ pub struct Artifact {
     pub os: Os,
     pub arch: Arch,
     pub url: String,
-    pub sha_checksum: String,
+    pub checksum: String,
 }
 
 impl Hash for Artifact {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.sha_checksum.hash(state);
+        self.checksum.hash(state);
     }
 }
 
@@ -165,7 +165,7 @@ impl TryFrom<&GoFile> for Artifact {
             semantic_version: Version::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
-            sha_checksum: value.sha256.clone(),
+            checksum: value.sha256.clone(),
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
     }
@@ -264,7 +264,7 @@ mod tests {
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),
-            sha_checksum: String::from("bar"),
+            checksum: String::from("bar"),
         }
     }
 
@@ -281,7 +281,7 @@ mod tests {
 
         let state = RandomState::new();
         assert_eq!(
-            state.hash_one(&artifact.sha_checksum),
+            state.hash_one(&artifact.checksum),
             state.hash_one(&artifact)
         );
     }
