@@ -1,4 +1,4 @@
-use crate::checksum::{Algorithm, Checksum, Error};
+use crate::checksum::{Algorithm, Checksum, Error as ChecksumError};
 use crate::vrs::{Requirement, Version, VersionParseError};
 use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
@@ -156,7 +156,7 @@ pub enum GoFileConversionError {
     #[error(transparent)]
     Os(#[from] UnsupportedOsError),
     #[error(transparent)]
-    Checksum(#[from] Error),
+    Checksum(#[from] ChecksumError),
 }
 
 impl TryFrom<&GoFile> for Artifact {
