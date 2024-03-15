@@ -56,8 +56,8 @@ pub struct Checksum {
 }
 
 impl From<Checksum> for String {
-    fn from(val: Checksum) -> Self {
-        val.to_string()
+    fn from(value: Checksum) -> Self {
+        value.to_string()
     }
 }
 
