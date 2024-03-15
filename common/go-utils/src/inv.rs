@@ -295,4 +295,13 @@ mod tests {
             state.hash_one(&artifact)
         );
     }
+
+    #[test]
+    fn test_artifact_serialization() {
+        let artifact = create_artifact();
+        let serialized = toml::to_string(&artifact).unwrap();
+        assert!(serialized
+            .contains("sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"));
+        assert_eq!(artifact, toml::from_str::<Artifact>(&serialized).unwrap());
+    }
 }
