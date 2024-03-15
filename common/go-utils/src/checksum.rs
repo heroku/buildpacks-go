@@ -83,3 +83,55 @@ impl Display for Checksum {
         write!(f, "{}:{}", self.algorithm, self.value)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_checksum_parse_and_validate_sha256() {
+        let checksum_str =
+            "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
+        let checksum: Result<Checksum, _> = Checksum::try_from(checksum_str.to_string());
+
+        assert!(checksum.is_ok());
+        assert_eq!(Algorithm::Sha256, checksum.unwrap().algorithm);
+    }
+
+    #[test]
+    fn test_checksum_parse_and_validate_sha512() {
+        let checksum_str = "sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
+        let checksum: Result<Checksum, _> = Checksum::try_from(checksum_str.to_string());
+
+        assert!(checksum.is_ok());
+        assert_eq!(Algorithm::Sha512, checksum.unwrap().algorithm);
+    }
+
+    #[test]
+    fn test_checksum_serialization() {
+        assert_eq!(
+            "sha256:foo",
+            Checksum {
+                algorithm: Algorithm::Sha256,
+                value: "foo".to_string(),
+            }
+            .to_string()
+        );
+    }
+
+    #[test]
+    fn test_invalid_checksum_length() {
+        let invalid_checksum = Checksum::try_from("sha256:abc".to_string());
+        assert!(matches!(invalid_checksum, Err(Error::InvalidLength(..))));
+    }
+
+    #[test]
+    fn test_invalid_algorithm() {
+        let invalid_checksum: Result<Checksum, _> =
+            Checksum::try_from("md5:abcdef1234567890abcdef1234567890".to_string());
+        assert!(matches!(
+            invalid_checksum,
+            Err(Error::UnsupportedAlgorithm(..))
+        ));
+    }
+}
