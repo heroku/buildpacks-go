@@ -9,7 +9,7 @@ workspace = true
 [dependencies]
 regex = "1"
 semver = "1"
-serde = "1"
+serde = { version = "1", features = ["derive"] }
 thiserror = "1"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
