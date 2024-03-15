@@ -1,3 +1,4 @@
+use crate::checksum::{Algorithm, Checksum, Error};
 use crate::vrs::{Requirement, Version, VersionParseError};
 use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
@@ -22,12 +23,12 @@ pub struct Artifact {
     pub os: Os,
     pub arch: Arch,
     pub url: String,
-    pub checksum: String,
+    pub checksum: Checksum,
 }
 
 impl Hash for Artifact {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.checksum.hash(state);
+        self.checksum.value.hash(state);
     }
 }
 
@@ -154,6 +155,8 @@ pub enum GoFileConversionError {
     Arch(#[from] UnsupportedArchError),
     #[error(transparent)]
     Os(#[from] UnsupportedOsError),
+    #[error(transparent)]
+    Checksum(#[from] Error),
 }
 
 impl TryFrom<&GoFile> for Artifact {
@@ -165,7 +168,10 @@ impl TryFrom<&GoFile> for Artifact {
             semantic_version: Version::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
-            checksum: value.sha256.clone(),
+            checksum: Checksum {
+                algorithm: Algorithm::Sha256,
+                value: value.sha256.to_string(),
+            },
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
     }
@@ -264,7 +270,11 @@ mod tests {
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),
-            checksum: String::from("bar"),
+            checksum: Checksum {
+                algorithm: Algorithm::Sha256,
+                value: "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+                    .to_string(),
+            },
         }
     }
 
@@ -281,7 +291,7 @@ mod tests {
 
         let state = RandomState::new();
         assert_eq!(
-            state.hash_one(&artifact.checksum),
+            state.hash_one(&artifact.checksum.value),
             state.hash_one(&artifact)
         );
     }

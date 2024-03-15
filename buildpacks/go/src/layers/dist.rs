@@ -51,7 +51,7 @@ impl Layer for DistLayer {
             "go",
             ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
             layer_path,
-            &self.artifact.checksum,
+            &self.artifact.checksum.value,
         )
         .map_err(DistLayerError::Tgz)?;
 
