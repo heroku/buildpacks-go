@@ -58,7 +58,7 @@ impl Checksum {
 #[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct Checksum {
-    pub algorithm: Algorithm,
+    algorithm: Algorithm,
     pub value: String,
 }
 

@@ -267,11 +267,11 @@ mod tests {
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),
-            checksum: Checksum {
-                algorithm: Algorithm::Sha256,
-                value: "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-                    .to_string(),
-            },
+            checksum: Checksum::new(
+                Algorithm::Sha256,
+                "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+            )
+            .unwrap(),
         }
     }
 
