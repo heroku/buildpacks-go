@@ -111,9 +111,9 @@ mod tests {
 
     #[test]
     fn test_checksum_parse_and_validate_sha256() {
-        let checksum_str =
-            "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
-        let checksum: Result<Checksum, _> = Checksum::try_from(checksum_str.to_string());
+        let checksum: Result<Checksum, _> = Checksum::try_from(
+            "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+        );
 
         assert!(checksum.is_ok());
         assert_eq!(Algorithm::Sha256, checksum.unwrap().algorithm);
@@ -121,8 +121,9 @@ mod tests {
 
     #[test]
     fn test_checksum_parse_and_validate_sha512() {
-        let checksum_str = "sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";
-        let checksum: Result<Checksum, _> = Checksum::try_from(checksum_str.to_string());
+        let checksum: Result<Checksum, _> = Checksum::try_from(
+            "sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string()
+        );
 
         assert!(checksum.is_ok());
         assert_eq!(Algorithm::Sha512, checksum.unwrap().algorithm);
