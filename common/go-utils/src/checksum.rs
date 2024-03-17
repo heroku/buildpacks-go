@@ -48,18 +48,18 @@ impl Display for Algorithm {
     }
 }
 
-impl Checksum {
-    pub(crate) fn new(algorithm: Algorithm, value: String) -> Result<Self, Error> {
-        algorithm.validate_length(&value)?;
-        Ok(Checksum { algorithm, value })
-    }
-}
-
 #[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct Checksum {
     algorithm: Algorithm,
     pub value: String,
+}
+
+impl Checksum {
+    pub(crate) fn new(algorithm: Algorithm, value: String) -> Result<Self, Error> {
+        algorithm.validate_length(&value)?;
+        Ok(Checksum { algorithm, value })
+    }
 }
 
 impl From<Checksum> for String {
