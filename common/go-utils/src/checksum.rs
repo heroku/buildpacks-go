@@ -143,16 +143,16 @@ mod tests {
 
     #[test]
     fn test_invalid_checksum_length() {
-        let invalid_checksum = Checksum::try_from("sha256:abc".to_string());
-        assert!(matches!(invalid_checksum, Err(Error::InvalidLength(..))));
+        assert!(matches!(
+            Checksum::try_from("sha256:abc".to_string()),
+            Err(Error::InvalidLength(..))
+        ));
     }
 
     #[test]
     fn test_unsupported_algorithm() {
-        let invalid_checksum: Result<Checksum, _> =
-            Checksum::try_from("md5:abcdef1234567890abcdef1234567890".to_string());
         assert!(matches!(
-            invalid_checksum,
+            Checksum::try_from("md5:abcdef1234567890abcdef1234567890".to_string()),
             Err(Error::UnsupportedAlgorithm(..))
         ));
     }
