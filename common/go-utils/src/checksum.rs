@@ -147,7 +147,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_algorithm() {
+    fn test_unsupported_algorithm() {
         let invalid_checksum: Result<Checksum, _> =
             Checksum::try_from("md5:abcdef1234567890abcdef1234567890".to_string());
         assert!(matches!(
