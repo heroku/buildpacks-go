@@ -76,9 +76,8 @@ impl TryFrom<String> for Checksum {
         if parts.len() == 2 {
             let algorithm: Algorithm = parts[0].parse()?;
             let value = parts[1].to_string();
-            algorithm.validate_length(&value)?;
 
-            Ok(Checksum { algorithm, value })
+            Ok(Self::new(algorithm, value)?)
         } else {
             Err(Error::InvalidFormat(value))
         }
