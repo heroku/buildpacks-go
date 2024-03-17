@@ -48,6 +48,13 @@ impl Display for Algorithm {
     }
 }
 
+impl Checksum {
+    pub(crate) fn new(algorithm: Algorithm, value: String) -> Result<Self, Error> {
+        algorithm.validate_length(&value)?;
+        Ok(Checksum { algorithm, value })
+    }
+}
+
 #[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct Checksum {
@@ -87,6 +94,21 @@ impl Display for Checksum {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_checksum_new_valid() {
+        let checksum = Checksum::new(
+            Algorithm::Sha256,
+            "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+        );
+        assert!(checksum.is_ok());
+    }
+
+    #[test]
+    fn test_checksum_new_invalid_length() {
+        let checksum = Checksum::new(Algorithm::Sha256, "foo".to_string());
+        assert!(checksum.is_err());
+    }
 
     #[test]
     fn test_checksum_parse_and_validate_sha256() {

@@ -168,10 +168,7 @@ impl TryFrom<&GoFile> for Artifact {
             semantic_version: Version::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
-            checksum: Checksum {
-                algorithm: Algorithm::Sha256,
-                value: value.sha256.to_string(),
-            },
+            checksum: Checksum::new(Algorithm::Sha256, value.sha256.to_string())?,
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
     }
