@@ -77,7 +77,7 @@ impl TryFrom<String> for Checksum {
             let algorithm: Algorithm = parts[0].parse()?;
             let value = parts[1].to_string();
 
-            Ok(Self::new(algorithm, value)?)
+            Self::new(algorithm, value)
         } else {
             Err(Error::InvalidFormat(value))
         }
