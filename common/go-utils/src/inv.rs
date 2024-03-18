@@ -1,3 +1,4 @@
+use crate::checksum::{Algorithm, Checksum, Error as ChecksumError};
 use crate::vrs::{Requirement, Version, VersionParseError};
 use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
@@ -22,12 +23,12 @@ pub struct Artifact {
     pub os: Os,
     pub arch: Arch,
     pub url: String,
-    pub sha_checksum: String,
+    pub checksum: Checksum,
 }
 
 impl Hash for Artifact {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.sha_checksum.hash(state);
+        self.checksum.value.hash(state);
     }
 }
 
@@ -154,6 +155,8 @@ pub enum GoFileConversionError {
     Arch(#[from] UnsupportedArchError),
     #[error(transparent)]
     Os(#[from] UnsupportedOsError),
+    #[error(transparent)]
+    Checksum(#[from] ChecksumError),
 }
 
 impl TryFrom<&GoFile> for Artifact {
@@ -165,7 +168,7 @@ impl TryFrom<&GoFile> for Artifact {
             semantic_version: Version::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
-            sha_checksum: value.sha256.clone(),
+            checksum: Checksum::new(Algorithm::Sha256, value.sha256.to_string())?,
             url: format!("{}/{}", GO_HOST_URL, value.filename),
         })
     }
@@ -264,7 +267,11 @@ mod tests {
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),
-            sha_checksum: String::from("bar"),
+            checksum: Checksum::new(
+                Algorithm::Sha256,
+                "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+            )
+            .unwrap(),
         }
     }
 
@@ -281,8 +288,17 @@ mod tests {
 
         let state = RandomState::new();
         assert_eq!(
-            state.hash_one(&artifact.sha_checksum),
+            state.hash_one(&artifact.checksum.value),
             state.hash_one(&artifact)
         );
+    }
+
+    #[test]
+    fn test_artifact_serialization() {
+        let artifact = create_artifact();
+        let serialized = toml::to_string(&artifact).unwrap();
+        assert!(serialized
+            .contains("sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"));
+        assert_eq!(artifact, toml::from_str::<Artifact>(&serialized).unwrap());
     }
 }
