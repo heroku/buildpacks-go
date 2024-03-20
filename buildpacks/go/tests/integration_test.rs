@@ -208,7 +208,7 @@ fn test_go_artifact_caching() {
             );
             let config = ctx.config.clone();
             ctx.rebuild(config, |ctx| {
-                assert_contains!(ctx.pack_stdout, "Reusing Go go1.16.15 (linux-x86_64)");
+                assert_contains!(ctx.pack_stdout, "Reusing go1.16.15 (linux-x86_64)");
             });
         },
     );
