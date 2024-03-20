@@ -195,3 +195,21 @@ fn basic_http_122_20() {
 fn basic_http_122_22() {
     test_basic_http_122("heroku/builder:22");
 }
+
+#[test]
+#[ignore = "integration test"]
+fn test_go_artifact_caching() {
+    TestRunner::default().build(
+        BuildConfig::new("heroku/builder:22", "tests/fixtures/basic_http_116"),
+        |ctx| {
+            assert_contains!(
+                ctx.pack_stdout,
+                "Installing Go 1.16.15 from https://go.dev/dl/go1.16.15.linux-amd64.tar.gz",
+            );
+            let config = ctx.config.clone();
+            ctx.rebuild(config, |ctx| {
+                assert_contains!(ctx.pack_stdout, "Reusing Go go1.16.15 (linux-x86_64)");
+            });
+        },
+    );
+}
