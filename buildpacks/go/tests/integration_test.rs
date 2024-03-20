@@ -43,6 +43,7 @@ fn test_basic_http_116(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: ~1.16.2",
+            "Resolved Go version: go1.16.",
             "Installing go1.16.",
         ],
         &[],
