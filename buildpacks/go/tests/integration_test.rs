@@ -43,7 +43,8 @@ fn test_basic_http_116(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: ~1.16.2",
-            "Installing Go 1.16.",
+            "Resolved Go version: go1.16.",
+            "Installing go1.16.",
         ],
         &[],
     );
@@ -65,7 +66,7 @@ fn test_vendor_gorilla_117(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: =1.17.8",
-            "Installing Go 1.17.8",
+            "Installing go1.17.8",
             "Using vendored Go modules",
         ],
         &["downloading github.com/gorilla/mux v1.8.0"],
@@ -88,7 +89,7 @@ fn test_modules_gin_121(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: =1.21",
-            "Installing Go 1.21",
+            "Installing go1.21",
             "downloading github.com/gin-gonic/gin v1.8.1",
         ],
         &[],
@@ -111,7 +112,7 @@ fn test_worker_http_118(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: ~1.18.1",
-            "Installing Go 1.18.",
+            "Installing go1.18.",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",
         ],
@@ -135,7 +136,7 @@ fn test_basic_http_119(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: ~1.19.4",
-            "Installing Go 1.19.",
+            "Installing go1.19.",
         ],
         &[],
     );
@@ -157,7 +158,7 @@ fn test_vendor_fasthttp_120(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: =1.20",
-            "Installing Go 1.20.",
+            "Installing go1.20.",
             "Using vendored Go modules",
         ],
         &["downloading github.com/valyala/fasthttp"],
@@ -180,7 +181,7 @@ fn test_basic_http_122(builder: &str) {
         builder,
         &[
             "Detected Go version requirement: ~1.22.0",
-            "Installing Go 1.22.",
+            "Installing go1.22.",
         ],
         &[],
     );
@@ -194,4 +195,22 @@ fn basic_http_122_20() {
 #[ignore = "integration test"]
 fn basic_http_122_22() {
     test_basic_http_122("heroku/builder:22");
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_go_artifact_caching() {
+    TestRunner::default().build(
+        BuildConfig::new("heroku/builder:22", "tests/fixtures/basic_http_116"),
+        |ctx| {
+            assert_contains!(
+                ctx.pack_stdout,
+                "Installing go1.16.15 (linux-x86_64) from https://go.dev/dl/go1.16.15.linux-amd64.tar.gz",
+            );
+            let config = ctx.config.clone();
+            ctx.rebuild(config, |ctx| {
+                assert_contains!(ctx.pack_stdout, "Reusing go1.16.15 (linux-x86_64)");
+            });
+        },
+    );
 }

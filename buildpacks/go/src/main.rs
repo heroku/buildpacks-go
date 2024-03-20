@@ -72,10 +72,7 @@ impl Buildpack for GoBuildpack {
         let artifact = inv
             .resolve(&requirement)
             .ok_or(GoBuildpackError::VersionResolution(requirement))?;
-        log_info(format!(
-            "Resolved Go version: {}",
-            artifact.semantic_version
-        ));
+        log_info(format!("Resolved Go version: {artifact}"));
 
         log_header("Installing Go distribution");
         go_env = context
@@ -113,7 +110,7 @@ impl Buildpack for GoBuildpack {
             .handle_layer(
                 layer_name!("go_build"),
                 BuildLayer {
-                    go_version: artifact.go_version.clone(),
+                    artifact: artifact.clone(),
                 },
             )?
             .env

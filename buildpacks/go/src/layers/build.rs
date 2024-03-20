@@ -1,4 +1,5 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use heroku_go_utils::inv::Artifact;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
@@ -11,13 +12,13 @@ use std::path::Path;
 
 /// A layer for go incremental build cache artifacts
 pub(crate) struct BuildLayer {
-    pub(crate) go_version: String,
+    pub(crate) artifact: Artifact,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct BuildLayerMetadata {
     layer_version: String,
-    go_version: String,
+    artifact: Artifact,
     cache_usage_count: f32,
 }
 
@@ -51,7 +52,7 @@ impl Layer for BuildLayer {
         let cache_dir = layer_path.join(CACHE_DIR);
         fs::create_dir(&cache_dir).map_err(BuildLayerError)?;
         LayerResultBuilder::new(BuildLayerMetadata {
-            go_version: self.go_version.clone(),
+            artifact: self.artifact.clone(),
             layer_version: LAYER_VERSION.to_string(),
             cache_usage_count: 1.0,
         })
@@ -70,7 +71,7 @@ impl Layer for BuildLayer {
         layer: &LayerData<Self::Metadata>,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         LayerResultBuilder::new(BuildLayerMetadata {
-            go_version: self.go_version.clone(),
+            artifact: self.artifact.clone(),
             layer_version: LAYER_VERSION.to_string(),
             cache_usage_count: layer.content_metadata.metadata.cache_usage_count + 1.0,
         })
@@ -91,7 +92,7 @@ impl Layer for BuildLayer {
         let mdata = &layer.content_metadata.metadata;
         if mdata.cache_usage_count >= MAX_CACHE_USAGE_COUNT
             || mdata.layer_version != LAYER_VERSION
-            || mdata.go_version != self.go_version
+            || mdata.artifact != self.artifact
         {
             log_info("Expired Go build cache");
             return Ok(ExistingLayerStrategy::Recreate);
