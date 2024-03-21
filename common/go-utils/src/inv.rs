@@ -18,7 +18,7 @@ pub struct Inventory {
 /// Represents a known go release artifact in the inventory.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct Artifact {
-    pub go_version: String,
+    pub version: String,
     pub semantic_version: Version,
     pub os: Os,
     pub arch: Arch,
@@ -34,7 +34,7 @@ impl Hash for Artifact {
 
 impl Display for Artifact {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} ({}-{})", self.go_version, self.os, self.arch)
+        write!(f, "{} ({}-{})", self.version, self.os, self.arch)
     }
 }
 
@@ -164,7 +164,7 @@ impl TryFrom<&GoFile> for Artifact {
 
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
         Ok(Artifact {
-            go_version: value.version.clone(),
+            version: value.version.clone(),
             semantic_version: Version::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
@@ -262,7 +262,7 @@ mod tests {
 
     fn create_artifact() -> Artifact {
         Artifact {
-            go_version: String::from("go1.7.2"),
+            version: String::from("go1.7.2"),
             semantic_version: Version::parse("1.7.2").unwrap(),
             os: Os::Linux,
             arch: Arch::X86_64,
