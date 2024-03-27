@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, fmt};
 
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
-/// - `Deserialize` and `Serialize` traits
 /// - Ability to parse go-flavored requirements
 ///
 /// The derived `Default` implementation creates a wildcard version `Requirement`.
