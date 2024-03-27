@@ -8,7 +8,7 @@ use std::{borrow::Cow, fmt};
 /// - Ability to parse go-flavored requirements
 ///
 /// The derived `Default` implementation creates a wildcard version `Requirement`.
-#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, Eq)]
 #[serde(try_from = "String", into = "String")]
 pub struct Requirement(semver::VersionReq);
 
@@ -54,13 +54,6 @@ impl Requirement {
     #[must_use]
     pub fn satisfies(&self, version: &Version) -> bool {
         self.0.matches(&version.0)
-    }
-}
-
-impl TryFrom<String> for Requirement {
-    type Error = RequirementParseError;
-    fn try_from(val: String) -> Result<Self, Self::Error> {
-        Requirement::parse(&val)
     }
 }
 
