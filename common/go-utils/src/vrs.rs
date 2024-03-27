@@ -113,8 +113,7 @@ impl Version {
     pub fn parse_go(go_version: &str) -> Result<Version, VersionParseError> {
         let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
-        let re = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?;
-        let caps = re
+        let caps = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?
             .captures(stripped_version)
             .ok_or(VersionParseError::Captures)?;
 
