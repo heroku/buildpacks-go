@@ -1,5 +1,5 @@
 use crate::checksum::{Algorithm, Checksum, Error as ChecksumError};
-use crate::vrs::{Requirement, Version, VersionParseError};
+use crate::vrs::{GoVersion, Requirement, VersionParseError};
 use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
@@ -19,7 +19,7 @@ pub struct Inventory {
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct Artifact {
     pub version: String,
-    pub semantic_version: Version,
+    pub semantic_version: GoVersion,
     pub os: Os,
     pub arch: Arch,
     pub url: String,
@@ -165,7 +165,7 @@ impl TryFrom<&GoFile> for Artifact {
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
         Ok(Artifact {
             version: value.version.clone(),
-            semantic_version: Version::parse_go(&value.version)?,
+            semantic_version: GoVersion::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
             checksum: Checksum::new(Algorithm::Sha256, value.sha256.to_string())?,
@@ -263,7 +263,7 @@ mod tests {
     fn create_artifact() -> Artifact {
         Artifact {
             version: String::from("go1.7.2"),
-            semantic_version: Version::parse("1.7.2").unwrap(),
+            semantic_version: GoVersion::parse("1.7.2").unwrap(),
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),

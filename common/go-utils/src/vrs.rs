@@ -53,7 +53,7 @@ impl Requirement {
 
     /// Determines if a `&Version` satisfies a `Requirement`
     #[must_use]
-    pub(crate) fn satisfies(&self, version: &Version) -> bool {
+    pub(crate) fn satisfies(&self, version: &GoVersion) -> bool {
         self.0.matches(&version.0)
     }
 }
@@ -69,7 +69,7 @@ impl fmt::Display for Requirement {
 /// - Ability to parse go-flavored versions
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(try_from = "String", into = "String")]
-pub struct Version(semver::Version);
+pub struct GoVersion(semver::Version);
 
 #[derive(thiserror::Error, Debug)]
 pub enum VersionParseError {
@@ -81,7 +81,7 @@ pub enum VersionParseError {
     Captures,
 }
 
-impl Version {
+impl GoVersion {
     /// Parses a semver `&str` as a `Version`
     ///
     /// # Examples
@@ -93,9 +93,9 @@ impl Version {
     /// # Errors
     ///
     /// Invalid semver `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse(version: &str) -> Result<Version, VersionParseError> {
+    pub fn parse(version: &str) -> Result<GoVersion, VersionParseError> {
         semver::Version::parse(version)
-            .map(Version)
+            .map(GoVersion)
             .map_err(VersionParseError::SemVer)
     }
 
@@ -110,7 +110,7 @@ impl Version {
     /// # Errors
     ///
     /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse_go(go_version: &str) -> Result<Version, VersionParseError> {
+    pub fn parse_go(go_version: &str) -> Result<GoVersion, VersionParseError> {
         let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
         let caps = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?
@@ -129,25 +129,25 @@ impl Version {
             composed_version.push_str(pre.as_str());
         };
 
-        Version::parse(&composed_version)
+        GoVersion::parse(&composed_version)
     }
 }
 
-impl TryFrom<String> for Version {
+impl TryFrom<String> for GoVersion {
     type Error = VersionParseError;
 
     fn try_from(val: String) -> Result<Self, Self::Error> {
-        Version::parse(&val)
+        GoVersion::parse(&val)
     }
 }
 
-impl From<Version> for String {
-    fn from(ver: Version) -> Self {
+impl From<GoVersion> for String {
+    fn from(ver: GoVersion) -> Self {
         format!("{ver}")
     }
 }
 
-impl fmt::Display for Version {
+impl fmt::Display for GoVersion {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -175,10 +175,10 @@ mod tests {
         ];
 
         for (input, expected_str) in go_versions {
-            let actual = Version::parse_go(input).expect("Failed to parse go input version");
+            let actual = GoVersion::parse_go(input).expect("Failed to parse go input version");
             let actual_str = actual.to_string();
             let expected =
-                Version::parse(expected_str).expect("Failed to parse go expected version");
+                GoVersion::parse(expected_str).expect("Failed to parse go expected version");
             assert_eq!(
                 expected, actual,
                 "Expected {input} to parse as {expected} but got {actual}."
