@@ -27,7 +27,9 @@ impl Requirement {
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
     pub fn parse(input: &str) -> Result<Self, RequirementParseError> {
-        Ok(semver::VersionReq::parse(input).map(Self)?)
+        semver::VersionReq::parse(input)
+            .map(Self)
+            .map_err(RequirementParseError)
     }
 
     /// Parses a go version requirement `&str` as a `Requirement`
