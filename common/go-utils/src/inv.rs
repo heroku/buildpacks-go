@@ -54,7 +54,7 @@ impl Inventory {
     /// Will return an Err if the file is missing, not readable, or if the
     /// file contents is not formatted properly.
     pub fn read(path: &str) -> Result<Self, ReadInventoryError> {
-        Ok(toml::from_str(&fs::read_to_string(path)?)?)
+        toml::from_str(&fs::read_to_string(path)?).map_err(ReadInventoryError::Parse)
     }
 
     /// Find the first artifact from the inventory that satisfies a
