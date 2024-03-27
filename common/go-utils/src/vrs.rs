@@ -135,6 +135,7 @@ impl Version {
 
 impl TryFrom<String> for Version {
     type Error = VersionParseError;
+
     fn try_from(val: String) -> Result<Self, Self::Error> {
         Version::parse(&val)
     }
