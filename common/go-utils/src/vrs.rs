@@ -94,7 +94,9 @@ impl Version {
     ///
     /// Invalid semver `&str`s like ".1", "1.*", "abc", etc. will return an error.
     pub fn parse(version: &str) -> Result<Version, VersionParseError> {
-        Ok(semver::Version::parse(version).map(Version)?)
+        semver::Version::parse(version)
+            .map(Version)
+            .map_err(VersionParseError::SemVer)
     }
 
     /// Parses a go version `&str` as a `Version`
