@@ -53,7 +53,7 @@ impl Requirement {
 
     /// Determines if a `&Version` satisfies a `Requirement`
     #[must_use]
-    pub fn satisfies(&self, version: &Version) -> bool {
+    pub(crate) fn satisfies(&self, version: &Version) -> bool {
         self.0.matches(&version.0)
     }
 }
