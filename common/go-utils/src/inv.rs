@@ -38,6 +38,67 @@ impl Display for Artifact {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum Os {
+    Linux,
+}
+
+impl Display for Os {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Os::Linux => write!(f, "linux"),
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("OS is not supported: {0}")]
+pub struct UnsupportedOsError(String);
+
+impl FromStr for Os {
+    type Err = UnsupportedOsError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "linux" => Ok(Os::Linux),
+            _ => Err(UnsupportedOsError(s.to_string())),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum Arch {
+    X86_64,
+    Aarch64,
+}
+
+impl Display for Arch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Arch::X86_64 => write!(f, "x86_64"),
+            Arch::Aarch64 => write!(f, "aarch64"),
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug)]
+#[error("Arch is not supported: {0}")]
+pub struct UnsupportedArchError(String);
+
+impl FromStr for Arch {
+    type Err = UnsupportedArchError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "amd64" | "x86_64" => Ok(Arch::X86_64),
+            "arm64" | "aarch64" => Ok(Arch::Aarch64),
+            _ => Err(UnsupportedArchError(s.to_string())),
+        }
+    }
+}
+
 #[derive(thiserror::Error, Debug)]
 pub enum ReadInventoryError {
     #[error("Couldn't read Go artifact inventory.toml: {0}")]
@@ -84,67 +145,6 @@ struct GoFile {
     filename: String,
     sha256: String,
     version: String,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-#[serde(rename_all = "lowercase")]
-pub enum Arch {
-    X86_64,
-    Aarch64,
-}
-
-impl Display for Arch {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Arch::X86_64 => write!(f, "x86_64"),
-            Arch::Aarch64 => write!(f, "aarch64"),
-        }
-    }
-}
-
-#[derive(thiserror::Error, Debug)]
-#[error("Arch is not supported: {0}")]
-pub struct UnsupportedArchError(String);
-
-impl FromStr for Arch {
-    type Err = UnsupportedArchError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "amd64" | "x86_64" => Ok(Arch::X86_64),
-            "arm64" | "aarch64" => Ok(Arch::Aarch64),
-            _ => Err(UnsupportedArchError(s.to_string())),
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-#[serde(rename_all = "lowercase")]
-pub enum Os {
-    Linux,
-}
-
-impl Display for Os {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Os::Linux => write!(f, "linux"),
-        }
-    }
-}
-
-#[derive(thiserror::Error, Debug)]
-#[error("OS is not supported: {0}")]
-pub struct UnsupportedOsError(String);
-
-impl FromStr for Os {
-    type Err = UnsupportedOsError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "linux" => Ok(Os::Linux),
-            _ => Err(UnsupportedOsError(s.to_string())),
-        }
-    }
 }
 
 #[derive(thiserror::Error, Debug)]
