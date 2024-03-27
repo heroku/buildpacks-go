@@ -8,7 +8,7 @@ use std::{borrow::Cow, fmt};
 /// - Ability to parse go-flavored requirements
 ///
 /// The derived `Default` implementation creates a wildcard version `Requirement`.
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Requirement(semver::VersionReq);
 
 #[derive(thiserror::Error, Debug)]
