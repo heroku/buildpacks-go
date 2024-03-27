@@ -1,7 +1,7 @@
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::{borrow::Cow, fmt};
+use std::fmt;
 
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
 /// - Ability to parse go-flavored requirements
@@ -44,10 +44,11 @@ impl Requirement {
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
     pub fn parse_go(go_req: &str) -> Result<Self, RequirementParseError> {
-        let stripped_req = go_req
+        go_req
             .strip_prefix("go")
-            .map_or(Cow::Borrowed(go_req), |req| Cow::Owned(format!("={req}")));
-        Self::parse(&stripped_req)
+            .map_or(Self::parse(go_req), |req| {
+                Self::parse(format!("={req}").as_str())
+            })
     }
 
     /// Determines if a `&Version` satisfies a `Requirement`
