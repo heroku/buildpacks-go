@@ -30,6 +30,20 @@ pub trait VersionRequirement {
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
     fn parse_go(go_req: &str) -> Result<GoRequirement, RequirementParseError>;
+
+    /// Parses a semver requirement `&str` as a `Requirement`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use heroku_go_utils::vrs::VersionRequirement;
+    /// let req = heroku_go_utils::vrs::GoRequirement::parse("~1.0").unwrap();
+    /// ```
+    ///
+    /// # Errors
+    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
+    /// will return an error.
+    fn parse(input: &str) -> Result<GoRequirement, RequirementParseError>;
 }
 
 impl VersionRequirement for GoRequirement {
@@ -44,21 +58,8 @@ impl VersionRequirement for GoRequirement {
                 Self::parse(format!("={req}").as_str())
             })
     }
-}
 
-impl GoRequirement {
-    /// Parses a semver requirement `&str` as a `Requirement`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// let req = heroku_go_utils::vrs::GoRequirement::parse("~1.0").unwrap();
-    /// ```
-    ///
-    /// # Errors
-    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
-    /// will return an error.
-    pub fn parse(input: &str) -> Result<Self, RequirementParseError> {
+    fn parse(input: &str) -> Result<Self, RequirementParseError> {
         semver::VersionReq::parse(input)
             .map(Self)
             .map_err(RequirementParseError)
