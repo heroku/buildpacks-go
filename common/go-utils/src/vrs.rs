@@ -14,8 +14,8 @@ pub struct GoRequirement(semver::VersionReq);
 #[error("Couldn't parse Go version requirement: {0}")]
 pub struct RequirementParseError(#[from] semver::Error);
 
-pub trait VersionRequirement {
-    fn satisfies(&self, version: &GoVersion) -> bool;
+pub trait VersionRequirement<T> {
+    fn satisfies(&self, version: &T) -> bool;
 
     /// Parses a go version requirement `&str` as a `Requirement`
     ///
@@ -29,7 +29,9 @@ pub trait VersionRequirement {
     /// # Errors
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
-    fn parse_go(go_req: &str) -> Result<GoRequirement, RequirementParseError>;
+    fn parse_go(go_req: &str) -> Result<Self, RequirementParseError>
+    where
+        Self: std::marker::Sized;
 
     /// Parses a semver requirement `&str` as a `Requirement`.
     ///
@@ -43,15 +45,17 @@ pub trait VersionRequirement {
     /// # Errors
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
-    fn parse(input: &str) -> Result<GoRequirement, RequirementParseError>;
+    fn parse(input: &str) -> Result<Self, RequirementParseError>
+    where
+        Self: std::marker::Sized;
 }
 
-impl VersionRequirement for GoRequirement {
+impl VersionRequirement<GoVersion> for GoRequirement {
     fn satisfies<'a>(&self, version: &GoVersion) -> bool {
         self.0.matches(&version.0)
     }
 
-    fn parse_go(go_req: &str) -> Result<GoRequirement, RequirementParseError> {
+    fn parse_go(go_req: &str) -> Result<Self, RequirementParseError> {
         go_req
             .strip_prefix("go")
             .map_or(Self::parse(go_req), |req| {
