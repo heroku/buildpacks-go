@@ -1,4 +1,4 @@
-use heroku_go_utils::vrs::{GoRequirement, RequirementParseError};
+use heroku_go_utils::vrs::{GoRequirement, RequirementParseError, VersionRequirement};
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path;
