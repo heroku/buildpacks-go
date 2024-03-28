@@ -1,5 +1,5 @@
 use crate::checksum::{Algorithm, Checksum, Error as ChecksumError};
-use crate::vrs::{GoVersion, VersionParseError, VersionRequirement};
+use crate::vrs::{GoVersion, Version, VersionParseError, VersionRequirement};
 use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
@@ -12,27 +12,36 @@ const GO_HOST_URL: &str = "https://go.dev/dl";
 /// Represents a collection of known go release artifacts.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Inventory {
-    pub artifacts: Vec<Artifact>,
+    pub artifacts: Vec<Artifact<GoVersion>>,
 }
 
 /// Represents a known go release artifact in the inventory.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub struct Artifact {
+pub struct Artifact<V>
+where
+    V: Version + Clone,
+{
     pub version: String,
-    pub semantic_version: GoVersion,
+    pub semantic_version: V,
     pub os: Os,
     pub arch: Arch,
     pub url: String,
     pub checksum: Checksum,
 }
 
-impl Hash for Artifact {
+impl<V> Hash for Artifact<V>
+where
+    V: Version + Clone,
+{
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.checksum.value.hash(state);
     }
 }
 
-impl Display for Artifact {
+impl<V> Display for Artifact<V>
+where
+    V: Version + Clone,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} ({}-{})", self.version, self.os, self.arch)
     }
@@ -121,7 +130,7 @@ impl Inventory {
     /// Find the first artifact from the inventory that satisfies a
     /// `Requirement`.
     #[must_use]
-    pub fn resolve<V>(&self, requirement: &V) -> Option<&Artifact>
+    pub fn resolve<V>(&self, requirement: &V) -> Option<&Artifact<GoVersion>>
     where
         V: VersionRequirement<GoVersion>,
     {
@@ -162,11 +171,11 @@ pub enum GoFileConversionError {
     Checksum(#[from] ChecksumError),
 }
 
-impl TryFrom<&GoFile> for Artifact {
+impl TryFrom<&GoFile> for Artifact<GoVersion> {
     type Error = GoFileConversionError;
 
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
-        Ok(Artifact {
+        Ok(Self {
             version: value.version.clone(),
             semantic_version: GoVersion::parse_go(&value.version)?,
             os: value.os.parse::<Os>()?,
@@ -199,7 +208,7 @@ pub enum ListUpstreamArtifactsError {
 ///
 /// HTTP issues connecting to the upstream releases endpoint, as well
 /// as json and Go version parsing issues, will return an error.
-pub fn list_upstream_artifacts() -> Result<Vec<Artifact>, ListUpstreamArtifactsError> {
+pub fn list_upstream_artifacts() -> Result<Vec<Artifact<GoVersion>>, ListUpstreamArtifactsError> {
     ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
@@ -263,8 +272,8 @@ mod tests {
         ));
     }
 
-    fn create_artifact() -> Artifact {
-        Artifact {
+    fn create_artifact() -> Artifact<GoVersion> {
+        Artifact::<GoVersion> {
             version: String::from("go1.7.2"),
             semantic_version: GoVersion::parse("1.7.2").unwrap(),
             os: Os::Linux,
@@ -302,6 +311,9 @@ mod tests {
         let serialized = toml::to_string(&artifact).unwrap();
         assert!(serialized
             .contains("sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"));
-        assert_eq!(artifact, toml::from_str::<Artifact>(&serialized).unwrap());
+        assert_eq!(
+            artifact,
+            toml::from_str::<Artifact<GoVersion>>(&serialized).unwrap()
+        );
     }
 }
