@@ -1,5 +1,6 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
 use heroku_go_utils::inv::Artifact;
+use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
@@ -11,13 +12,13 @@ use std::path::Path;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub(crate) struct DistLayer {
-    pub(crate) artifact: Artifact,
+    pub(crate) artifact: Artifact<GoVersion>,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
     layer_version: String,
-    artifact: Artifact,
+    artifact: Artifact<GoVersion>,
 }
 
 #[derive(thiserror::Error, Debug)]

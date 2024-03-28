@@ -1,5 +1,6 @@
 use crate::{GoBuildpack, GoBuildpackError};
 use heroku_go_utils::inv::Artifact;
+use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
@@ -12,13 +13,13 @@ use std::path::Path;
 
 /// A layer for go incremental build cache artifacts
 pub(crate) struct BuildLayer {
-    pub(crate) artifact: Artifact,
+    pub(crate) artifact: Artifact<GoVersion>,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct BuildLayerMetadata {
     layer_version: String,
-    artifact: Artifact,
+    artifact: Artifact<GoVersion>,
     cache_usage_count: f32,
 }
 
