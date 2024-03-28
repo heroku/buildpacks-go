@@ -1,7 +1,7 @@
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::fmt::{self, Display};
 
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
 /// - Ability to parse go-flavored requirements
@@ -17,7 +17,7 @@ pub struct RequirementParseError(#[from] semver::Error);
 pub trait Version {}
 
 impl Version for GoVersion {}
-pub trait VersionRequirement<T>
+pub trait VersionRequirement<T>: Display
 where
     T: Version,
 {
