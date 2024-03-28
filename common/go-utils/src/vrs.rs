@@ -14,7 +14,13 @@ pub struct GoRequirement(semver::VersionReq);
 #[error("Couldn't parse Go version requirement: {0}")]
 pub struct RequirementParseError(#[from] semver::Error);
 
-pub trait VersionRequirement<T> {
+pub trait Version {}
+
+impl Version for GoVersion {}
+pub trait VersionRequirement<T>
+where
+    T: Version,
+{
     fn satisfies(&self, version: &T) -> bool;
 
     /// Parses a go version requirement `&str` as a `Requirement`
