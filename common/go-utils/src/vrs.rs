@@ -23,22 +23,6 @@ where
 {
     fn satisfies(&self, version: &T) -> bool;
 
-    /// Parses a go version requirement `&str` as a `Requirement`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use heroku_go_utils::vrs::VersionRequirement;
-    /// let req = heroku_go_utils::vrs::GoRequirement::parse_go("go1.0").unwrap();
-    /// ```
-    ///
-    /// # Errors
-    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
-    /// will return an error.
-    fn parse_go(go_req: &str) -> Result<Self, RequirementParseError>
-    where
-        Self: std::marker::Sized;
-
     /// Parses a semver requirement `&str` as a `Requirement`.
     ///
     /// # Examples
@@ -61,19 +45,30 @@ impl VersionRequirement<GoVersion> for GoRequirement {
         self.0.matches(&version.0)
     }
 
-    fn parse_go(go_req: &str) -> Result<Self, RequirementParseError> {
-        go_req
-            .strip_prefix("go")
-            .map_or(Self::parse(go_req), |req| {
-                Self::parse(format!("={req}").as_str())
-            })
-    }
-
+    /// Parses a go version requirement `&str` as a `Requirement`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use heroku_go_utils::vrs::VersionRequirement;
+    /// let req = heroku_go_utils::vrs::GoRequirement::parse("go1.0").unwrap();
+    /// ```
+    ///
+    /// # Errors
+    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
+    /// will return an error.
     fn parse(input: &str) -> Result<Self, RequirementParseError> {
-        semver::VersionReq::parse(input)
+        input
+            .strip_prefix("go")
+            .map_or(parse_semver_requirement(input), |req| {
+                parse_semver_requirement(format!("={req}").as_str())
+            })
             .map(Self)
-            .map_err(RequirementParseError)
     }
+}
+
+fn parse_semver_requirement(input: &str) -> Result<semver::VersionReq, RequirementParseError> {
+    semver::VersionReq::parse(input).map_err(RequirementParseError)
 }
 
 impl fmt::Display for GoRequirement {
@@ -222,7 +217,7 @@ mod tests {
             ("^1.18.2", "^1.18.2"),
         ];
         for (input, expected_str) in examples {
-            let actual = GoRequirement::parse_go(input)
+            let actual = GoRequirement::parse(input)
                 .unwrap_or_else(|_| panic!("Failed to parse go input requirement: {input}"));
             let actual_str = actual.to_string();
             let expected = GoRequirement::parse(expected_str)

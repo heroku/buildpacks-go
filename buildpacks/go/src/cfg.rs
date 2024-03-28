@@ -37,11 +37,11 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
                 packages = Some(parts.map(ToString::to_string).collect());
             }
             (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
-                version = GoRequirement::parse_go(vrs).map(Some)?;
+                version = GoRequirement::parse(vrs).map(Some)?;
             }
             (Some("go"), Some(vrs), None, None) => {
                 if version.is_none() {
-                    version = GoRequirement::parse_go(&format!("={vrs}")).map(Some)?;
+                    version = GoRequirement::parse(&format!("={vrs}")).map(Some)?;
                 }
             }
             _ => (),
