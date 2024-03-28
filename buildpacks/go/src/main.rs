@@ -5,7 +5,7 @@ mod proc;
 mod tgz;
 
 use heroku_go_utils::inv::Inventory;
-use heroku_go_utils::vrs::Requirement;
+use heroku_go_utils::vrs::GoRequirement;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
 use layers::dist::{DistLayer, DistLayerError};
@@ -70,7 +70,7 @@ impl Buildpack for GoBuildpack {
         log_info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = inv
-            .resolve(&requirement)
+            .resolve(requirement.clone())
             .ok_or(GoBuildpackError::VersionResolution(requirement))?;
         log_info(format!("Resolved Go version: {artifact}"));
 
@@ -186,7 +186,7 @@ enum GoBuildpackError {
     #[error("Couldn't parse go artifact inventory: {0}")]
     InventoryParse(toml::de::Error),
     #[error("Couldn't resolve go version for: {0}")]
-    VersionResolution(Requirement),
+    VersionResolution(GoRequirement),
     #[error("Launch process error: {0}")]
     Proc(proc::Error),
 }

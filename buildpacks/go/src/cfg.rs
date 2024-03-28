@@ -1,4 +1,4 @@
-use heroku_go_utils::vrs::{Requirement, RequirementParseError};
+use heroku_go_utils::vrs::{GoRequirement, RequirementParseError};
 use std::fs;
 use std::io::{BufRead, BufReader};
 use std::path;
@@ -6,7 +6,7 @@ use std::path;
 /// Represents buildpack configuration found in a project's `go.mod`.
 pub(crate) struct GoModConfig {
     pub(crate) packages: Option<Vec<String>>,
-    pub(crate) version: Option<Requirement>,
+    pub(crate) version: Option<GoRequirement>,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -26,7 +26,7 @@ pub(crate) enum ReadGoModConfigError {
 pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
     gomod_path: P,
 ) -> Result<GoModConfig, ReadGoModConfigError> {
-    let mut version: Option<Requirement> = None;
+    let mut version: Option<GoRequirement> = None;
     let mut packages: Option<Vec<String>> = None;
     let file = fs::File::open(gomod_path)?;
     for line_result in BufReader::new(file).lines() {
@@ -37,11 +37,11 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
                 packages = Some(parts.map(ToString::to_string).collect());
             }
             (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
-                version = Requirement::parse_go(vrs).map(Some)?;
+                version = GoRequirement::parse_go(vrs).map(Some)?;
             }
             (Some("go"), Some(vrs), None, None) => {
                 if version.is_none() {
-                    version = Requirement::parse_go(&format!("={vrs}")).map(Some)?;
+                    version = GoRequirement::parse_go(&format!("={vrs}")).map(Some)?;
                 }
             }
             _ => (),

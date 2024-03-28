@@ -7,20 +7,30 @@ use std::fmt;
 /// - Ability to parse go-flavored requirements
 ///
 /// The derived `Default` implementation creates a wildcard version `Requirement`.
-#[derive(Debug, Default, PartialEq)]
-pub struct Requirement(semver::VersionReq);
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct GoRequirement(semver::VersionReq);
 
 #[derive(thiserror::Error, Debug)]
 #[error("Couldn't parse Go version requirement: {0}")]
 pub struct RequirementParseError(#[from] semver::Error);
 
-impl Requirement {
+pub trait VersionRequirement {
+    fn satisfies(&self, version: &GoVersion) -> bool;
+}
+
+impl VersionRequirement for GoRequirement {
+    fn satisfies<'a>(&self, version: &GoVersion) -> bool {
+        self.0.matches(&version.0)
+    }
+}
+
+impl GoRequirement {
     /// Parses a semver requirement `&str` as a `Requirement`.
     ///
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_utils::vrs::Requirement::parse("~1.0").unwrap();
+    /// let req = heroku_go_utils::vrs::GoRequirement::parse("~1.0").unwrap();
     /// ```
     ///
     /// # Errors
@@ -37,7 +47,7 @@ impl Requirement {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_utils::vrs::Requirement::parse_go("go1.0").unwrap();
+    /// let req = heroku_go_utils::vrs::GoRequirement::parse_go("go1.0").unwrap();
     /// ```
     ///
     /// # Errors
@@ -50,15 +60,9 @@ impl Requirement {
                 Self::parse(format!("={req}").as_str())
             })
     }
-
-    /// Determines if a `&Version` satisfies a `Requirement`
-    #[must_use]
-    pub(crate) fn satisfies(&self, version: &GoVersion) -> bool {
-        self.0.matches(&version.0)
-    }
 }
 
-impl fmt::Display for Requirement {
+impl fmt::Display for GoRequirement {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -87,7 +91,7 @@ impl GoVersion {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_utils::vrs::Version::parse("1.14.2").unwrap();
+    /// let req = heroku_go_utils::vrs::GoVersion::parse("1.14.2").unwrap();
     /// ```
     ///
     /// # Errors
@@ -104,7 +108,7 @@ impl GoVersion {
     /// # Examples
     ///
     /// ```
-    /// let req = heroku_go_utils::vrs::Version::parse_go("go1.12").unwrap();
+    /// let req = heroku_go_utils::vrs::GoVersion::parse_go("go1.12").unwrap();
     /// ```
     ///
     /// # Errors
@@ -204,11 +208,11 @@ mod tests {
             ("^1.18.2", "^1.18.2"),
         ];
         for (input, expected_str) in examples {
-            let actual = Requirement::parse_go(input)
+            let actual = GoRequirement::parse_go(input)
                 .unwrap_or_else(|_| panic!("Failed to parse go input requirement: {input}"));
             let actual_str = actual.to_string();
-            let expected =
-                Requirement::parse(expected_str).expect("Failed to parse go expected requirement");
+            let expected = GoRequirement::parse(expected_str)
+                .expect("Failed to parse go expected requirement");
             assert_eq!(
                 expected, actual,
                 "Expected {input} to parse as {expected} but got {actual}."

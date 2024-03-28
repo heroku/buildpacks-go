@@ -1,5 +1,5 @@
 use crate::checksum::{Algorithm, Checksum, Error as ChecksumError};
-use crate::vrs::{GoVersion, Requirement, VersionParseError};
+use crate::vrs::{GoVersion, VersionParseError, VersionRequirement};
 use core::fmt::{self, Display};
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
@@ -121,7 +121,10 @@ impl Inventory {
     /// Find the first artifact from the inventory that satisfies a
     /// `Requirement`.
     #[must_use]
-    pub fn resolve(&self, requirement: &Requirement) -> Option<&Artifact> {
+    pub fn resolve<V>(&self, requirement: V) -> Option<&Artifact>
+    where
+        V: VersionRequirement,
+    {
         match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => self
                 .artifacts
