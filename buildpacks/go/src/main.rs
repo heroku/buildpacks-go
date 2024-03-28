@@ -70,7 +70,7 @@ impl Buildpack for GoBuildpack {
         log_info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = inv
-            .resolve(requirement.clone())
+            .resolve(&requirement)
             .ok_or(GoBuildpackError::VersionResolution(requirement))?;
         log_info(format!("Resolved Go version: {artifact}"));
 

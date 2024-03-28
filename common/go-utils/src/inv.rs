@@ -121,9 +121,9 @@ impl Inventory {
     /// Find the first artifact from the inventory that satisfies a
     /// `Requirement`.
     #[must_use]
-    pub fn resolve<V>(&self, requirement: V) -> Option<&Artifact>
+    pub fn resolve<V>(&self, requirement: &V) -> Option<&Artifact>
     where
-        V: VersionRequirement,
+        V: VersionRequirement<GoVersion>,
     {
         match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => self
