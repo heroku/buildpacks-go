@@ -47,9 +47,8 @@ impl fmt::Display for GoRequirement {
     }
 }
 
-/// `Version` is a wrapper around `semver::Version` that adds
-/// - `Deserialize` and `Serialize` traits
-/// - Ability to parse go-flavored versions
+/// `GoVersion` is a wrapper around `SemanticVersion` that adds
+///  ability to parse go-flavored versions
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct GoVersion(SemanticVersion);
 

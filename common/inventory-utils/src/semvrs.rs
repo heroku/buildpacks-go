@@ -38,7 +38,7 @@ pub enum SemanticVersionParseError {
 impl Version for SemanticVersion {
     type Error = SemanticVersionParseError;
 
-    /// Parses a semver `&str` as a `Version`
+    /// Parses a semver `&str` as a `SemanticVersion`
     ///
     /// # Examples
     ///
