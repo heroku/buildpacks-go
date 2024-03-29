@@ -112,7 +112,7 @@ impl Version for GoVersion {
             composed_version.push_str(pre.as_str());
         };
 
-        GoVersion::parse(&composed_version)
+        Self::parse(&composed_version)
     }
 }
 
