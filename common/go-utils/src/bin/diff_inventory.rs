@@ -1,10 +1,8 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use heroku_go_utils::{
-    inv::{list_upstream_artifacts, Artifact, Inventory},
-    vrs::GoVersion,
-};
+use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
+use heroku_inventory_utils::inv::{Artifact, Inventory};
 use std::collections::HashSet;
 
 /// Prints a human-readable software inventory difference. Useful

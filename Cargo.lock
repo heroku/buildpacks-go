@@ -473,6 +473,7 @@ dependencies = [
  "semver",
  "serde",
  "thiserror",
+ "toml",
 ]
 
 [[package]]

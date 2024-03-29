@@ -1,6 +1,6 @@
 use crate::{GoBuildpack, GoBuildpackError};
-use heroku_go_utils::inv::Artifact;
 use heroku_go_utils::vrs::GoVersion;
+use heroku_inventory_utils::inv::Artifact;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
