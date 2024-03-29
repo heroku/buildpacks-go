@@ -1,4 +1,7 @@
-use heroku_inventory_utils::vrs::{RequirementParseError, Version, VersionRequirement};
+use heroku_inventory_utils::{
+    semvrs::{SemanticVersion, SemanticVersionParseError, SemanticVersionRequirement},
+    vrs::{RequirementParseError, Version, VersionRequirement},
+};
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
@@ -10,30 +13,6 @@ use std::fmt;
 /// The derived `Default` implementation creates a wildcard version `Requirement`.
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct GoRequirement(SemanticVersionRequirement);
-
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct SemanticVersionRequirement(semver::VersionReq);
-
-impl fmt::Display for SemanticVersionRequirement {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl VersionRequirement<SemanticVersion> for SemanticVersionRequirement {
-    fn satisfies(&self, version: &SemanticVersion) -> bool {
-        self.0.matches(&version.0)
-    }
-
-    fn parse(input: &str) -> Result<Self, RequirementParseError>
-    where
-        Self: Sized,
-    {
-        semver::VersionReq::parse(input)
-            .map_err(RequirementParseError)
-            .map(SemanticVersionRequirement)
-    }
-}
 
 impl VersionRequirement<GoVersion> for GoRequirement {
     fn satisfies<'a>(&self, version: &GoVersion) -> bool {
@@ -73,54 +52,6 @@ impl fmt::Display for GoRequirement {
 /// - Ability to parse go-flavored versions
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct GoVersion(SemanticVersion);
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
-#[serde(try_from = "String", into = "String")]
-pub struct SemanticVersion(semver::Version);
-
-impl fmt::Display for SemanticVersion {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl TryFrom<String> for SemanticVersion {
-    type Error = SemanticVersionParseError;
-
-    fn try_from(val: String) -> Result<Self, Self::Error> {
-        SemanticVersion::parse(&val)
-    }
-}
-
-impl From<SemanticVersion> for String {
-    fn from(ver: SemanticVersion) -> Self {
-        format!("{ver}")
-    }
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum SemanticVersionParseError {
-    #[error("Couldn't parse semantic version: {0}")]
-    SemVer(#[from] semver::Error),
-}
-
-impl Version for SemanticVersion {
-    type Error = SemanticVersionParseError;
-
-    /// Parses a semver `&str` as a `Version`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use heroku_inventory_utils::vrs::Version;
-    /// let req = heroku_go_utils::vrs::SemanticVersion::parse("1.14.2").unwrap();
-    /// ```
-    fn parse(version: &str) -> Result<Self, Self::Error> {
-        semver::Version::parse(version)
-            .map(SemanticVersion)
-            .map_err(SemanticVersionParseError::SemVer)
-    }
-}
 
 #[derive(thiserror::Error, Debug)]
 pub enum GoVersionParseError {
