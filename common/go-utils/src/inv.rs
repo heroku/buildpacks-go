@@ -1,4 +1,4 @@
-use crate::vrs::{GoVersion, Version, VersionParseError};
+use crate::vrs::{GoVersion, GoVersionParseError, Version};
 use core::fmt::{self, Display};
 use heroku_inventory_utils::checksum::{Algorithm, Checksum, Error as ChecksumError};
 use heroku_inventory_utils::vrs::VersionRequirement;
@@ -163,7 +163,7 @@ struct GoFile {
 #[derive(thiserror::Error, Debug)]
 pub enum GoFileConversionError {
     #[error(transparent)]
-    Version(#[from] VersionParseError),
+    Version(#[from] GoVersionParseError),
     #[error(transparent)]
     Arch(#[from] UnsupportedArchError),
     #[error(transparent)]
