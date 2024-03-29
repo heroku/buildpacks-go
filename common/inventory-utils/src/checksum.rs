@@ -56,7 +56,13 @@ pub struct Checksum {
 }
 
 impl Checksum {
-    pub(crate) fn new(algorithm: Algorithm, value: String) -> Result<Self, Error> {
+    /// Initialize a new Checksum
+    ///
+    /// # Errors
+    ///
+    /// Will return an Error if the checksum value doesn't match the expected
+    /// length for the algorithm
+    pub fn new(algorithm: Algorithm, value: String) -> Result<Self, Error> {
         algorithm.validate_length(&value)?;
         Ok(Checksum { algorithm, value })
     }
