@@ -1,7 +1,8 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use heroku_go_utils::inv::{list_upstream_artifacts, Inventory};
+use heroku_go_utils::inv::list_upstream_artifacts;
+use heroku_inventory_utils::inv::Inventory;
 use std::{env, fs, process};
 
 /// Updates the local go inventory.toml with versions published on go.dev.
