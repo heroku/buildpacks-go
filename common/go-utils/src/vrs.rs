@@ -11,8 +11,6 @@ use std::fmt;
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct GoRequirement(semver::VersionReq);
 
-impl Version for GoVersion {}
-
 impl VersionRequirement<GoVersion> for GoRequirement {
     fn satisfies<'a>(&self, version: &GoVersion) -> bool {
         self.0.matches(&version.0)
@@ -67,19 +65,17 @@ pub enum GoVersionParseError {
     Captures,
 }
 
-impl GoVersion {
+impl Version for GoVersion {
+    type Error = GoVersionParseError;
     /// Parses a semver `&str` as a `Version`
     ///
     /// # Examples
     ///
     /// ```
+    /// use heroku_inventory_utils::vrs::Version;
     /// let req = heroku_go_utils::vrs::GoVersion::parse("1.14.2").unwrap();
     /// ```
-    ///
-    /// # Errors
-    ///
-    /// Invalid semver `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse(version: &str) -> Result<GoVersion, GoVersionParseError> {
+    fn parse(version: &str) -> Result<Self, Self::Error> {
         semver::Version::parse(version)
             .map(GoVersion)
             .map_err(GoVersionParseError::SemVer)
@@ -90,13 +86,14 @@ impl GoVersion {
     /// # Examples
     ///
     /// ```
+    /// use heroku_inventory_utils::vrs::Version;
     /// let req = heroku_go_utils::vrs::GoVersion::parse_go("go1.12").unwrap();
     /// ```
     ///
     /// # Errors
     ///
     /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse_go(go_version: &str) -> Result<GoVersion, GoVersionParseError> {
+    fn parse_go(go_version: &str) -> Result<GoVersion, Self::Error> {
         let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
         let caps = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?
