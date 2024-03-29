@@ -14,12 +14,12 @@ pub struct GoRequirement(semver::VersionReq);
 #[error("Couldn't parse Go version requirement: {0}")]
 pub struct RequirementParseError(#[from] semver::Error);
 
-pub trait Version {}
+pub trait Version: Clone {}
 
 impl Version for GoVersion {}
 pub trait VersionRequirement<T>: Display
 where
-    T: Version,
+    T: Version + std::marker::Sized,
 {
     fn satisfies(&self, version: &T) -> bool;
 
