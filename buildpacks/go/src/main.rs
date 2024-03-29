@@ -5,7 +5,7 @@ mod proc;
 mod tgz;
 
 use heroku_go_utils::inv::Inventory;
-use heroku_go_utils::vrs::GoRequirement;
+use heroku_go_utils::vrs::{GoRequirement, GoVersion};
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
 use layers::dist::{DistLayer, DistLayerError};
@@ -62,7 +62,8 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let inv: Inventory = toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
+        let inv: Inventory<GoVersion> =
+            toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
             .map_err(GoBuildpackError::GoModConfig)?;

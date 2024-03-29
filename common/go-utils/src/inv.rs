@@ -1,6 +1,7 @@
 use crate::checksum::{Algorithm, Checksum, Error as ChecksumError};
 use crate::vrs::{GoVersion, Version, VersionParseError, VersionRequirement};
 use core::fmt::{self, Display};
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
 use std::{env::consts, fs, str::FromStr};
@@ -11,15 +12,17 @@ const GO_HOST_URL: &str = "https://go.dev/dl";
 
 /// Represents a collection of known go release artifacts.
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Inventory {
-    pub artifacts: Vec<Artifact<GoVersion>>,
+pub struct Inventory<V>
+where
+    V: Version,
+{
+    pub artifacts: Vec<Artifact<V>>,
 }
-
 /// Represents a known go release artifact in the inventory.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct Artifact<V>
 where
-    V: Version + Clone,
+    V: Version,
 {
     pub version: String,
     pub semantic_version: V,
@@ -29,19 +32,13 @@ where
     pub checksum: Checksum,
 }
 
-impl<V> Hash for Artifact<V>
-where
-    V: Version + Clone,
-{
+impl<V: Version> Hash for Artifact<V> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.checksum.value.hash(state);
     }
 }
 
-impl<V> Display for Artifact<V>
-where
-    V: Version + Clone,
-{
+impl<V: Version> Display for Artifact<V> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} ({}-{})", self.version, self.os, self.arch)
     }
@@ -116,8 +113,11 @@ pub enum ReadInventoryError {
     Parse(#[from] toml::de::Error),
 }
 
-impl Inventory {
-    /// Read inventory.toml to an `Inventory`.
+impl<V> Inventory<V>
+where
+    V: Version + DeserializeOwned,
+{
+    /// Read inventory.toml to an `Inventory<V>`.
     ///
     /// # Errors
     ///
@@ -130,9 +130,9 @@ impl Inventory {
     /// Find the first artifact from the inventory that satisfies a
     /// `Requirement`.
     #[must_use]
-    pub fn resolve<V>(&self, requirement: &V) -> Option<&Artifact<GoVersion>>
+    pub fn resolve<R>(&self, requirement: &R) -> Option<&Artifact<V>>
     where
-        V: VersionRequirement<GoVersion>,
+        R: VersionRequirement<V>,
     {
         match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => self
