@@ -25,7 +25,7 @@ impl VersionRequirement<GoVersion> for GoRequirement {
     /// # Examples
     ///
     /// ```
-    /// use heroku_go_utils::vrs::VersionRequirement;
+    /// use heroku_inventory_utils::vrs::VersionRequirement;
     /// let req = heroku_go_utils::vrs::GoRequirement::parse("go1.0").unwrap();
     /// ```
     ///
@@ -60,7 +60,7 @@ impl fmt::Display for GoRequirement {
 pub struct GoVersion(semver::Version);
 
 #[derive(thiserror::Error, Debug)]
-pub enum VersionParseError {
+pub enum GoVersionParseError {
     #[error("Couldn't parse go version: {0}")]
     SemVer(#[from] semver::Error),
     #[error("Internal buildpack issue parsing go version regex: {0}")]
@@ -81,10 +81,10 @@ impl GoVersion {
     /// # Errors
     ///
     /// Invalid semver `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse(version: &str) -> Result<GoVersion, VersionParseError> {
+    pub fn parse(version: &str) -> Result<GoVersion, GoVersionParseError> {
         semver::Version::parse(version)
             .map(GoVersion)
-            .map_err(VersionParseError::SemVer)
+            .map_err(GoVersionParseError::SemVer)
     }
 
     /// Parses a go version `&str` as a `Version`
@@ -98,12 +98,12 @@ impl GoVersion {
     /// # Errors
     ///
     /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    pub fn parse_go(go_version: &str) -> Result<GoVersion, VersionParseError> {
+    pub fn parse_go(go_version: &str) -> Result<GoVersion, GoVersionParseError> {
         let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
 
         let caps = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?
             .captures(stripped_version)
-            .ok_or(VersionParseError::Captures)?;
+            .ok_or(GoVersionParseError::Captures)?;
 
         let mut composed_version = [
             caps.get(1).map_or("0", |major| major.as_str()),
@@ -122,7 +122,7 @@ impl GoVersion {
 }
 
 impl TryFrom<String> for GoVersion {
-    type Error = VersionParseError;
+    type Error = GoVersionParseError;
 
     fn try_from(val: String) -> Result<Self, Self::Error> {
         GoVersion::parse(&val)
