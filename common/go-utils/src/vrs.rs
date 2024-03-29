@@ -1,7 +1,8 @@
+use heroku_inventory_utils::vrs::{RequirementParseError, VersionRequirement};
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::fmt::{self};
+use std::fmt;
 
 /// `Requirement` is a wrapper around `semver::Requirement` that adds
 /// - Ability to parse go-flavored requirements
@@ -10,32 +11,9 @@ use std::fmt::{self};
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct GoRequirement(semver::VersionReq);
 
-#[derive(thiserror::Error, Debug)]
-#[error("Couldn't parse Go version requirement: {0}")]
-pub struct RequirementParseError(#[from] semver::Error);
-
 pub trait Version {}
 
 impl Version for GoVersion {}
-pub trait VersionRequirement<T> {
-    fn satisfies(&self, version: &T) -> bool;
-
-    /// Parses a semver requirement `&str` as a `Requirement`.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use heroku_go_utils::vrs::VersionRequirement;
-    /// let req = heroku_go_utils::vrs::GoRequirement::parse("~1.0").unwrap();
-    /// ```
-    ///
-    /// # Errors
-    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
-    /// will return an error.
-    fn parse(input: &str) -> Result<Self, RequirementParseError>
-    where
-        Self: std::marker::Sized;
-}
 
 impl VersionRequirement<GoVersion> for GoRequirement {
     fn satisfies<'a>(&self, version: &GoVersion) -> bool {

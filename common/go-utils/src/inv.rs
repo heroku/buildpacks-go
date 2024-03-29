@@ -1,6 +1,7 @@
-use crate::vrs::{GoVersion, Version, VersionParseError, VersionRequirement};
+use crate::vrs::{GoVersion, Version, VersionParseError};
 use core::fmt::{self, Display};
 use heroku_inventory_utils::checksum::{Algorithm, Checksum, Error as ChecksumError};
+use heroku_inventory_utils::vrs::VersionRequirement;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
