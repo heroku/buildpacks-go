@@ -29,7 +29,9 @@ impl VersionRequirement<SemanticVersion> for SemanticVersionRequirement {
     where
         Self: Sized,
     {
-        parse_semver_requirement(input).map(SemanticVersionRequirement)
+        semver::VersionReq::parse(input)
+            .map_err(RequirementParseError)
+            .map(SemanticVersionRequirement)
     }
 }
 
@@ -58,10 +60,6 @@ impl VersionRequirement<GoVersion> for GoRequirement {
             })
             .map(GoRequirement)
     }
-}
-
-fn parse_semver_requirement(input: &str) -> Result<semver::VersionReq, RequirementParseError> {
-    semver::VersionReq::parse(input).map_err(RequirementParseError)
 }
 
 impl fmt::Display for GoRequirement {
