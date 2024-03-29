@@ -9,7 +9,7 @@ use std::hash::Hash;
 use std::{fmt::Display, str::FromStr};
 
 /// Represents an inventory of artifacts.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Inventory<V>
 where
     V: Version,
@@ -18,7 +18,7 @@ where
 }
 
 /// Represents a known artifact in the inventory.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct Artifact<V>
 where
     V: Version,
@@ -31,7 +31,7 @@ where
     pub checksum: Checksum,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
     Linux,
