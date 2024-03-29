@@ -1,11 +1,9 @@
+use crate::vrs::{RequirementParseError, Version, VersionRequirement};
 use core::fmt;
+use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
-use serde::{Deserialize, Serialize};
-
-use crate::vrs::{RequirementParseError, Version, VersionRequirement};
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq, Ord, PartialOrd)]
 #[serde(try_from = "String", into = "String")]
 pub struct SemanticVersion(semver::Version);
 
