@@ -41,7 +41,7 @@ impl TryFrom<&GoFile> for Artifact<GoVersion> {
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
         Ok(Self {
             version: value.version.clone(),
-            semantic_version: GoVersion::parse_go(&value.version)?,
+            semantic_version: GoVersion::parse(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
             checksum: Checksum::new(Algorithm::Sha256, value.sha256.to_string())?,
