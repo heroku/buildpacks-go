@@ -440,6 +440,7 @@ version = "0.0.0"
 dependencies = [
  "flate2",
  "heroku-go-utils",
+ "heroku-inventory-utils",
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",
@@ -469,6 +470,7 @@ dependencies = [
 name = "heroku-inventory-utils"
 version = "0.0.0"
 dependencies = [
+ "semver",
  "serde",
  "thiserror",
 ]
