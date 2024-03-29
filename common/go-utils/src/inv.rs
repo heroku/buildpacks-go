@@ -18,16 +18,16 @@ where
 {
     pub artifacts: Vec<Artifact<V>>,
 }
-/// Represents a known go release artifact in the inventory.
+/// Represents a known artifact in the inventory.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct Artifact<V>
 where
     V: Version,
 {
-    pub version: String,
+    version: String,
     pub semantic_version: V,
-    pub os: Os,
-    pub arch: Arch,
+    os: Os,
+    arch: Arch,
     pub url: String,
     pub checksum: Checksum,
 }
@@ -46,7 +46,7 @@ impl<V: Version> Display for Artifact<V> {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum Os {
+enum Os {
     Linux,
 }
 
@@ -75,7 +75,7 @@ impl FromStr for Os {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum Arch {
+enum Arch {
     X86_64,
     Aarch64,
 }
