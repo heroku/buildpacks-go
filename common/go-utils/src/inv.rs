@@ -1,5 +1,6 @@
 use heroku_inventory_utils::checksum::{Algorithm, Checksum, Error as ChecksumError};
 use heroku_inventory_utils::inv::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError};
+use heroku_inventory_utils::vrs::Version;
 use serde::Deserialize;
 use vrs::{GoVersion, GoVersionParseError};
 
