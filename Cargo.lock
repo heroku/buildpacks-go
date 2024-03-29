@@ -465,6 +465,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "heroku-inventory-utils"
+version = "0.0.0"
+
+[[package]]
 name = "home"
 version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
