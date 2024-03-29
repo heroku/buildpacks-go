@@ -1,4 +1,4 @@
-use heroku_inventory_utils::vrs::{RequirementParseError, VersionRequirement};
+use heroku_inventory_utils::vrs::{RequirementParseError, Version, VersionRequirement};
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
@@ -10,8 +10,6 @@ use std::fmt;
 /// The derived `Default` implementation creates a wildcard version `Requirement`.
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct GoRequirement(semver::VersionReq);
-
-pub trait Version {}
 
 impl Version for GoVersion {}
 

@@ -1,3 +1,5 @@
+pub trait Version {}
+
 pub trait VersionRequirement<T> {
     fn satisfies(&self, version: &T) -> bool;
 
