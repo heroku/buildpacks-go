@@ -5,12 +5,6 @@ pub trait Version: Sized {
     ///
     /// Invalid Version `&str`s for the implementation will return an error.
     fn parse(version: &str) -> Result<Self, Self::Error>;
-
-    /// # Errors
-    ///
-    /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    /// This trait fn will be refactored.
-    fn parse_go(go_version: &str) -> Result<Self, Self::Error>;
 }
 
 pub trait VersionRequirement<T> {

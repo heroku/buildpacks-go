@@ -109,14 +109,18 @@ pub enum SemanticVersionParseError {
 impl Version for SemanticVersion {
     type Error = SemanticVersionParseError;
 
+    /// Parses a semver `&str` as a `Version`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use heroku_inventory_utils::vrs::Version;
+    /// let req = heroku_go_utils::vrs::SemanticVersion::parse("1.14.2").unwrap();
+    /// ```
     fn parse(version: &str) -> Result<Self, Self::Error> {
         semver::Version::parse(version)
             .map(SemanticVersion)
             .map_err(SemanticVersionParseError::SemVer)
-    }
-
-    fn parse_go(go_version: &str) -> Result<Self, Self::Error> {
-        todo!()
     }
 }
 
@@ -134,19 +138,6 @@ pub enum GoVersionParseError {
 
 impl Version for GoVersion {
     type Error = GoVersionParseError;
-    /// Parses a semver `&str` as a `Version`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use heroku_inventory_utils::vrs::Version;
-    /// let req = heroku_go_utils::vrs::GoVersion::parse("1.14.2").unwrap();
-    /// ```
-    fn parse(version: &str) -> Result<Self, Self::Error> {
-        SemanticVersion::parse(version)
-            .map(GoVersion)
-            .map_err(GoVersionParseError::SemanticVersion)
-    }
 
     /// Parses a go version `&str` as a `Version`
     ///
@@ -154,14 +145,14 @@ impl Version for GoVersion {
     ///
     /// ```
     /// use heroku_inventory_utils::vrs::Version;
-    /// let req = heroku_go_utils::vrs::GoVersion::parse_go("go1.12").unwrap();
+    /// let req = heroku_go_utils::vrs::GoVersion::parse("go1.12").unwrap();
     /// ```
     ///
     /// # Errors
     ///
     /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    fn parse_go(go_version: &str) -> Result<GoVersion, Self::Error> {
-        let stripped_version = go_version.strip_prefix("go").unwrap_or(go_version);
+    fn parse(version: &str) -> Result<Self, Self::Error> {
+        let stripped_version = version.strip_prefix("go").unwrap_or(version);
 
         let caps = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?
             .captures(stripped_version)
@@ -179,7 +170,9 @@ impl Version for GoVersion {
             composed_version.push_str(pre.as_str());
         };
 
-        Self::parse(&composed_version)
+        SemanticVersion::parse(&composed_version)
+            .map(GoVersion)
+            .map_err(GoVersionParseError::SemanticVersion)
     }
 }
 
@@ -225,10 +218,11 @@ mod tests {
         ];
 
         for (input, expected_str) in go_versions {
-            let actual = GoVersion::parse_go(input).expect("Failed to parse go input version");
+            let actual = GoVersion::parse(input).expect("Failed to parse go input version");
             let actual_str = actual.to_string();
-            let expected =
-                GoVersion::parse(expected_str).expect("Failed to parse go expected version");
+            let expected = GoVersion(
+                SemanticVersion::parse(expected_str).expect("Failed to parse go expected version"),
+            );
             assert_eq!(
                 expected, actual,
                 "Expected {input} to parse as {expected} but got {actual}."
