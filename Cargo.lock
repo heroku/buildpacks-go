@@ -456,6 +456,7 @@ dependencies = [
 name = "heroku-go-utils"
 version = "0.0.0"
 dependencies = [
+ "heroku-inventory-utils",
  "regex",
  "semver",
  "serde",
@@ -467,6 +468,10 @@ dependencies = [
 [[package]]
 name = "heroku-inventory-utils"
 version = "0.0.0"
+dependencies = [
+ "serde",
+ "thiserror",
+]
 
 [[package]]
 name = "home"
