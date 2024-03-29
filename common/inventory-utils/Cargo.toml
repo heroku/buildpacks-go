@@ -1,0 +1,9 @@
+[package]
+name = "heroku-inventory-utils"
+rust-version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
