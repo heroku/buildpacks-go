@@ -11,7 +11,7 @@ pub trait VersionRequirement<T> {
     fn satisfies(&self, version: &T) -> bool;
 
     /// Parses a &str as a `VersionRequirement<Version>`.
-
+    ///
     /// # Errors
     /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
     /// will return an error.
