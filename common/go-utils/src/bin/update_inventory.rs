@@ -13,10 +13,14 @@ fn main() {
     });
 
     // List available upstream release versions.
-    let remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
+    let mut remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
         eprintln!("Failed to fetch upstream go versions: {e}");
         process::exit(4);
     });
+
+    remote_artifacts.sort_by_key(|a| a.arch.to_string());
+    remote_artifacts.sort_by_key(|a| a.version.clone());
+    remote_artifacts.reverse();
 
     let inventory = Inventory {
         artifacts: remote_artifacts,
