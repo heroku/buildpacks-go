@@ -52,10 +52,7 @@ where
     /// Prints a human-readable inventory diff. Useful for generating
     /// commit messages and changelogs for automated inventory updates.
     fn diff_inventory() {
-        let path = std::env::args().nth(1).unwrap_or_else(|| {
-            eprintln!("$ diff_inventory path/to/inventory.toml");
-            std::process::exit(1);
-        });
+        let path = inventory_path();
 
         let upstream_artifacts: HashSet<Artifact<V>> = Self::list_upstream_artifacts()
             .unwrap_or_else(|e| {
