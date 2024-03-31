@@ -39,7 +39,8 @@ fn main() {
     .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
     .for_each(|(action, artifacts)| {
         let mut list: Vec<&Artifact<GoVersion>> = artifacts.iter().collect();
-        list.sort_by_key(|a| &a.version);
+        list.sort();
+        list.reverse();
         println!(
             "{} {}.",
             action,
