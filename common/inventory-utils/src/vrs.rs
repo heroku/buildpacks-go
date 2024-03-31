@@ -1,4 +1,6 @@
-pub trait Version: Sized {
+use std::fmt::Display;
+
+pub trait Version: Display + Sized {
     type Error;
 
     /// # Errors
