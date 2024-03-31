@@ -18,7 +18,7 @@ where
 }
 
 /// Represents a known artifact in the inventory.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct Artifact<V>
 where
     V: Version,
@@ -28,6 +28,18 @@ where
     pub arch: Arch,
     pub url: String,
     pub checksum: Checksum,
+}
+
+impl<V: Version> Ord for Artifact<V> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        (&self.version, &self.arch).cmp(&(&other.version, &other.arch))
+    }
+}
+
+impl<V: Version> PartialOrd for Artifact<V> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Ord, PartialOrd)]

@@ -18,8 +18,7 @@ fn main() {
         process::exit(4);
     });
 
-    remote_artifacts.sort_by_key(|a| a.arch.clone());
-    remote_artifacts.sort_by_key(|a| a.version.clone());
+    remote_artifacts.sort();
     remote_artifacts.reverse();
 
     let inventory = Inventory {
