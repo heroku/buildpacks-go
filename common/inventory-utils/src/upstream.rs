@@ -19,6 +19,7 @@ where
     /// Issues listing upstream artifacts will return an Error
     fn list_upstream_artifacts() -> Result<HashSet<Artifact<V>>, Self::Error>;
 
+    /// Updates a local inventory.toml with versions published upstream.
     fn update_local() {
         // List available upstream release versions.
 
@@ -53,6 +54,9 @@ where
         });
     }
 
+    /// Prints a human-readable software inventory difference. Useful
+    /// for generating commit messages and changelogs for automated inventory
+    /// updates.
     fn diff_inventory() {
         let path = std::env::args().nth(1).unwrap_or_else(|| {
             eprintln!("$ diff_inventory path/to/inventory.toml");
