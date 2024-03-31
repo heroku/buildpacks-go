@@ -75,3 +75,58 @@ impl VersionRequirement<SemanticVersion> for SemanticVersionRequirement {
             .map(SemanticVersionRequirement)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        checksum::{Algorithm, Checksum},
+        inv::{Arch, Artifact, Os},
+    };
+
+    use super::*;
+    use std::hash::{BuildHasher, RandomState};
+
+    fn create_artifact() -> Artifact<SemanticVersion> {
+        Artifact::<SemanticVersion> {
+            version: SemanticVersion::parse("1.7.2").unwrap(),
+            os: Os::Linux,
+            arch: Arch::X86_64,
+            url: String::from("foo"),
+            checksum: Checksum::new(
+                Algorithm::Sha256,
+                "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+            )
+            .unwrap(),
+        }
+    }
+
+    #[test]
+    fn test_artifact_display_format() {
+        let artifact = create_artifact();
+
+        assert_eq!("1.7.2 (linux-x86_64)", artifact.to_string());
+    }
+
+    #[test]
+    fn test_artifact_hash_implementation() {
+        let artifact = create_artifact();
+
+        let state = RandomState::new();
+        assert_eq!(
+            state.hash_one(&artifact.checksum.value),
+            state.hash_one(&artifact)
+        );
+    }
+
+    #[test]
+    fn test_artifact_serialization() {
+        let artifact = create_artifact();
+        let serialized = toml::to_string(&artifact).unwrap();
+        assert!(serialized
+            .contains("sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"));
+        assert_eq!(
+            artifact,
+            toml::from_str::<Artifact<SemanticVersion>>(&serialized).unwrap()
+        );
+    }
+}
