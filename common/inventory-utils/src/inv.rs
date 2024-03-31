@@ -18,7 +18,7 @@ where
 }
 
 /// Represents a known artifact in the inventory.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Artifact<V>
 where
     V: Version,
@@ -30,17 +30,17 @@ where
     pub checksum: Checksum,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Ord, PartialOrd)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
     Linux,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(rename_all = "lowercase")]
 pub enum Arch {
-    X86_64,
     Aarch64,
+    X86_64,
 }
 
 impl<V: Version> Hash for Artifact<V> {
