@@ -51,9 +51,10 @@ where
         });
     }
 
-    /// Prints a human-readable inventory diff. Useful for generating
-    /// commit messages and changelogs for automated inventory updates.
-    fn diff_inventory() {
+    /// Prints a human-readable inventory diff between upstream and the
+    /// specified inventory path. Useful for generating commit messages
+    /// and changelogs for automated inventory updates.
+    fn print_diff() {
         let path = inventory_path();
 
         let inventory_artifacts: HashSet<Artifact<V>> = Inventory::read(&path)
