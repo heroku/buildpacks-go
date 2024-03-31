@@ -1,12 +1,36 @@
 use crate::vrs;
 use heroku_inventory_utils::checksum::{Algorithm, Checksum, Error as ChecksumError};
-use heroku_inventory_utils::inv::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError};
+use heroku_inventory_utils::inv::{
+    Arch, Artifact, Inventory, Os, UnsupportedArchError, UnsupportedOsError, UpstreamInventory,
+};
 use heroku_inventory_utils::vrs::Version;
 use serde::Deserialize;
 use vrs::{GoVersion, GoVersionParseError};
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://go.dev/dl";
+
+impl UpstreamInventory<GoVersion> for Inventory<GoVersion> {
+    type Error = ListUpstreamArtifactsError;
+
+    fn list_upstream_artifacts(
+    ) -> Result<std::collections::HashSet<Artifact<GoVersion>>, Self::Error> {
+        ureq::get(GO_RELEASES_URL)
+            .call()
+            .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
+            .into_json::<Vec<GoRelease>>()
+            .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
+            .iter()
+            .flat_map(|release| &release.files)
+            .filter(|file| {
+                !file.sha256.is_empty()
+                    && file.os == "linux"
+                    && (file.arch == "amd64" || file.arch == "arm64")
+            })
+            .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
+            .collect()
+    }
+}
 
 #[derive(Debug, Deserialize)]
 struct GoRelease {
@@ -56,35 +80,6 @@ pub enum ListUpstreamArtifactsError {
     ParseJsonResponse(std::io::Error),
     #[error(transparent)]
     Conversion(#[from] GoFileConversionError),
-}
-
-/// List known go artifacts from releases on go.dev.
-///
-/// # Example
-///
-/// ```
-/// let versions = heroku_go_utils::inv::list_upstream_artifacts().unwrap();
-/// ```
-///
-/// # Errors
-///
-/// HTTP issues connecting to the upstream releases endpoint, as well
-/// as json and Go version parsing issues, will return an error.
-pub fn list_upstream_artifacts() -> Result<Vec<Artifact<GoVersion>>, ListUpstreamArtifactsError> {
-    ureq::get(GO_RELEASES_URL)
-        .call()
-        .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
-        .into_json::<Vec<GoRelease>>()
-        .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
-        .iter()
-        .flat_map(|release| &release.files)
-        .filter(|file| {
-            !file.sha256.is_empty()
-                && file.os == "linux"
-                && (file.arch == "amd64" || file.arch == "arm64")
-        })
-        .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
-        .collect::<Result<Vec<_>, _>>()
 }
 
 #[cfg(test)]

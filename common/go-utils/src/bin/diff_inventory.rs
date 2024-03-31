@@ -1,7 +1,8 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
+use heroku_go_utils::vrs::GoVersion;
+use heroku_inventory_utils::inv::UpstreamInventory;
 use heroku_inventory_utils::inv::{Artifact, Inventory};
 use std::collections::HashSet;
 
@@ -14,13 +15,11 @@ fn main() {
         std::process::exit(1);
     });
 
-    let upstream_artifacts: HashSet<Artifact<GoVersion>> = list_upstream_artifacts()
+    let upstream_artifacts: HashSet<Artifact<GoVersion>> = Inventory::list_upstream_artifacts()
         .unwrap_or_else(|e| {
             eprintln!("Failed to fetch upstream go versions: {e}");
             std::process::exit(1)
-        })
-        .into_iter()
-        .collect();
+        });
 
     let inventory_artifacts: HashSet<Artifact<GoVersion>> = Inventory::read(&inventory_path)
         .unwrap_or_else(|e| {
