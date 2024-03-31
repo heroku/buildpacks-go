@@ -462,7 +462,6 @@ dependencies = [
  "semver",
  "serde",
  "thiserror",
- "toml",
  "ureq",
 ]
 
