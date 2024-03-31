@@ -54,12 +54,6 @@ where
     fn diff_inventory() {
         let path = inventory_path();
 
-        let upstream_artifacts: HashSet<Artifact<V>> = Self::list_upstream_artifacts()
-            .unwrap_or_else(|e| {
-                eprintln!("Failed to fetch upstream artifacts: {e}");
-                std::process::exit(1)
-            });
-
         let inventory_artifacts: HashSet<Artifact<V>> = Inventory::read(&path)
             .unwrap_or_else(|e| {
                 eprintln!("Error reading inventory at '{path}': {e}");
@@ -68,6 +62,12 @@ where
             .artifacts
             .into_iter()
             .collect();
+
+        let upstream_artifacts: HashSet<Artifact<V>> = Self::list_upstream_artifacts()
+            .unwrap_or_else(|e| {
+                eprintln!("Failed to fetch upstream artifacts: {e}");
+                std::process::exit(1)
+            });
 
         [
             ("Added", &upstream_artifacts - &inventory_artifacts),
