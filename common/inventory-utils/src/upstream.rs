@@ -4,7 +4,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use std::collections::HashSet;
 use std::fmt::Display;
-use std::{fs, process};
+use std::{env, fs, process};
 
 // Todo: Refactor with a different name
 #[allow(clippy::module_name_repetitions)]
@@ -19,8 +19,14 @@ where
     /// Issues listing upstream artifacts will return an Error
     fn list_upstream_artifacts() -> Result<HashSet<Artifact<V>>, Self::Error>;
 
-    fn update_local(path: String) {
+    fn update_local() {
         // List available upstream release versions.
+
+        let path = env::args().nth(1).unwrap_or_else(|| {
+            eprintln!("Usage: update_inventory <path/to/inventory.toml>");
+            process::exit(2);
+        });
+
         let mut remote_artifacts: Vec<Artifact<V>> = Self::list_upstream_artifacts()
             .unwrap_or_else(|e| {
                 eprintln!("Failed to fetch upstream go versions: {e}");
@@ -47,7 +53,12 @@ where
         });
     }
 
-    fn diff_inventory(path: String) {
+    fn diff_inventory() {
+        let path = std::env::args().nth(1).unwrap_or_else(|| {
+            eprintln!("$ diff_inventory path/to/inventory.toml");
+            std::process::exit(1);
+        });
+
         let upstream_artifacts: HashSet<Artifact<V>> = Self::list_upstream_artifacts()
             .unwrap_or_else(|e| {
                 eprintln!("Failed to fetch upstream go versions: {e}");
