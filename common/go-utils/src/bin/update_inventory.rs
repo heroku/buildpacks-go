@@ -6,5 +6,5 @@ use heroku_inventory_utils::inv::Inventory;
 use heroku_inventory_utils::upstream::UpstreamInventory;
 
 fn main() {
-    Inventory::<GoVersion>::update_local();
+    Inventory::<GoVersion>::pull();
 }

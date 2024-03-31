@@ -19,8 +19,10 @@ where
     /// Issues listing upstream artifacts will return an Error
     fn list_upstream_artifacts() -> Result<HashSet<Artifact<V>>, Self::Error>;
 
-    /// Updates a local inventory.toml with versions published upstream.
-    fn update_local() {
+    /// Fetches upstream artifacts and updates local inventory. This function
+    /// will create (or overwrite) the inventory at the specified file path,
+    /// based solely on the artifacts listed by upstream.
+    fn pull() {
         let path = inventory_path();
 
         let mut remote_artifacts: Vec<Artifact<V>> = Self::list_upstream_artifacts()
