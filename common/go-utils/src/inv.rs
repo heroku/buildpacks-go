@@ -39,8 +39,7 @@ impl TryFrom<&GoFile> for Artifact<GoVersion> {
 
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
         Ok(Self {
-            version: value.version.clone(),
-            semantic_version: GoVersion::parse(&value.version)?,
+            version: GoVersion::parse(&value.version)?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
             checksum: Checksum::new(Algorithm::Sha256, value.sha256.to_string())?,
@@ -95,8 +94,7 @@ mod tests {
 
     fn create_artifact() -> Artifact<GoVersion> {
         Artifact::<GoVersion> {
-            version: String::from("go1.7.2"),
-            semantic_version: GoVersion::parse("1.7.2").unwrap(),
+            version: GoVersion::parse("1.7.2").unwrap(),
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),
@@ -112,7 +110,7 @@ mod tests {
     fn test_artifact_display_format() {
         let artifact = create_artifact();
 
-        assert_eq!("go1.7.2 (linux-x86_64)", artifact.to_string());
+        assert_eq!("Go 1.7.2 (linux-x86_64)", artifact.to_string());
     }
 
     #[test]

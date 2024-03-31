@@ -23,8 +23,7 @@ pub struct Artifact<V>
 where
     V: Version,
 {
-    pub version: String,
-    pub semantic_version: V,
+    pub version: V,
     pub os: Os,
     pub arch: Arch,
     pub url: String,
@@ -138,7 +137,7 @@ where
                 .artifacts
                 .iter()
                 .filter(|artifact| artifact.os == os && artifact.arch == arch)
-                .find(|artifact| requirement.satisfies(&artifact.semantic_version)),
+                .find(|artifact| requirement.satisfies(&artifact.version)),
             (_, _) => None,
         }
     }

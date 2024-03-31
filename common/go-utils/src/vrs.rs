@@ -112,15 +112,9 @@ impl TryFrom<String> for GoVersion {
     }
 }
 
-impl From<GoVersion> for String {
-    fn from(ver: GoVersion) -> Self {
-        format!("{ver}")
-    }
-}
-
 impl fmt::Display for GoVersion {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
+        write!(f, "Go {}", self.0)
     }
 }
 
@@ -156,7 +150,8 @@ mod tests {
                 "Expected {input} to parse as {expected} but got {actual}."
             );
             assert_eq!(
-                expected_str, actual_str,
+                format!("Go {expected_str}"),
+                actual_str,
                 "Expected {input} to parse as {expected_str} but got {actual_str}"
             );
         }
