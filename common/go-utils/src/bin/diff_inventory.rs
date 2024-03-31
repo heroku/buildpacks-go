@@ -6,5 +6,5 @@ use heroku_inventory_utils::inv::Inventory;
 use heroku_inventory_utils::upstream::UpstreamInventory;
 
 fn main() {
-    Inventory::<GoVersion>::diff_inventory();
+    Inventory::<GoVersion>::print_diff();
 }
