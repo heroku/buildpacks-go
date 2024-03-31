@@ -1,8 +1,9 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use heroku_go_utils::inv::list_upstream_artifacts;
-use heroku_inventory_utils::inv::Inventory;
+use heroku_go_utils::vrs::GoVersion;
+use heroku_inventory_utils::inv::UpstreamInventory;
+use heroku_inventory_utils::inv::{Artifact, Inventory};
 use std::{env, fs, process};
 
 /// Updates the local go inventory.toml with versions published on go.dev.
@@ -13,10 +14,13 @@ fn main() {
     });
 
     // List available upstream release versions.
-    let mut remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
-        eprintln!("Failed to fetch upstream go versions: {e}");
-        process::exit(4);
-    });
+    let mut remote_artifacts: Vec<Artifact<GoVersion>> = Inventory::list_upstream_artifacts()
+        .unwrap_or_else(|e| {
+            eprintln!("Failed to fetch upstream go versions: {e}");
+            process::exit(4);
+        })
+        .into_iter()
+        .collect();
 
     remote_artifacts.sort();
     remote_artifacts.reverse();

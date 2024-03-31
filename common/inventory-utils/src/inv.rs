@@ -3,10 +3,23 @@ use crate::{checksum::Checksum, vrs::Version};
 use core::fmt;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use std::env::consts;
 use std::fs;
 use std::hash::Hash;
 use std::{fmt::Display, str::FromStr};
+
+pub trait UpstreamInventory<V>
+where
+    V: Version,
+{
+    type Error;
+
+    /// # Errors
+    ///
+    /// Issues listing upstream artifacts will return an Error
+    fn list_upstream_artifacts() -> Result<HashSet<Artifact<V>>, Self::Error>;
+}
 
 /// Represents an inventory of artifacts.
 #[derive(Debug, Serialize, Deserialize)]
