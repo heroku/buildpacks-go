@@ -10,28 +10,6 @@ use vrs::{GoVersion, GoVersionParseError};
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://go.dev/dl";
 
-impl UpstreamInventory<GoVersion> for Inventory<GoVersion> {
-    type Error = ListUpstreamArtifactsError;
-
-    fn list_upstream_artifacts(
-    ) -> Result<std::collections::HashSet<Artifact<GoVersion>>, Self::Error> {
-        ureq::get(GO_RELEASES_URL)
-            .call()
-            .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
-            .into_json::<Vec<GoRelease>>()
-            .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
-            .iter()
-            .flat_map(|release| &release.files)
-            .filter(|file| {
-                !file.sha256.is_empty()
-                    && file.os == "linux"
-                    && (file.arch == "amd64" || file.arch == "arm64")
-            })
-            .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
-            .collect()
-    }
-}
-
 #[derive(Debug, Deserialize)]
 struct GoRelease {
     files: Vec<GoFile>,
@@ -80,6 +58,28 @@ pub enum ListUpstreamArtifactsError {
     ParseJsonResponse(std::io::Error),
     #[error(transparent)]
     Conversion(#[from] GoFileConversionError),
+}
+
+impl UpstreamInventory<GoVersion> for Inventory<GoVersion> {
+    type Error = ListUpstreamArtifactsError;
+
+    fn list_upstream_artifacts(
+    ) -> Result<std::collections::HashSet<Artifact<GoVersion>>, Self::Error> {
+        ureq::get(GO_RELEASES_URL)
+            .call()
+            .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
+            .into_json::<Vec<GoRelease>>()
+            .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
+            .iter()
+            .flat_map(|release| &release.files)
+            .filter(|file| {
+                !file.sha256.is_empty()
+                    && file.os == "linux"
+                    && (file.arch == "amd64" || file.arch == "arm64")
+            })
+            .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
+            .collect()
+    }
 }
 
 #[cfg(test)]
