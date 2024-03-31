@@ -96,7 +96,10 @@ where
 
 fn inventory_path() -> String {
     env::args().nth(1).unwrap_or_else(|| {
-        eprintln!("Usage: update_inventory <path/to/inventory.toml>");
+        eprintln!(
+            "Usage: {} <path/to/inventory.toml>",
+            &env::args().next().expect("args to be > 0")
+        );
         process::exit(2);
     })
 }
