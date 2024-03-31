@@ -11,7 +11,7 @@ use std::{fs, process};
 
 pub trait UpstreamInventory<V>
 where
-    V: Version + DeserializeOwned + Serialize,
+    V: Version + DeserializeOwned + Serialize + Clone,
 {
     type Error: Display;
 
@@ -45,6 +45,43 @@ where
         fs::write(path, toml).unwrap_or_else(|e| {
             eprintln!("Error writing inventory to file: {e}");
             process::exit(7);
+        });
+    }
+
+    fn diff_inventory(path: String) {
+        let upstream_artifacts: HashSet<Artifact<V>> = Self::list_upstream_artifacts()
+            .unwrap_or_else(|e| {
+                eprintln!("Failed to fetch upstream go versions: {e}");
+                std::process::exit(1)
+            });
+
+        let inventory_artifacts: HashSet<Artifact<V>> = Inventory::read(&path)
+            .unwrap_or_else(|e| {
+                eprintln!("Error reading inventory at '{path}': {e}");
+                std::process::exit(1);
+            })
+            .artifacts
+            .into_iter()
+            .collect();
+
+        [
+            ("Added", &upstream_artifacts - &inventory_artifacts),
+            ("Removed", &inventory_artifacts - &upstream_artifacts),
+        ]
+        .iter()
+        .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
+        .for_each(|(action, artifacts)| {
+            let mut list: Vec<&Artifact<V>> = artifacts.iter().collect();
+            list.sort();
+            list.reverse();
+            println!(
+                "{} {}.",
+                action,
+                list.iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
         });
     }
 }
