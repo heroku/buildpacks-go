@@ -3,7 +3,7 @@
 
 use heroku_go_utils::vrs::GoVersion;
 use heroku_inventory_utils::inv::Inventory;
-use heroku_inventory_utils::inv::UpstreamInventory;
+use heroku_inventory_utils::upstream::UpstreamInventory;
 
 /// Prints a human-readable software inventory difference. Useful
 /// for generating commit messages and changelogs for automated inventory

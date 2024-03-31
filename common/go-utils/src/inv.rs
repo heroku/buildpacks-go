@@ -1,11 +1,11 @@
-use crate::vrs;
+use crate::vrs::{GoVersion, GoVersionParseError};
 use heroku_inventory_utils::checksum::{Algorithm, Checksum, Error as ChecksumError};
 use heroku_inventory_utils::inv::{
-    Arch, Artifact, Inventory, Os, UnsupportedArchError, UnsupportedOsError, UpstreamInventory,
+    Arch, Artifact, Inventory, Os, UnsupportedArchError, UnsupportedOsError,
 };
+use heroku_inventory_utils::upstream::UpstreamInventory;
 use heroku_inventory_utils::vrs::Version;
 use serde::Deserialize;
-use vrs::{GoVersion, GoVersionParseError};
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://go.dev/dl";
