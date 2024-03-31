@@ -5,20 +5,48 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::env::consts;
-use std::fs;
 use std::hash::Hash;
 use std::{fmt::Display, str::FromStr};
+use std::{fs, process};
 
 pub trait UpstreamInventory<V>
 where
-    V: Version,
+    V: Version + DeserializeOwned + Serialize,
 {
-    type Error;
+    type Error: Display;
 
     /// # Errors
     ///
     /// Issues listing upstream artifacts will return an Error
     fn list_upstream_artifacts() -> Result<HashSet<Artifact<V>>, Self::Error>;
+
+    fn update_local(path: String) {
+        // List available upstream release versions.
+        let mut remote_artifacts: Vec<Artifact<V>> = Self::list_upstream_artifacts()
+            .unwrap_or_else(|e| {
+                eprintln!("Failed to fetch upstream go versions: {e}");
+                process::exit(4)
+            })
+            .into_iter()
+            .collect();
+
+        remote_artifacts.sort();
+        remote_artifacts.reverse();
+
+        let inventory = Inventory {
+            artifacts: remote_artifacts,
+        };
+
+        let toml = toml::to_string(&inventory).unwrap_or_else(|e| {
+            eprintln!("Error serializing inventory as toml: {e}");
+            process::exit(6);
+        });
+
+        fs::write(path, toml).unwrap_or_else(|e| {
+            eprintln!("Error writing inventory to file: {e}");
+            process::exit(7);
+        });
+    }
 }
 
 /// Represents an inventory of artifacts.

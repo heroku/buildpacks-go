@@ -2,40 +2,16 @@
 #![allow(unused_crate_dependencies)]
 
 use heroku_go_utils::vrs::GoVersion;
+use heroku_inventory_utils::inv::Inventory;
 use heroku_inventory_utils::inv::UpstreamInventory;
-use heroku_inventory_utils::inv::{Artifact, Inventory};
-use std::{env, fs, process};
+use std::{env, process};
 
 /// Updates the local go inventory.toml with versions published on go.dev.
 fn main() {
-    let filename = env::args().nth(1).unwrap_or_else(|| {
+    let path = env::args().nth(1).unwrap_or_else(|| {
         eprintln!("Usage: update_inventory <path/to/inventory.toml>");
         process::exit(2);
     });
 
-    // List available upstream release versions.
-    let mut remote_artifacts: Vec<Artifact<GoVersion>> = Inventory::list_upstream_artifacts()
-        .unwrap_or_else(|e| {
-            eprintln!("Failed to fetch upstream go versions: {e}");
-            process::exit(4);
-        })
-        .into_iter()
-        .collect();
-
-    remote_artifacts.sort();
-    remote_artifacts.reverse();
-
-    let inventory = Inventory {
-        artifacts: remote_artifacts,
-    };
-
-    let toml = toml::to_string(&inventory).unwrap_or_else(|e| {
-        eprintln!("Error serializing inventory as toml: {e}");
-        process::exit(6);
-    });
-
-    fs::write(filename, toml).unwrap_or_else(|e| {
-        eprintln!("Error writing inventory to file: {e}");
-        process::exit(7);
-    });
+    Inventory::<GoVersion>::update_local(path);
 }
