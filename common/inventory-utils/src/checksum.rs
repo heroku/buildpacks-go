@@ -11,7 +11,7 @@ pub enum Error {
     InvalidLength(String),
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq, Ord, PartialOrd)]
 pub enum Algorithm {
     Sha256,
     Sha512,
@@ -48,7 +48,7 @@ impl Display for Algorithm {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize, Ord, PartialOrd)]
 #[serde(try_from = "String", into = "String")]
 pub struct Checksum {
     algorithm: Algorithm,
