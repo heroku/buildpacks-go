@@ -21,12 +21,7 @@ where
 
     /// Updates a local inventory.toml with versions published upstream.
     fn update_local() {
-        // List available upstream release versions.
-
-        let path = env::args().nth(1).unwrap_or_else(|| {
-            eprintln!("Usage: update_inventory <path/to/inventory.toml>");
-            process::exit(2);
-        });
+        let path = inventory_path();
 
         let mut remote_artifacts: Vec<Artifact<V>> = Self::list_upstream_artifacts()
             .unwrap_or_else(|e| {
@@ -97,4 +92,11 @@ where
             );
         });
     }
+}
+
+fn inventory_path() -> String {
+    env::args().nth(1).unwrap_or_else(|| {
+        eprintln!("Usage: update_inventory <path/to/inventory.toml>");
+        process::exit(2);
+    })
 }
