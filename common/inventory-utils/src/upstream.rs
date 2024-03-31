@@ -30,7 +30,7 @@ where
 
         let mut remote_artifacts: Vec<Artifact<V>> = Self::list_upstream_artifacts()
             .unwrap_or_else(|e| {
-                eprintln!("Failed to fetch upstream go versions: {e}");
+                eprintln!("Failed to fetch upstream artifacts: {e}");
                 process::exit(4)
             })
             .into_iter()
@@ -54,9 +54,8 @@ where
         });
     }
 
-    /// Prints a human-readable software inventory difference. Useful
-    /// for generating commit messages and changelogs for automated inventory
-    /// updates.
+    /// Prints a human-readable inventory diff. Useful for generating
+    /// commit messages and changelogs for automated inventory updates.
     fn diff_inventory() {
         let path = std::env::args().nth(1).unwrap_or_else(|| {
             eprintln!("$ diff_inventory path/to/inventory.toml");
@@ -65,7 +64,7 @@ where
 
         let upstream_artifacts: HashSet<Artifact<V>> = Self::list_upstream_artifacts()
             .unwrap_or_else(|e| {
-                eprintln!("Failed to fetch upstream go versions: {e}");
+                eprintln!("Failed to fetch upstream artifacts: {e}");
                 std::process::exit(1)
             });
 
