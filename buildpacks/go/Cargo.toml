@@ -9,18 +9,14 @@ workspace = true
 [dependencies]
 heroku-go-utils = { path = "../../common/go-utils" }
 heroku-inventory-utils = { path = "../../common/inventory-utils" }
-flate2 = { version = "1", default-features = false, features = ["zlib"] }
 # libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
 # so it's pinned to an exact version to isolate it from lockfile refreshes.
 libcnb = { version = "=0.19.0", features = ["trace"] }
 libherokubuildpack = { version = "=0.19.0", default-features = false, features = ["log"] }
 serde = "1"
-sha2 = "0.10"
-tar = { version = "0.4", default-features = false }
 thiserror = "1"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
 
 [dev-dependencies]
 libcnb-test = "=0.19.0"
-tempfile = "3"

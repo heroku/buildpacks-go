@@ -7,7 +7,7 @@ use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
 
 #[derive(thiserror::Error, Debug)]
-pub(crate) enum Error {
+pub enum Error {
     #[error("HTTP error while fetching archive: {0}")]
     Http(#[from] Box<ureq::Error>),
 
@@ -41,7 +41,7 @@ pub(crate) enum Error {
 /// # Errors
 ///
 /// See `Error` for an enumeration of error scenarios.
-pub(crate) fn fetch_strip_filter_extract_verify<'a>(
+pub fn fetch_strip_filter_extract_verify<'a>(
     uri: impl AsRef<str>,
     strip_prefix: impl AsRef<str>,
     filter_prefixes: impl Iterator<Item = &'a str>,
