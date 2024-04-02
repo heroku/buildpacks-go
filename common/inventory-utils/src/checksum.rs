@@ -51,7 +51,7 @@ impl Display for Algorithm {
 #[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct Checksum {
-    algorithm: Algorithm,
+    pub(crate) algorithm: Algorithm,
     pub value: String,
 }
 

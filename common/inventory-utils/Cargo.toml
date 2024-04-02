@@ -13,6 +13,7 @@ serde = { version = "1", features = ["derive"] }
 thiserror = "1"
 toml = "0.8"
 sha2 = "0.10"
+hex = "0.4"
 tar = { version = "0.4", default-features = false }
 ureq = { version = "2", features = ["json"] }
 

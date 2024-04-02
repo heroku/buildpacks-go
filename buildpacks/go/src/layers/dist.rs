@@ -51,14 +51,13 @@ impl Layer for DistLayer {
             "Installing {} from {}",
             self.artifact, self.artifact.url
         ));
-        tgz::fetch_strip_filter_extract_verify(
-            self.artifact.url.clone(),
-            "go",
-            ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
-            layer_path,
-            &self.artifact.checksum,
-        )
-        .map_err(DistLayerError::Tgz)?;
+        self.artifact
+            .fetch_strip_filter_extract_verify(
+                "go",
+                ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
+                layer_path,
+            )
+            .map_err(DistLayerError::Tgz)?;
 
         LayerResultBuilder::new(DistLayerMetadata::current(self))
             .env(

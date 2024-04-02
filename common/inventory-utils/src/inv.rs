@@ -1,8 +1,11 @@
+use crate::checksum::Algorithm;
+use crate::tgz;
 use crate::vrs::VersionRequirement;
 use crate::{checksum::Checksum, vrs::Version};
 use core::fmt;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use sha2::{Sha256, Sha512};
 use std::env::consts;
 use std::fs;
 use std::hash::Hash;
@@ -28,6 +31,38 @@ where
     pub arch: Arch,
     pub url: String,
     pub checksum: Checksum,
+}
+
+impl<V: Version> Artifact<V> {
+    /// Fetches a tarball from a url, strips component paths, filters path prefixes,
+    /// extracts files to a location, and verifies a sha256 checksum. Care is taken
+    /// not to write temporary files or read the entire contents into memory. In an
+    /// error scenario, any archive contents already extracted will not be removed.
+    ///
+    /// # Errors
+    ///
+    /// See `Error` for an enumeration of error scenarios.
+    pub fn fetch_strip_filter_extract_verify<'a>(
+        &self,
+        strip_prefix: impl AsRef<str>,
+        filter_prefixes: impl Iterator<Item = &'a str>,
+        dest_dir: impl AsRef<std::path::Path>,
+    ) -> Result<(), tgz::Error> {
+        match self.checksum.algorithm {
+            Algorithm::Sha256 => tgz::fetch_strip_filter_extract_verify::<Sha256, V>(
+                self,
+                strip_prefix,
+                filter_prefixes,
+                dest_dir,
+            ),
+            Algorithm::Sha512 => tgz::fetch_strip_filter_extract_verify::<Sha512, V>(
+                self,
+                strip_prefix,
+                filter_prefixes,
+                dest_dir,
+            ),
+        }
+    }
 }
 
 impl<V: Version> Ord for Artifact<V> {
