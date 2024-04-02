@@ -438,16 +438,12 @@ checksum = "290f1a1d9242c78d09ce40a5e87e7554ee637af1351968159f4952f028f75604"
 name = "heroku-go-buildpack"
 version = "0.0.0"
 dependencies = [
- "flate2",
  "heroku-go-utils",
  "heroku-inventory-utils",
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",
  "serde",
- "sha2",
- "tar",
- "tempfile",
  "thiserror",
  "toml",
  "ureq",
@@ -469,10 +465,15 @@ dependencies = [
 name = "heroku-inventory-utils"
 version = "0.0.0"
 dependencies = [
+ "flate2",
  "semver",
  "serde",
+ "sha2",
+ "tar",
+ "tempfile",
  "thiserror",
  "toml",
+ "ureq",
 ]
 
 [[package]]

@@ -2,7 +2,6 @@ mod cfg;
 mod cmd;
 mod layers;
 mod proc;
-mod tgz;
 
 use heroku_go_utils::vrs::{GoRequirement, GoVersion};
 use heroku_inventory_utils::inv::Inventory;
@@ -25,6 +24,7 @@ use std::path::Path;
 
 #[cfg(test)]
 use libcnb_test as _;
+use ureq as _;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
