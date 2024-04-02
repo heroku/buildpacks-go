@@ -455,7 +455,6 @@ version = "0.0.0"
 dependencies = [
  "heroku-inventory-utils",
  "regex",
- "semver",
  "serde",
  "thiserror",
  "ureq",
