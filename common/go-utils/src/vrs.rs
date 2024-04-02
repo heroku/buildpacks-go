@@ -3,7 +3,6 @@ use heroku_inventory_utils::{
     vrs::{RequirementParseError, Version, VersionRequirement},
 };
 use regex::Regex;
-use semver;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -54,8 +53,6 @@ pub struct GoVersion(SemanticVersion);
 
 #[derive(thiserror::Error, Debug)]
 pub enum GoVersionParseError {
-    #[error("Couldn't parse go version: {0}")]
-    SemVer(#[from] semver::Error),
     #[error("Internal buildpack issue parsing go version regex: {0}")]
     Regex(#[from] regex::Error),
     #[error("Couldn't parse version. Unable to capture values from regex.")]
