@@ -6,6 +6,8 @@ use sha2::{
 use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
 
+use crate::checksum::Checksum;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("HTTP error while fetching archive: {0}")]
@@ -46,9 +48,9 @@ pub fn fetch_strip_filter_extract_verify<'a>(
     strip_prefix: impl AsRef<str>,
     filter_prefixes: impl Iterator<Item = &'a str>,
     dest_dir: impl AsRef<std::path::Path>,
-    sha256: impl AsRef<str>,
+    checksum: &Checksum,
 ) -> Result<(), Error> {
-    let expected_digest = sha256.as_ref();
+    let expected_digest = checksum.value.as_ref();
     let destination = dest_dir.as_ref();
     let body = ureq::get(uri.as_ref())
         .call()
@@ -107,6 +109,8 @@ impl<R: Read, H: sha2::Digest> Read for DigestingReader<R, H> {
 
 #[cfg(test)]
 mod tests {
+    use crate::checksum::Algorithm;
+
     use super::*;
 
     #[test]
@@ -117,7 +121,11 @@ mod tests {
             "git-0.01",
             ["README"].into_iter(),
             dest.path(),
-            "9bdf8a4198b269c5cbe4263b1f581aae885170a6cb93339a2033cb468e57dcd3",
+            &Checksum::new(
+                Algorithm::Sha256,
+                "9bdf8a4198b269c5cbe4263b1f581aae885170a6cb93339a2033cb468e57dcd3".to_string(),
+            )
+            .unwrap(),
         )
         .expect("Expected to fetch, strip, filter, extract, and verify");
 
