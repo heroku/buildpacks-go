@@ -1,4 +1,20 @@
 [[artifacts]]
+version = "go1.22.2"
+semantic_version = "1.22.2"
+os = "linux"
+arch = "x86_64"
+url = "https://go.dev/dl/go1.22.2.linux-amd64.tar.gz"
+checksum = "sha256:5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17"
+
+[[artifacts]]
+version = "go1.22.2"
+semantic_version = "1.22.2"
+os = "linux"
+arch = "aarch64"
+url = "https://go.dev/dl/go1.22.2.linux-arm64.tar.gz"
+checksum = "sha256:36e720b2d564980c162a48c7e97da2e407dfcc4239e1e58d98082dfa2486a0c1"
+
+[[artifacts]]
 version = "go1.22.1"
 semantic_version = "1.22.1"
 os = "linux"
@@ -61,6 +77,22 @@ os = "linux"
 arch = "aarch64"
 url = "https://go.dev/dl/go1.22rc1.linux-arm64.tar.gz"
 checksum = "sha256:d777d6bc3241bcd470603c3af896d1c60ed1d8cc718cf92d0a5d9035b149a827"
+
+[[artifacts]]
+version = "go1.21.9"
+semantic_version = "1.21.9"
+os = "linux"
+arch = "x86_64"
+url = "https://go.dev/dl/go1.21.9.linux-amd64.tar.gz"
+checksum = "sha256:f76194c2dc607e0df4ed2e7b825b5847cb37e34fc70d780e2f6c7e805634a7ea"
+
+[[artifacts]]
+version = "go1.21.9"
+semantic_version = "1.21.9"
+os = "linux"
+arch = "aarch64"
+url = "https://go.dev/dl/go1.21.9.linux-arm64.tar.gz"
+checksum = "sha256:4d169d9cf3dde1692b81c0fd9484fa28d8bc98f672d06bf9db9c75ada73c5fbc"
 
 [[artifacts]]
 version = "go1.21.8"
