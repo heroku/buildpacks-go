@@ -40,7 +40,7 @@ pub enum Arch {
     Aarch64,
 }
 
-impl<V: Version> Hash for Artifact<V> {
+impl<V> Hash for Artifact<V> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.checksum.value.hash(state);
     }
