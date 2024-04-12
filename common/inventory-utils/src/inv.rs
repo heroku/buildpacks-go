@@ -19,10 +19,7 @@ where
 
 /// Represents a known artifact in the inventory.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
-pub struct Artifact<V>
-where
-    V: Version,
-{
+pub struct Artifact<V> {
     pub version: V,
     pub os: Os,
     pub arch: Arch,
@@ -49,7 +46,7 @@ impl<V: Version> Hash for Artifact<V> {
     }
 }
 
-impl<V: Version> Display for Artifact<V> {
+impl<V: Display> Display for Artifact<V> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} ({}-{})", self.version, self.os, self.arch)
     }
