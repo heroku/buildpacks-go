@@ -4,7 +4,6 @@ use crate::{checksum::Checksum, vrs::Version};
 use core::fmt;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use std::env::consts;
 use std::fs;
 use std::hash::Hash;
 use std::{fmt::Display, str::FromStr};
@@ -43,13 +42,13 @@ where
 
 impl<V, D> Eq for Artifact<V, D> where V: Eq {}
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
     Linux,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum Arch {
     X86_64,
@@ -138,23 +137,22 @@ where
     pub fn read(path: &str) -> Result<Self, ReadInventoryError> {
         toml::from_str(&fs::read_to_string(path)?).map_err(ReadInventoryError::Parse)
     }
+}
 
-    /// Find the first artifact from the inventory that satisfies a
-    /// `VersionRequirement<V>`.
-    #[must_use]
-    pub fn resolve<R>(&self, requirement: &R) -> Option<&Artifact<V, D>>
-    where
-        R: VersionRequirement<V>,
-    {
-        match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
-            (Ok(os), Ok(arch)) => self
-                .artifacts
-                .iter()
-                .filter(|artifact| artifact.os == os && artifact.arch == arch)
-                .find(|artifact| requirement.satisfies(&artifact.version)),
-            (_, _) => None,
-        }
-    }
+/// Find the first artifact that satisfies a `VersionRequirement<V>`.
+pub fn resolve<'a, V, D, R>(
+    artifacts: &'a [Artifact<V, D>],
+    os: Os,
+    arch: Arch,
+    requirement: &'a R,
+) -> Option<&'a Artifact<V, D>>
+where
+    R: VersionRequirement<V>,
+{
+    artifacts
+        .iter()
+        .filter(|artifact| artifact.os == os && artifact.arch == arch)
+        .find(|artifact| requirement.satisfies(&artifact.version))
 }
 
 #[cfg(test)]
