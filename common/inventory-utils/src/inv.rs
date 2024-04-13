@@ -117,9 +117,9 @@ impl FromStr for Arch {
 
 #[derive(thiserror::Error, Debug)]
 pub enum ReadInventoryError {
-    #[error("Couldn't read artifact inventory.toml: {0}")]
+    #[error("Couldn't read inventory file: {0}")]
     Io(#[from] std::io::Error),
-    #[error("Couldn't parse artifact inventory.toml: {0}")]
+    #[error("Couldn't parse inventory toml: {0}")]
     Parse(#[from] toml::de::Error),
 }
 
