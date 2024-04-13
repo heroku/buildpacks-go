@@ -2,7 +2,7 @@
 #![allow(unused_crate_dependencies)]
 
 use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
-use heroku_inventory_utils::inv::{Artifact, Inventory};
+use heroku_inventory_utils::inv::{read_inventory_file, Artifact};
 use sha2::Sha256;
 use std::collections::HashSet;
 
@@ -24,7 +24,7 @@ fn main() {
         .collect();
 
     let inventory_artifacts: HashSet<Artifact<GoVersion, Sha256>> =
-        Inventory::read(&inventory_path)
+        read_inventory_file(&inventory_path)
             .unwrap_or_else(|e| {
                 eprintln!("Error reading inventory at '{inventory_path}': {e}");
                 std::process::exit(1);
