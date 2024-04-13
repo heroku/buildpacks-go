@@ -199,4 +199,64 @@ mod tests {
             UnsupportedOsError(..)
         ));
     }
+
+    impl VersionRequirement<String> for String {
+        fn satisfies(&self, version: &String) -> bool {
+            self == version
+        }
+
+        fn parse(input: &str) -> Result<Self, crate::vrs::RequirementParseError>
+        where
+            Self: Sized,
+        {
+            todo!()
+        }
+    }
+
+    #[test]
+    fn test_matching_artifact_resolution() {
+        assert_eq!(
+            "foo",
+            &resolve(
+                &[create_artifact("foo", Os::Linux, Arch::Aarch64)],
+                Os::Linux,
+                Arch::Aarch64,
+                &String::from("foo")
+            )
+            .expect("should resolve matching artifact")
+            .version,
+        );
+    }
+
+    #[test]
+    fn test_dont_resolve_artifact_with_wrong_arch() {
+        assert!(resolve(
+            &[create_artifact("foo", Os::Linux, Arch::Aarch64)],
+            Os::Linux,
+            Arch::X86_64,
+            &String::from("foo")
+        )
+        .is_none());
+    }
+
+    #[test]
+    fn test_dont_resolve_artifact_with_wrong_version() {
+        assert!(resolve(
+            &[create_artifact("foo", Os::Linux, Arch::Aarch64)],
+            Os::Linux,
+            Arch::Aarch64,
+            &String::from("bar")
+        )
+        .is_none());
+    }
+
+    fn create_artifact(version: &str, os: Os, arch: Arch) -> Artifact<String, String> {
+        Artifact::<String, String> {
+            version: String::from(version),
+            os,
+            arch,
+            url: "https://example.com".to_string(),
+            checksum: Checksum::try_from("aaaa".to_string()).unwrap(),
+        }
+    }
 }
