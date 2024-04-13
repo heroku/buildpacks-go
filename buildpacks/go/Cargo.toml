@@ -9,6 +9,7 @@ workspace = true
 [dependencies]
 heroku-go-utils = { path = "../../common/go-utils" }
 heroku-inventory-utils = { path = "../../common/inventory-utils" }
+hex = "0.4.3"
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
 # libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
 # so it's pinned to an exact version to isolate it from lockfile refreshes.

@@ -1,165 +1,201 @@
+use hex::FromHexError;
 use serde::{Deserialize, Serialize};
-use std::{fmt::Display, str::FromStr};
+use sha2::{Digest, Sha256, Sha512};
+use std::marker::PhantomData;
+
+#[derive(Debug, Clone, Eq)]
+pub struct Checksum<D> {
+    pub value: Vec<u8>,
+    digest: PhantomData<D>,
+}
+
+impl<D> PartialEq for Checksum<D> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
+}
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Invalid checksum format: {0}")]
-    InvalidFormat(String),
-    #[error("Unsupported algorithm: {0}")]
-    UnsupportedAlgorithm(String),
-    #[error("Invalid checksum length for: {0}")]
-    InvalidLength(String),
+    #[error("Invalid checksum size for: {0}")]
+    InvalidSize(String),
+    #[error("Invalid input string")]
+    HexError(#[from] FromHexError),
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Eq)]
-pub enum Algorithm {
-    Sha256,
-    Sha512,
-}
-
-impl Algorithm {
-    fn validate_length(&self, value: &str) -> Result<(), Error> {
-        match self {
-            Algorithm::Sha256 if value.len() == 64 => Ok(()),
-            Algorithm::Sha512 if value.len() == 128 => Ok(()),
-            _ => Err(Error::InvalidLength(self.to_string())),
-        }
-    }
-}
-
-impl FromStr for Algorithm {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "sha256" => Ok(Algorithm::Sha256),
-            "sha512" => Ok(Algorithm::Sha512),
-            _ => Err(Error::UnsupportedAlgorithm(s.to_string())),
-        }
-    }
-}
-
-impl Display for Algorithm {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Algorithm::Sha256 => write!(f, "sha256"),
-            Algorithm::Sha512 => write!(f, "sha512"),
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Clone, Eq, Serialize, Deserialize)]
-#[serde(try_from = "String", into = "String")]
-pub struct Checksum {
-    algorithm: Algorithm,
-    pub value: String,
-}
-
-impl Checksum {
-    /// Initialize a new Checksum
-    ///
-    /// # Errors
-    ///
-    /// Will return an Error if the checksum value doesn't match the expected
-    /// length for the algorithm
-    pub fn new(algorithm: Algorithm, value: String) -> Result<Self, Error> {
-        algorithm.validate_length(&value)?;
-        Ok(Checksum { algorithm, value })
-    }
-}
-
-impl From<Checksum> for String {
-    fn from(value: Checksum) -> Self {
-        value.to_string()
-    }
-}
-
-impl TryFrom<String> for Checksum {
+impl<D> TryFrom<String> for Checksum<D>
+where
+    D: ChecksumSize,
+{
     type Error = Error;
 
-    fn try_from(value: String) -> Result<Self, Error> {
-        let parts: Vec<&str> = value.splitn(2, ':').collect();
-        if parts.len() == 2 {
-            let algorithm: Algorithm = parts[0].parse()?;
-            let value = parts[1].to_string();
-
-            Self::new(algorithm, value)
+    fn try_from(input: String) -> Result<Self, Self::Error> {
+        let value: Vec<u8> = hex::decode(input.clone())?.clone();
+        if value.len() == D::checksum_size() {
+            Ok(Checksum::<_> {
+                value,
+                digest: PhantomData,
+            })
         } else {
-            Err(Error::InvalidFormat(value))
+            Err(Error::InvalidSize(input))
         }
     }
 }
 
-impl Display for Checksum {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.algorithm, self.value)
+pub trait Name {
+    fn name() -> String;
+}
+
+impl Name for Sha256 {
+    fn name() -> String {
+        String::from("sha256")
+    }
+}
+
+impl Name for Sha512 {
+    fn name() -> String {
+        String::from("sha512")
+    }
+}
+
+#[allow(clippy::module_name_repetitions)]
+pub trait ChecksumSize {
+    fn checksum_size() -> usize;
+}
+
+impl ChecksumSize for Sha256 {
+    fn checksum_size() -> usize {
+        Self::output_size()
+    }
+}
+
+impl ChecksumSize for Sha512 {
+    fn checksum_size() -> usize {
+        Self::output_size()
+    }
+}
+
+impl<D> Serialize for Checksum<D>
+where
+    D: Name,
+{
+    fn serialize<T>(&self, serializer: T) -> Result<T::Ok, T::Error>
+    where
+        T: serde::Serializer,
+    {
+        serializer.serialize_str(&format!("{}:{}", D::name(), hex::encode(&self.value)))
+    }
+}
+
+impl<'de, D> Deserialize<'de> for Checksum<D>
+where
+    D: Name,
+{
+    fn deserialize<T>(deserializer: T) -> Result<Self, T::Error>
+    where
+        T: serde::Deserializer<'de>,
+    {
+        use serde::de::Error;
+        String::deserialize(deserializer)?
+            .strip_prefix(&format!("{}:", D::name()))
+            .ok_or_else(|| T::Error::custom("checksum prefix is invalid"))
+            .map(|value| hex::decode(value).map_err(T::Error::custom))?
+            .map(|value| Checksum::<_> {
+                value,
+                digest: PhantomData,
+            })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_test::{assert_de_tokens_error, assert_tokens, Token};
+    use sha2::Sha512;
 
-    #[test]
-    fn test_checksum_new_valid() {
-        let checksum = Checksum::new(
-            Algorithm::Sha256,
-            "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
-        );
-        assert!(checksum.is_ok());
+    impl Name for String {
+        fn name() -> String {
+            String::from("foo")
+        }
     }
 
-    #[test]
-    fn test_checksum_new_invalid_length() {
-        let checksum = Checksum::new(Algorithm::Sha256, "foo".to_string());
-        assert!(checksum.is_err());
-    }
-
-    #[test]
-    fn test_checksum_parse_and_validate_sha256() {
-        let checksum: Result<Checksum, _> = Checksum::try_from(
-            "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
-        );
-
-        assert!(checksum.is_ok());
-        assert_eq!(Algorithm::Sha256, checksum.unwrap().algorithm);
-    }
-
-    #[test]
-    fn test_checksum_parse_and_validate_sha512() {
-        let checksum: Result<Checksum, _> = Checksum::try_from(
-            "sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string()
-        );
-
-        assert!(checksum.is_ok());
-        assert_eq!(Algorithm::Sha512, checksum.unwrap().algorithm);
+    impl ChecksumSize for String {
+        fn checksum_size() -> usize {
+            2
+        }
     }
 
     #[test]
     fn test_checksum_serialization() {
-        assert_eq!(
-            "sha256:foo",
-            Checksum {
-                algorithm: Algorithm::Sha256,
-                value: "foo".to_string(),
-            }
-            .to_string()
+        assert_tokens(
+            &Checksum::<String>::try_from("abcd".to_string()).unwrap(),
+            &[Token::BorrowedStr("foo:abcd")],
         );
     }
 
     #[test]
-    fn test_invalid_checksum_length() {
+    fn test_invalid_checksum_deserialization() {
+        assert_de_tokens_error::<Checksum<String>>(
+            &[Token::BorrowedStr("baz:bar")],
+            "checksum prefix is invalid",
+        );
+    }
+
+    #[test]
+    fn test_digest_names() {
+        assert_eq!("sha256", Sha256::name());
+        assert_eq!("sha512", Sha512::name());
+    }
+
+    #[test]
+    fn test_checksum_sizes() {
+        assert_eq!(32, Sha256::checksum_size());
+        assert_eq!(64, Sha512::checksum_size());
+    }
+
+    #[test]
+    fn test_invalid_checksum_size() {
         assert!(matches!(
-            Checksum::try_from("sha256:abc".to_string()),
-            Err(Error::InvalidLength(..))
+            Checksum::<Sha256>::try_from("123456".to_string()),
+            Err(Error::InvalidSize(..))
         ));
     }
 
     #[test]
-    fn test_unsupported_algorithm() {
+    fn test_invalid_hex_input() {
         assert!(matches!(
-            Checksum::try_from("md5:abcdef1234567890abcdef1234567890".to_string()),
-            Err(Error::UnsupportedAlgorithm(..))
+            Checksum::<Sha256>::try_from("quux".to_string()),
+            Err(Error::HexError(..))
         ));
+    }
+
+    #[test]
+    fn test_sha256_checksum_parse_and_serialize() {
+        let checksum: Result<Checksum<Sha256>, _> = Checksum::try_from(
+            "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+        );
+
+        assert!(checksum.is_ok());
+        assert_tokens(
+            &checksum.unwrap(),
+            &[Token::BorrowedStr(
+                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+            )],
+        );
+    }
+
+    #[test]
+    fn test_sha512_checksum_parse_and_serialize() {
+        let checksum: Result<Checksum<Sha512>, _> = Checksum::try_from(
+            "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
+        );
+
+        assert!(checksum.is_ok());
+        assert_tokens(
+            &checksum.unwrap(),
+            &[Token::BorrowedStr(
+                "sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+            )],
+        );
     }
 }

@@ -3,6 +3,7 @@
 
 use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
 use heroku_inventory_utils::inv::{Artifact, Inventory};
+use sha2::Sha256;
 use std::collections::HashSet;
 
 /// Prints a human-readable software inventory difference. Useful
@@ -14,7 +15,7 @@ fn main() {
         std::process::exit(1);
     });
 
-    let upstream_artifacts: HashSet<Artifact<GoVersion>> = list_upstream_artifacts()
+    let upstream_artifacts: HashSet<Artifact<GoVersion, Sha256>> = list_upstream_artifacts()
         .unwrap_or_else(|e| {
             eprintln!("Failed to fetch upstream go versions: {e}");
             std::process::exit(1)
@@ -22,14 +23,15 @@ fn main() {
         .into_iter()
         .collect();
 
-    let inventory_artifacts: HashSet<Artifact<GoVersion>> = Inventory::read(&inventory_path)
-        .unwrap_or_else(|e| {
-            eprintln!("Error reading inventory at '{inventory_path}': {e}");
-            std::process::exit(1);
-        })
-        .artifacts
-        .into_iter()
-        .collect();
+    let inventory_artifacts: HashSet<Artifact<GoVersion, Sha256>> =
+        Inventory::read(&inventory_path)
+            .unwrap_or_else(|e| {
+                eprintln!("Error reading inventory at '{inventory_path}': {e}");
+                std::process::exit(1);
+            })
+            .artifacts
+            .into_iter()
+            .collect();
 
     [
         ("Added", &upstream_artifacts - &inventory_artifacts),
@@ -38,7 +40,7 @@ fn main() {
     .iter()
     .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
     .for_each(|(action, artifacts)| {
-        let mut list: Vec<&Artifact<GoVersion>> = artifacts.iter().collect();
+        let mut list: Vec<&Artifact<GoVersion, Sha256>> = artifacts.iter().collect();
         list.sort_by_key(|a| &a.version);
         println!(
             "{} {}.",

@@ -1,6 +1,6 @@
-use std::fmt::Display;
+use serde::{de::DeserializeOwned, Serialize};
 
-pub trait Version: Display + Sized {
+pub trait Version: Serialize + DeserializeOwned {
     type Error;
 
     /// # Errors

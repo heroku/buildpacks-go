@@ -20,6 +20,7 @@ use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::log::{log_error, log_header, log_info};
+use sha2::Sha256;
 use std::env;
 use std::path::Path;
 
@@ -62,7 +63,7 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let inv: Inventory<GoVersion> =
+        let inv: Inventory<GoVersion, Sha256> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))

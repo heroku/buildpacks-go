@@ -8,17 +8,18 @@ use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
+use sha2::Sha256;
 use std::path::Path;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub(crate) struct DistLayer {
-    pub(crate) artifact: Artifact<GoVersion>,
+    pub(crate) artifact: Artifact<GoVersion, Sha256>,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
     layer_version: String,
-    artifact: Artifact<GoVersion>,
+    artifact: Artifact<GoVersion, Sha256>,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -51,11 +52,10 @@ impl Layer for DistLayer {
             self.artifact, self.artifact.url
         ));
         tgz::fetch_strip_filter_extract_verify(
-            self.artifact.url.clone(),
+            &self.artifact,
             "go",
             ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
             layer_path,
-            &self.artifact.checksum.value,
         )
         .map_err(DistLayerError::Tgz)?;
 

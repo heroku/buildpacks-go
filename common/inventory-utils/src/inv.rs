@@ -1,3 +1,4 @@
+use crate::checksum::Name;
 use crate::vrs::VersionRequirement;
 use crate::{checksum::Checksum, vrs::Version};
 use core::fmt;
@@ -10,22 +11,37 @@ use std::{fmt::Display, str::FromStr};
 
 /// Represents an inventory of artifacts.
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Inventory<V>
-where
-    V: Version,
-{
-    pub artifacts: Vec<Artifact<V>>,
+pub struct Inventory<V, D> {
+    #[serde(bound = "V: Version, D: Name")]
+    pub artifacts: Vec<Artifact<V, D>>,
 }
 
 /// Represents a known artifact in the inventory.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
-pub struct Artifact<V> {
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Artifact<V, D> {
+    #[serde(bound = "V: Version")]
     pub version: V,
     pub os: Os,
     pub arch: Arch,
     pub url: String,
-    pub checksum: Checksum,
+    #[serde(bound = "D: Name")]
+    pub checksum: Checksum<D>,
 }
+
+impl<V, D> PartialEq for Artifact<V, D>
+where
+    V: Eq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.version == other.version
+            && self.os == other.os
+            && self.arch == other.arch
+            && self.url == other.url
+            && self.checksum == other.checksum
+    }
+}
+
+impl<V, D> Eq for Artifact<V, D> where V: Eq {}
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
@@ -40,13 +56,13 @@ pub enum Arch {
     Aarch64,
 }
 
-impl<V> Hash for Artifact<V> {
+impl<V, D> Hash for Artifact<V, D> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.checksum.value.hash(state);
     }
 }
 
-impl<V: Display> Display for Artifact<V> {
+impl<V: Display, D> Display for Artifact<V, D> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} ({}-{})", self.version, self.os, self.arch)
     }
@@ -108,9 +124,10 @@ pub enum ReadInventoryError {
     Parse(#[from] toml::de::Error),
 }
 
-impl<V> Inventory<V>
+impl<V, D> Inventory<V, D>
 where
     V: Version + DeserializeOwned,
+    D: Name,
 {
     /// Read inventory.toml to an `Inventory<V>`.
     ///
@@ -125,7 +142,7 @@ where
     /// Find the first artifact from the inventory that satisfies a
     /// `VersionRequirement<V>`.
     #[must_use]
-    pub fn resolve<R>(&self, requirement: &R) -> Option<&Artifact<V>>
+    pub fn resolve<R>(&self, requirement: &R) -> Option<&Artifact<V, D>>
     where
         R: VersionRequirement<V>,
     {

@@ -8,18 +8,19 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
+use sha2::Sha256;
 use std::fs;
 use std::path::Path;
 
 /// A layer for go incremental build cache artifacts
 pub(crate) struct BuildLayer {
-    pub(crate) artifact: Artifact<GoVersion>,
+    pub(crate) artifact: Artifact<GoVersion, Sha256>,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct BuildLayerMetadata {
     layer_version: String,
-    artifact: Artifact<GoVersion>,
+    artifact: Artifact<GoVersion, Sha256>,
     cache_usage_count: f32,
 }
 
