@@ -14,7 +14,6 @@ pub struct Inventory<V, D> {
     pub artifacts: Vec<Artifact<V, D>>,
 }
 
-/// Represents a known artifact in the inventory.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Artifact<V, D> {
     #[serde(bound = "V: Version")]
