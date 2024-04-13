@@ -1,5 +1,5 @@
 use crate::vrs;
-use heroku_inventory_utils::checksum::{Checksum, Error as ChecksumError};
+use heroku_inventory_utils::checksum::{self, Checksum};
 use heroku_inventory_utils::inv::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError};
 use serde::Deserialize;
 use sha2::Sha256;
@@ -31,7 +31,7 @@ pub enum GoFileConversionError {
     #[error(transparent)]
     Os(#[from] UnsupportedOsError),
     #[error(transparent)]
-    Checksum(#[from] ChecksumError),
+    Checksum(#[from] checksum::Error),
 }
 
 impl TryFrom<&GoFile> for Artifact<GoVersion, Sha256> {
