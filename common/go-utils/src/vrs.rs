@@ -10,7 +10,7 @@ impl VersionRequirement<GoVersion> for semver::VersionReq {
     }
 }
 
-/// Parses a `semver::VersionReq` from a go version `&str`
+/// Parses a `semver::VersionReq` from a go-flavored requirement `&str`
 ///
 /// # Examples
 ///
