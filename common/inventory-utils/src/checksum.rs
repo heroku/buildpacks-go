@@ -30,7 +30,7 @@ where
     type Error = Error;
 
     fn try_from(input: String) -> Result<Self, Self::Error> {
-        let value: Vec<u8> = hex::decode(input.clone())?.clone();
+        let value: Vec<u8> = hex::decode(input.clone())?;
         if value.len() == D::checksum_size() {
             Ok(Checksum::<_> {
                 value,
