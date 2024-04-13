@@ -60,7 +60,7 @@ pub enum Os {
     Linux,
 }
 
-#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Arch {
     X86_64,
