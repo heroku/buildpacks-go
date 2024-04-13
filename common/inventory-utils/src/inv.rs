@@ -125,7 +125,7 @@ pub enum ReadInventoryError {
 
 impl<V, D> Inventory<V, D>
 where
-    V: Version + DeserializeOwned,
+    V: Version,
     D: Name,
 {
     /// Read inventory.toml to an `Inventory<V>`.
