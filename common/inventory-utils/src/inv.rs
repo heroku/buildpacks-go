@@ -212,13 +212,6 @@ mod tests {
         fn satisfies(&self, version: &String) -> bool {
             self == version
         }
-
-        fn parse(input: &str) -> Result<Self, crate::vrs::RequirementParseError>
-        where
-            Self: Sized,
-        {
-            todo!()
-        }
     }
 
     #[test]

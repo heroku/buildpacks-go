@@ -1,7 +1,6 @@
 use crate::vrs;
 use heroku_inventory_utils::checksum::{Checksum, Error as ChecksumError};
 use heroku_inventory_utils::inv::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError};
-use heroku_inventory_utils::vrs::Version;
 use serde::Deserialize;
 use sha2::Sha256;
 use vrs::{GoVersion, GoVersionParseError};
@@ -39,8 +38,8 @@ impl TryFrom<&GoFile> for Artifact<GoVersion, Sha256> {
     type Error = GoFileConversionError;
 
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
-        Ok(Self {
-            version: GoVersion::parse(&value.version)?,
+        Ok(Artifact {
+            version: value.version.clone().try_into()?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
             checksum: Checksum::try_from(value.sha256.clone())?,
@@ -95,8 +94,8 @@ mod tests {
     use std::hash::{BuildHasher, RandomState};
 
     fn create_artifact() -> Artifact<GoVersion, Sha256> {
-        Artifact::<GoVersion, Sha256> {
-            version: GoVersion::parse("1.7.2").unwrap(),
+        Artifact {
+            version: GoVersion::try_from("1.7.2".to_string()).unwrap(),
             os: Os::Linux,
             arch: Arch::X86_64,
             url: String::from("foo"),
@@ -111,7 +110,7 @@ mod tests {
     fn test_artifact_display_format() {
         let artifact = create_artifact();
 
-        assert_eq!("Go 1.7.2 (linux-x86_64)", artifact.to_string());
+        assert_eq!("1.7.2 (linux-x86_64)", artifact.to_string());
     }
 
     #[test]

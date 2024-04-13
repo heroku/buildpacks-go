@@ -445,6 +445,7 @@ dependencies = [
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",
+ "semver",
  "serde",
  "sha2",
  "tar",

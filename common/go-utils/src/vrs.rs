@@ -1,56 +1,58 @@
-use heroku_inventory_utils::{
-    semvrs::{SemanticVersion, SemanticVersionParseError, SemanticVersionRequirement},
-    vrs::{RequirementParseError, Version, VersionRequirement},
-};
+use heroku_inventory_utils::vrs::{Version, VersionRequirement};
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
-use std::fmt;
+use std::fmt::Display;
 
-/// `Requirement` is a wrapper around `semver::Requirement` that adds
-/// - Ability to parse go-flavored requirements
-///
-/// The derived `Default` implementation creates a wildcard version `Requirement`.
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct GoRequirement(SemanticVersionRequirement);
-
-impl VersionRequirement<GoVersion> for GoRequirement {
-    fn satisfies<'a>(&self, version: &GoVersion) -> bool {
-        self.0.satisfies(&version.0)
-    }
-
-    /// Parses a go version requirement `&str` as a `Requirement`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use heroku_inventory_utils::vrs::VersionRequirement;
-    /// let req = heroku_go_utils::vrs::GoRequirement::parse("go1.0").unwrap();
-    /// ```
-    ///
-    /// # Errors
-    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
-    /// will return an error.
-    fn parse(input: &str) -> Result<Self, RequirementParseError> {
-        input
-            .strip_prefix("go")
-            .map_or(SemanticVersionRequirement::parse(input), |req| {
-                SemanticVersionRequirement::parse(format!("={req}").as_str())
-            })
-            .map(GoRequirement)
+impl VersionRequirement<GoVersion> for semver::VersionReq {
+    fn satisfies(&self, version: &GoVersion) -> bool {
+        self.matches(&version.semantic_version)
     }
 }
 
-impl fmt::Display for GoRequirement {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
+/// Parses a go version requirement `&str` as a `semver::VersionReq`
+///
+/// # Examples
+///
+/// ```
+/// use heroku_go_utils::vrs::parse_go_version_requirement;
+/// let req = parse_go_version_requirement("go1.0").unwrap();
+/// ```
+///
+/// # Errors
+/// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
+/// will return an error.
+pub fn parse_go_version_requirement(input: &str) -> Result<semver::VersionReq, semver::Error> {
+    semver::VersionReq::parse(
+        &input
+            .strip_prefix("go")
+            .map_or(input.to_string(), |v| format!("={v}")),
+    )
 }
 
 /// `GoVersion` is a wrapper around `SemanticVersion` that adds
 ///  ability to parse go-flavored versions
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord)]
-pub struct GoVersion(SemanticVersion);
+#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
+#[serde(try_from = "String", into = "String")]
+pub struct GoVersion {
+    pub value: String,
+    #[serde(skip)]
+    semantic_version: semver::Version,
+}
+
+impl Version for GoVersion {}
+
+impl Ord for GoVersion {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other.semantic_version.cmp(&self.semantic_version)
+    }
+}
+
+impl PartialOrd for GoVersion {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
 
 #[derive(thiserror::Error, Debug)]
 pub enum GoVersionParseError {
@@ -60,27 +62,13 @@ pub enum GoVersionParseError {
     Regex(#[from] regex::Error),
     #[error("Couldn't parse version. Unable to capture values from regex.")]
     Captures,
-    #[error("Couldn't parse go version: {0}")]
-    SemanticVersion(#[from] SemanticVersionParseError),
 }
 
-impl Version for GoVersion {
+impl TryFrom<String> for GoVersion {
     type Error = GoVersionParseError;
 
-    /// Parses a go version `&str` as a `Version`
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use heroku_inventory_utils::vrs::Version;
-    /// let req = heroku_go_utils::vrs::GoVersion::parse("go1.12").unwrap();
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Invalid go version `&str`s like ".1", "1.*", "abc", etc. will return an error.
-    fn parse(version: &str) -> Result<Self, Self::Error> {
-        let stripped_version = version.strip_prefix("go").unwrap_or(version);
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let stripped_version = value.strip_prefix("go").unwrap_or(&value);
 
         let caps = Regex::new(r"^(\d+)\.?(\d+)?\.?(\d+)?([a-z][a-z0-9]*)?$")?
             .captures(stripped_version)
@@ -97,24 +85,23 @@ impl Version for GoVersion {
             composed_version.push('-');
             composed_version.push_str(pre.as_str());
         };
-
-        SemanticVersion::parse(&composed_version)
-            .map(GoVersion)
-            .map_err(GoVersionParseError::SemanticVersion)
+        let semantic_version = semver::Version::parse(&composed_version)?;
+        Ok(GoVersion {
+            value,
+            semantic_version,
+        })
     }
 }
 
-impl TryFrom<String> for GoVersion {
-    type Error = GoVersionParseError;
-
-    fn try_from(val: String) -> Result<Self, Self::Error> {
-        GoVersion::parse(&val)
+impl Display for GoVersion {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
     }
 }
 
-impl fmt::Display for GoVersion {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Go {}", self.0)
+impl From<GoVersion> for String {
+    fn from(version: GoVersion) -> Self {
+        version.value
     }
 }
 
@@ -140,19 +127,19 @@ mod tests {
         ];
 
         for (input, expected_str) in go_versions {
-            let actual = GoVersion::parse(input).expect("Failed to parse go input version");
-            let actual_str = actual.to_string();
-            let expected = GoVersion(
-                SemanticVersion::parse(expected_str).expect("Failed to parse go expected version"),
+            let actual =
+                GoVersion::try_from(input.to_string()).expect("Failed to parse go input version");
+            let expected = semver::Version::parse(expected_str).unwrap();
+
+            assert_eq!(
+                expected, actual.semantic_version,
+                "Expected {input} to parse as {expected} but got {}.",
+                actual.semantic_version
             );
             assert_eq!(
-                expected, actual,
-                "Expected {input} to parse as {expected} but got {actual}."
-            );
-            assert_eq!(
-                format!("Go {expected_str}"),
-                actual_str,
-                "Expected {input} to parse as {expected_str} but got {actual_str}"
+                input,
+                actual.to_string(),
+                "Expected Go parsed from {input} to be displayed as {actual}"
             );
         }
     }
@@ -171,15 +158,15 @@ mod tests {
             ("^1.18.2", "^1.18.2"),
         ];
         for (input, expected_str) in examples {
-            let actual = GoRequirement::parse(input)
-                .unwrap_or_else(|_| panic!("Failed to parse go input requirement: {input}"));
-            let actual_str = actual.to_string();
-            let expected = GoRequirement::parse(expected_str)
-                .expect("Failed to parse go expected requirement");
+            let actual = parse_go_version_requirement(input).unwrap();
+            let expected = parse_go_version_requirement(expected_str).unwrap();
+
             assert_eq!(
                 expected, actual,
                 "Expected {input} to parse as {expected} but got {actual}."
             );
+
+            let actual_str = actual.to_string();
             assert_eq!(
                 expected_str, actual_str,
                 "Expected {input} to parse as {expected_str} but got {actual_str}"

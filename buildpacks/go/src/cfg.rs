@@ -1,5 +1,4 @@
-use heroku_go_utils::vrs::GoRequirement;
-use heroku_inventory_utils::vrs::{RequirementParseError, VersionRequirement};
+use heroku_go_utils::vrs::parse_go_version_requirement;
 
 use std::fs;
 use std::io::{BufRead, BufReader};
@@ -8,7 +7,7 @@ use std::path;
 /// Represents buildpack configuration found in a project's `go.mod`.
 pub(crate) struct GoModConfig {
     pub(crate) packages: Option<Vec<String>>,
-    pub(crate) version: Option<GoRequirement>,
+    pub(crate) version: Option<semver::VersionReq>,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -16,7 +15,7 @@ pub(crate) enum ReadGoModConfigError {
     #[error("Failed to read go.mod configuration: {0}")]
     Io(#[from] std::io::Error),
     #[error("Failed to parse go.mod configuration: {0}")]
-    Version(#[from] RequirementParseError),
+    Version(#[from] semver::Error),
 }
 
 /// Build a `GoModConfig` from a `go.mod` file.
@@ -28,7 +27,7 @@ pub(crate) enum ReadGoModConfigError {
 pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
     gomod_path: P,
 ) -> Result<GoModConfig, ReadGoModConfigError> {
-    let mut version: Option<GoRequirement> = None;
+    let mut version: Option<semver::VersionReq> = None;
     let mut packages: Option<Vec<String>> = None;
     let file = fs::File::open(gomod_path)?;
     for line_result in BufReader::new(file).lines() {
@@ -39,11 +38,11 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
                 packages = Some(parts.map(ToString::to_string).collect());
             }
             (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
-                version = GoRequirement::parse(vrs).map(Some)?;
+                version = parse_go_version_requirement(vrs).map(Some)?;
             }
             (Some("go"), Some(vrs), None, None) => {
                 if version.is_none() {
-                    version = GoRequirement::parse(&format!("={vrs}")).map(Some)?;
+                    version = parse_go_version_requirement(&format!("={vrs}")).map(Some)?;
                 }
             }
             _ => (),

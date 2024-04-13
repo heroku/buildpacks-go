@@ -1,27 +1,7 @@
 use serde::{de::DeserializeOwned, Serialize};
 
-pub trait Version: Serialize + DeserializeOwned {
-    type Error;
+pub trait Version: Serialize + DeserializeOwned {}
 
-    /// # Errors
-    ///
-    /// Invalid Version `&str`s for the implementation will return an error.
-    fn parse(version: &str) -> Result<Self, Self::Error>;
+pub trait VersionRequirement<V> {
+    fn satisfies(&self, version: &V) -> bool;
 }
-
-pub trait VersionRequirement<T> {
-    fn satisfies(&self, version: &T) -> bool;
-
-    /// Parses a &str as a `VersionRequirement<Version>`.
-    ///
-    /// # Errors
-    /// Invalid semver requirement `&str` like ">< 1.0", ".1.0", "!=4", etc.
-    /// will return an error.
-    fn parse(input: &str) -> Result<Self, RequirementParseError>
-    where
-        Self: Sized;
-}
-
-#[derive(thiserror::Error, Debug)]
-#[error("Couldn't parse semantic version requirement: {0}")]
-pub struct RequirementParseError(#[from] pub semver::Error);
