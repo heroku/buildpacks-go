@@ -35,10 +35,10 @@ pub(crate) enum Error {
     Prefix(StripPrefixError),
 }
 
-/// Fetches a tarball from a url, strips component paths, filters path prefixes,
-/// extracts files to a location, and verifies a sha256 checksum. Care is taken
-/// not to write temporary files or read the entire contents into memory. In an
-/// error scenario, any archive contents already extracted will not be removed.
+/// Fetches a tarball from the artifact url, strips component paths, filters path
+/// prefixes, extracts files to a directory, and verifies the artifact checksum. Care
+/// is taken not to write temporary files or read the entire contents into memory.
+/// In an error scenario, any archive contents already extracted will not be removed.
 ///
 /// # Errors
 ///
