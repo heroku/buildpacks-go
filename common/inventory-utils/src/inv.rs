@@ -2,7 +2,6 @@ use crate::checksum::Name;
 use crate::vrs::VersionRequirement;
 use crate::{checksum::Checksum, vrs::Version};
 use core::fmt;
-use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::hash::Hash;
