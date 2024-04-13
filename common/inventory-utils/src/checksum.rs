@@ -171,13 +171,13 @@ mod tests {
 
     #[test]
     fn test_sha256_checksum_parse_and_serialize() {
-        let checksum: Result<Checksum<Sha256>, _> = Checksum::try_from(
+        let result: Result<Checksum<Sha256>, _> = Checksum::try_from(
             "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
         );
 
-        assert!(checksum.is_ok());
+        assert!(result.is_ok());
         assert_tokens(
-            &checksum.unwrap(),
+            &result.unwrap(),
             &[Token::BorrowedStr(
                 "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
             )],
@@ -186,13 +186,13 @@ mod tests {
 
     #[test]
     fn test_sha512_checksum_parse_and_serialize() {
-        let checksum: Result<Checksum<Sha512>, _> = Checksum::try_from(
+        let result: Result<Checksum<Sha512>, _> = Checksum::try_from(
             "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
         );
 
-        assert!(checksum.is_ok());
+        assert!(result.is_ok());
         assert_tokens(
-            &checksum.unwrap(),
+            &result.unwrap(),
             &[Token::BorrowedStr(
                 "sha512:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
             )],
