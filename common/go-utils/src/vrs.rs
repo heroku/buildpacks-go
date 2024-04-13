@@ -26,7 +26,7 @@ pub fn parse_go_version_requirement(input: &str) -> Result<semver::VersionReq, s
     semver::VersionReq::parse(
         &input
             .strip_prefix("go")
-            .map_or(input.to_string(), |v| format!("={v}")),
+            .map_or_else(|| input.to_string(), |v| format!("={v}")),
     )
 }
 
