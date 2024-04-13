@@ -1,11 +1,13 @@
+use crate::checksum::Checksum;
 use crate::checksum::Name;
-use crate::vrs::VersionRequirement;
-use crate::{checksum::Checksum, vrs::Version};
 use core::fmt;
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::hash::Hash;
 use std::{fmt::Display, str::FromStr};
+
+pub trait Version: Serialize + DeserializeOwned {}
 
 /// Represents an inventory of artifacts.
 #[derive(Debug, Serialize, Deserialize)]
@@ -135,6 +137,10 @@ where
     pub fn read(path: &str) -> Result<Self, ReadInventoryError> {
         toml::from_str(&fs::read_to_string(path)?).map_err(ReadInventoryError::Parse)
     }
+}
+
+pub trait VersionRequirement<V> {
+    fn satisfies(&self, version: &V) -> bool;
 }
 
 /// Find the first artifact that satisfies a `VersionRequirement<V>` for
