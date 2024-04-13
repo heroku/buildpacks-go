@@ -126,7 +126,7 @@ where
     V: Version,
     D: Name,
 {
-    /// Read inventory.toml to an `Inventory<V>`.
+    /// Read a TOML-formatted file to an `Inventory<V, D>`.
     ///
     /// # Errors
     ///
@@ -137,7 +137,8 @@ where
     }
 }
 
-/// Find the first artifact that satisfies a `VersionRequirement<V>`.
+/// Find the first artifact that satisfies a `VersionRequirement<V>` for
+/// the specified OS and arch.
 pub fn resolve<'a, V, D, R>(
     artifacts: &'a [Artifact<V, D>],
     os: Os,
