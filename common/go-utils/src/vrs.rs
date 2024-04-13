@@ -10,7 +10,7 @@ impl VersionRequirement<GoVersion> for semver::VersionReq {
     }
 }
 
-/// Parses a go version requirement `&str` as a `semver::VersionReq`
+/// Parses a `semver::VersionReq` from a go version `&str`
 ///
 /// # Examples
 ///
@@ -30,8 +30,8 @@ pub fn parse_go_version_requirement(input: &str) -> Result<semver::VersionReq, s
     )
 }
 
-/// `GoVersion` is a wrapper around `SemanticVersion` that adds
-///  ability to parse go-flavored versions
+/// `GoVersion` is a wrapper around a `semver::Version` that can be
+///  parsed from go-flavored version strings
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
 #[serde(try_from = "String", into = "String")]
 pub struct GoVersion {
@@ -41,6 +41,18 @@ pub struct GoVersion {
 }
 
 impl Version for GoVersion {}
+
+impl Display for GoVersion {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
+}
+
+impl From<GoVersion> for String {
+    fn from(version: GoVersion) -> Self {
+        version.value
+    }
+}
 
 impl Ord for GoVersion {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -90,18 +102,6 @@ impl TryFrom<String> for GoVersion {
             value,
             semantic_version,
         })
-    }
-}
-
-impl Display for GoVersion {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value)
-    }
-}
-
-impl From<GoVersion> for String {
-    fn from(version: GoVersion) -> Self {
-        version.value
     }
 }
 

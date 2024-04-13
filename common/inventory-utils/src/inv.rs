@@ -42,6 +42,18 @@ where
 
 impl<V, D> Eq for Artifact<V, D> where V: Eq {}
 
+impl<V, D> Hash for Artifact<V, D> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.checksum.value.hash(state);
+    }
+}
+
+impl<V: Display, D> Display for Artifact<V, D> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} ({}-{})", self.version, self.os, self.arch)
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Copy, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
@@ -53,18 +65,6 @@ pub enum Os {
 pub enum Arch {
     X86_64,
     Aarch64,
-}
-
-impl<V, D> Hash for Artifact<V, D> {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.checksum.value.hash(state);
-    }
-}
-
-impl<V: Display, D> Display for Artifact<V, D> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} ({}-{})", self.version, self.os, self.arch)
-    }
 }
 
 impl Display for Os {
