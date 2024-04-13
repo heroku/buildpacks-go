@@ -200,6 +200,14 @@ mod tests {
         ));
     }
 
+    #[test]
+    fn test_artifact_display() {
+        assert_eq!(
+            "foo (linux-aarch64)",
+            create_artifact("foo", Os::Linux, Arch::Aarch64).to_string()
+        );
+    }
+
     impl VersionRequirement<String> for String {
         fn satisfies(&self, version: &String) -> bool {
             self == version
