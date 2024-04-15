@@ -56,7 +56,7 @@ impl From<GoVersion> for String {
 
 impl Ord for GoVersion {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.semantic_version.cmp(&self.semantic_version)
+        self.semantic_version.cmp(&other.semantic_version)
     }
 }
 
