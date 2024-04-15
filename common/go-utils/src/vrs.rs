@@ -173,4 +173,17 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn test_version_ordering() {
+        let examples = [("1.20.1", "1.2.1"), ("1.20.0", "1.3.0")];
+        for (version, other_version) in examples {
+            assert_eq!(
+                std::cmp::Ordering::Greater,
+                GoVersion::try_from(String::from(version))
+                    .unwrap()
+                    .cmp(&GoVersion::try_from(String::from(other_version)).unwrap())
+            );
+        }
+    }
 }
