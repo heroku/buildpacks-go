@@ -126,7 +126,7 @@ mod tests {
         let artifact = Artifact::<String, Sha256> {
             version: "0.0.1".to_string(),
             os: Os::Linux,
-            arch: Arch::X86_64,
+            arch: Arch::Amd64,
             url: "https://mirrors.edge.kernel.org/pub/software/scm/git/git-0.01.tar.gz".to_string(),
             checksum: Checksum::try_from(
                 "9bdf8a4198b269c5cbe4263b1f581aae885170a6cb93339a2033cb468e57dcd3".to_string(),
