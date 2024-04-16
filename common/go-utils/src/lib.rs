@@ -1,3 +1,4 @@
-pub mod checksum;
+use toml as _;
+
 pub mod inv;
 pub mod vrs;
