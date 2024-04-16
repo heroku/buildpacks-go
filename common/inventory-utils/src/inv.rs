@@ -93,8 +93,8 @@ impl FromStr for Os {
 impl Display for Arch {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Arch::X86_64 => write!(f, "x86_64"),
-            Arch::Aarch64 => write!(f, "aarch64"),
+            Arch::X86_64 => write!(f, "amd64"),
+            Arch::Aarch64 => write!(f, "arm64"),
         }
     }
 }
@@ -163,7 +163,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_arch_display_format() {
-        let archs = [(Arch::X86_64, "x86_64"), (Arch::Aarch64, "aarch64")];
+        let archs = [(Arch::X86_64, "amd64"), (Arch::Aarch64, "arm64")];
 
         for (input, expected) in archs {
             assert_eq!(expected, input.to_string());
@@ -206,7 +206,7 @@ mod tests {
     #[test]
     fn test_artifact_display() {
         assert_eq!(
-            "foo (linux-aarch64)",
+            "foo (linux-arm64)",
             create_artifact("foo", Os::Linux, Arch::Aarch64).to_string()
         );
     }
