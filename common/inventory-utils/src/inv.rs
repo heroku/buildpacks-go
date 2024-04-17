@@ -87,7 +87,7 @@ impl FromStr for Os {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "linux" => Ok(Os::Linux),
-            "darwin" => Ok(Os::Darwin),
+            "darwin" | "osx" => Ok(Os::Darwin),
             _ => Err(UnsupportedOsError(s.to_string())),
         }
     }
@@ -200,6 +200,7 @@ mod tests {
     fn test_os_parsing() {
         assert_eq!(Os::Linux, "linux".parse::<Os>().unwrap());
         assert_eq!(Os::Darwin, "darwin".parse::<Os>().unwrap());
+        assert_eq!(Os::Darwin, "osx".parse::<Os>().unwrap());
 
         assert!(matches!(
             "foo".parse::<Os>().unwrap_err(),
