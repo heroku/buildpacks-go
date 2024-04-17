@@ -57,6 +57,7 @@ impl<V: Display, D> Display for Artifact<V, D> {
 #[derive(Debug, Serialize, Deserialize, Copy, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Os {
+    Darwin,
     Linux,
 }
 
@@ -70,6 +71,7 @@ pub enum Arch {
 impl Display for Os {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Os::Darwin => write!(f, "darwin"),
             Os::Linux => write!(f, "linux"),
         }
     }
@@ -85,6 +87,7 @@ impl FromStr for Os {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "linux" => Ok(Os::Linux),
+            "darwin" | "osx" => Ok(Os::Darwin),
             _ => Err(UnsupportedOsError(s.to_string())),
         }
     }
@@ -196,6 +199,8 @@ mod tests {
     #[test]
     fn test_os_parsing() {
         assert_eq!(Os::Linux, "linux".parse::<Os>().unwrap());
+        assert_eq!(Os::Darwin, "darwin".parse::<Os>().unwrap());
+        assert_eq!(Os::Darwin, "osx".parse::<Os>().unwrap());
 
         assert!(matches!(
             "foo".parse::<Os>().unwrap_err(),
