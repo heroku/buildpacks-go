@@ -1,4 +1,4 @@
-use heroku_inventory_utils::inv::{Version, VersionRequirement};
+use heroku_inventory_utils::inv::VersionRequirement;
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};
@@ -39,8 +39,6 @@ pub struct GoVersion {
     #[serde(skip)]
     semantic_version: semver::Version,
 }
-
-impl Version for GoVersion {}
 
 impl Display for GoVersion {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

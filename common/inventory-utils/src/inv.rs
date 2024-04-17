@@ -7,18 +7,16 @@ use std::fs;
 use std::hash::Hash;
 use std::{fmt::Display, str::FromStr};
 
-pub trait Version: Serialize + DeserializeOwned {}
-
 /// Represents an inventory of artifacts.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Inventory<V, D> {
-    #[serde(bound = "V: Version, D: Name")]
+    #[serde(bound = "V: Serialize + DeserializeOwned, D: Name")]
     pub artifacts: Vec<Artifact<V, D>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Artifact<V, D> {
-    #[serde(bound = "V: Version")]
+    #[serde(bound = "V: Serialize + DeserializeOwned")]
     pub version: V,
     pub os: Os,
     pub arch: Arch,
@@ -134,7 +132,7 @@ pub enum ReadInventoryError {
 /// file contents is not formatted properly.
 pub fn read_inventory_file<V, D>(path: &str) -> Result<Inventory<V, D>, ReadInventoryError>
 where
-    V: Version,
+    V: Serialize + DeserializeOwned,
     D: Name,
 {
     toml::from_str(&fs::read_to_string(path)?).map_err(ReadInventoryError::Parse)
