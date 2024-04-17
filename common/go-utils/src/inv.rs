@@ -97,7 +97,7 @@ mod tests {
         Artifact {
             version: GoVersion::try_from("1.7.2".to_string()).unwrap(),
             os: Os::Linux,
-            arch: Arch::X86_64,
+            arch: Arch::Amd64,
             url: String::from("foo"),
             checksum: Checksum::try_from(
                 "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
@@ -110,7 +110,7 @@ mod tests {
     fn test_artifact_display_format() {
         let artifact = create_artifact();
 
-        assert_eq!("1.7.2 (linux-x86_64)", artifact.to_string());
+        assert_eq!("1.7.2 (linux-amd64)", artifact.to_string());
     }
 
     #[test]

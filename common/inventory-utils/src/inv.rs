@@ -64,8 +64,8 @@ pub enum Os {
 #[derive(Debug, Serialize, Deserialize, Copy, Clone, Eq, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum Arch {
-    X86_64,
-    Aarch64,
+    Amd64,
+    Arm64,
 }
 
 impl Display for Os {
@@ -96,8 +96,8 @@ impl FromStr for Os {
 impl Display for Arch {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Arch::X86_64 => write!(f, "x86_64"),
-            Arch::Aarch64 => write!(f, "aarch64"),
+            Arch::Amd64 => write!(f, "amd64"),
+            Arch::Arm64 => write!(f, "arm64"),
         }
     }
 }
@@ -111,8 +111,8 @@ impl FromStr for Arch {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "amd64" | "x86_64" => Ok(Arch::X86_64),
-            "arm64" | "aarch64" => Ok(Arch::Aarch64),
+            "amd64" | "x86_64" => Ok(Arch::Amd64),
+            "arm64" | "aarch64" => Ok(Arch::Arm64),
             _ => Err(UnsupportedArchError(s.to_string())),
         }
     }
@@ -166,7 +166,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_arch_display_format() {
-        let archs = [(Arch::X86_64, "x86_64"), (Arch::Aarch64, "aarch64")];
+        let archs = [(Arch::Amd64, "amd64"), (Arch::Arm64, "arm64")];
 
         for (input, expected) in archs {
             assert_eq!(expected, input.to_string());
@@ -176,10 +176,10 @@ mod tests {
     #[test]
     fn test_arch_parsing() {
         let archs = [
-            ("amd64", Arch::X86_64),
-            ("arm64", Arch::Aarch64),
-            ("x86_64", Arch::X86_64),
-            ("aarch64", Arch::Aarch64),
+            ("amd64", Arch::Amd64),
+            ("arm64", Arch::Arm64),
+            ("x86_64", Arch::Amd64),
+            ("aarch64", Arch::Arm64),
         ];
         for (input, expected) in archs {
             assert_eq!(expected, input.parse::<Arch>().unwrap());
@@ -211,8 +211,8 @@ mod tests {
     #[test]
     fn test_artifact_display() {
         assert_eq!(
-            "foo (linux-aarch64)",
-            create_artifact("foo", Os::Linux, Arch::Aarch64).to_string()
+            "foo (linux-arm64)",
+            create_artifact("foo", Os::Linux, Arch::Arm64).to_string()
         );
     }
 
@@ -227,9 +227,9 @@ mod tests {
         assert_eq!(
             "foo",
             &resolve(
-                &[create_artifact("foo", Os::Linux, Arch::Aarch64)],
+                &[create_artifact("foo", Os::Linux, Arch::Arm64)],
                 Os::Linux,
-                Arch::Aarch64,
+                Arch::Arm64,
                 &String::from("foo")
             )
             .expect("should resolve matching artifact")
@@ -240,9 +240,9 @@ mod tests {
     #[test]
     fn test_dont_resolve_artifact_with_wrong_arch() {
         assert!(resolve(
-            &[create_artifact("foo", Os::Linux, Arch::Aarch64)],
+            &[create_artifact("foo", Os::Linux, Arch::Arm64)],
             Os::Linux,
-            Arch::X86_64,
+            Arch::Amd64,
             &String::from("foo")
         )
         .is_none());
@@ -251,9 +251,9 @@ mod tests {
     #[test]
     fn test_dont_resolve_artifact_with_wrong_version() {
         assert!(resolve(
-            &[create_artifact("foo", Os::Linux, Arch::Aarch64)],
+            &[create_artifact("foo", Os::Linux, Arch::Arm64)],
             Os::Linux,
-            Arch::Aarch64,
+            Arch::Arm64,
             &String::from("bar")
         )
         .is_none());

@@ -205,11 +205,11 @@ fn test_go_artifact_caching() {
         |ctx| {
             assert_contains!(
                 ctx.pack_stdout,
-                "Installing go1.16.15 (linux-x86_64) from https://go.dev/dl/go1.16.15.linux-amd64.tar.gz",
+                "Installing go1.16.15 (linux-amd64) from https://go.dev/dl/go1.16.15.linux-amd64.tar.gz",
             );
             let config = ctx.config.clone();
             ctx.rebuild(config, |ctx| {
-                assert_contains!(ctx.pack_stdout, "Reusing go1.16.15 (linux-x86_64)");
+                assert_contains!(ctx.pack_stdout, "Reusing go1.16.15 (linux-amd64)");
             });
         },
     );
