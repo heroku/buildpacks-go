@@ -7,7 +7,7 @@ use std::{env, fs, process};
 
 /// Updates the local go inventory.toml with versions published on go.dev.
 fn main() {
-    let filename = env::args().nth(1).unwrap_or_else(|| {
+    let inventory_path = env::args().nth(1).unwrap_or_else(|| {
         eprintln!("Usage: update_inventory <path/to/inventory.toml>");
         process::exit(2);
     });
@@ -27,7 +27,7 @@ fn main() {
         process::exit(6);
     });
 
-    fs::write(filename, toml).unwrap_or_else(|e| {
+    fs::write(inventory_path, toml).unwrap_or_else(|e| {
         eprintln!("Error writing inventory to file: {e}");
         process::exit(7);
     });
