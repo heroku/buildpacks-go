@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Add support for `arm64` and multi-arch images. ([#261](https://github.com/heroku/buildpacks-go/pull/261))
+### Added
+
+- Support for `arm64` and multi-arch images. ([#261](https://github.com/heroku/buildpacks-go/pull/261))
 
 ## [0.2.1] - 2024-04-05
 
