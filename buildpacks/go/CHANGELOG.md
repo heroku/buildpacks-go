@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for `arm64` and multi-arch images. ([#261](https://github.com/heroku/buildpacks-go/pull/261))
+
 ## [0.2.1] - 2024-04-05
 
 - Added go1.21.9 (linux-aarch64), go1.21.9 (linux-x86_64), go1.22.2 (linux-aarch64), go1.22.2 (linux-x86_64).
