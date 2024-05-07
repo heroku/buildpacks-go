@@ -1,4 +1,18 @@
 [[artifacts]]
+version = "go1.22.3"
+os = "linux"
+arch = "amd64"
+url = "https://go.dev/dl/go1.22.3.linux-amd64.tar.gz"
+checksum = "sha256:8920ea521bad8f6b7bc377b4824982e011c19af27df88a815e3586ea895f1b36"
+
+[[artifacts]]
+version = "go1.22.3"
+os = "linux"
+arch = "arm64"
+url = "https://go.dev/dl/go1.22.3.linux-arm64.tar.gz"
+checksum = "sha256:6c33e52a5b26e7aa021b94475587fce80043a727a54ceb0eee2f9fc160646434"
+
+[[artifacts]]
 version = "go1.22.2"
 os = "linux"
 arch = "amd64"
@@ -67,6 +81,20 @@ os = "linux"
 arch = "arm64"
 url = "https://go.dev/dl/go1.22rc1.linux-arm64.tar.gz"
 checksum = "sha256:d777d6bc3241bcd470603c3af896d1c60ed1d8cc718cf92d0a5d9035b149a827"
+
+[[artifacts]]
+version = "go1.21.10"
+os = "linux"
+arch = "amd64"
+url = "https://go.dev/dl/go1.21.10.linux-amd64.tar.gz"
+checksum = "sha256:e330e5d977bf4f3bdc157bc46cf41afa5b13d66c914e12fd6b694ccda65fcf92"
+
+[[artifacts]]
+version = "go1.21.10"
+os = "linux"
+arch = "arm64"
+url = "https://go.dev/dl/go1.21.10.linux-arm64.tar.gz"
+checksum = "sha256:428e0b9ecab5762b7c2be000ad1be6f432dccfcd99bb8b8aeeb757d987bfda9d"
 
 [[artifacts]]
 version = "go1.21.9"
