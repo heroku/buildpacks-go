@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
     "buildpacks/go",
-    "common/go-utils", 
+    "common/go-utils",
     "common/inventory-utils",
 ]
 
