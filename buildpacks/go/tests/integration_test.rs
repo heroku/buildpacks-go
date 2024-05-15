@@ -26,7 +26,11 @@ impl IntegrationTestConfig {
             (_, _) => "x86_64-unknown-linux-musl".to_string(),
         };
         let fixture = format!("tests/fixtures/{}", fixture.into());
-        Self { target, builder, fixture }
+        Self {
+            target,
+            builder,
+            fixture,
+        }
     }
 }
 

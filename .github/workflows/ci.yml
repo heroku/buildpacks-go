@@ -41,7 +41,7 @@ jobs:
         run: cargo test --locked
 
   integration-test:
-    name: Integration tests -- ${{ matrix.builder }} / ${{ matrix.arch }}
+      name: integration-tests: ${{ matrix.builder }} / ${{ matrix.arch }}
     runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-22.04-arm-large' || 'ubuntu-latest' }}
     strategy:
       matrix:
