@@ -26,11 +26,7 @@ impl IntegrationTestConfig {
             (_, _) => "x86_64-unknown-linux-musl".to_string(),
         };
         let fixture = format!("tests/fixtures/{}", fixture.into());
-        Self {
-            builder,
-            target,
-            fixture,
-        }
+        Self { target, builder, fixture }
     }
 }
 
@@ -195,6 +191,6 @@ fn test_go_binary_arch() {
         for contain in contains {
             assert_contains!(ctx.pack_stdout, contain);
         }
-        assert_not_contains!(ctx.pack_stdout, not_contain)
+        assert_not_contains!(ctx.pack_stdout, not_contain);
     });
 }
