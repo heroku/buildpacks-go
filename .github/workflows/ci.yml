@@ -73,8 +73,10 @@ jobs:
         uses: Swatinem/rust-cache@v2.7.3
       - name: Install Pack CLI
         uses: buildpacks/github-actions/setup-pack@v5.6.0
+      - name: Pull builder image
+        run: docker pull ${{ matrix.builder }}
       - name: Run integration tests
         env:
           INTEGRATION_TEST_BUILDER: ${{ matrix.builder }}
         # Runs only tests annotated with the `ignore` attribute (which in this repo, are the integration tests).
-        run: cargo test --locked -- --ignored
+        run: cargo test --locked -- --ignored --test-threads 16
