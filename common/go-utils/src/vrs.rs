@@ -40,6 +40,22 @@ pub struct GoVersion {
     semantic_version: semver::Version,
 }
 
+impl GoVersion {
+    /// Get the corresponding Go major release. Go identifies major releases
+    /// as increments to the second identifier (e.g.: 1.16.0, 1.22.0). In
+    /// semver this corresponds to a change to major and/or minor identifiers.
+    #[must_use]
+    pub fn major_release_version(&self) -> GoVersion {
+        let go_major_release =
+            semver::Version::new(self.semantic_version.major, self.semantic_version.minor, 0);
+
+        GoVersion {
+            value: go_major_release.to_string(),
+            semantic_version: go_major_release,
+        }
+    }
+}
+
 impl Display for GoVersion {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
