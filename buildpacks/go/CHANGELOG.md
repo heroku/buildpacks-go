@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added go1.22.4 (linux-arm64), go1.22.4 (linux-amd64).
 ### Changed
 
 - The build cache is now invalidated when the target distribution changes. ([#267](https://github.com/heroku/buildpacks-go/pull/267))
