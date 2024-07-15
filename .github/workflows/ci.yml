@@ -15,7 +15,7 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
         run: cargo fmt -- --check
 
   unit-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
 
   integration-test:
     name: integration-tests ${{ matrix.builder }} / ${{ matrix.arch }}
-    runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-22.04-arm-small' || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-24.04-arm-medium' || 'ubuntu-24.04' }}
     strategy:
       matrix:
         arch: ["amd64"]
@@ -63,8 +63,18 @@ jobs:
         uses: Swatinem/rust-cache@v2.7.3
       - name: Install Pack CLI
         uses: buildpacks/github-actions/setup-pack@v5.7.2
+      # The images are pulled up front to prevent duplicate pulls due to the tests being run concurrently.
       - name: Pull builder image
         run: docker pull ${{ matrix.builder }}
+      - name: Pull run image
+        # Using `docker inspect` rather than `pack builder inspect` since the latter makes
+        # additional requests to Docker Hub even when the image is available locally.
+        run: |
+          RUN_IMAGE=$(
+            docker inspect --format='{{index .Config.Labels "io.buildpacks.builder.metadata"}}' '${{ matrix.builder }}' \
+              | jq --exit-status --raw-output '.stack.runImage.image'
+          )
+          docker pull "${RUN_IMAGE}"
       - name: Run integration tests
         env:
           INTEGRATION_TEST_BUILDER: ${{ matrix.builder }}
