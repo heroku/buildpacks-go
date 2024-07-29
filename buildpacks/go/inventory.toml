@@ -1,4 +1,18 @@
 [[artifacts]]
+version = "go1.23rc2"
+os = "linux"
+arch = "amd64"
+url = "https://go.dev/dl/go1.23rc2.linux-amd64.tar.gz"
+checksum = "sha256:fa906bbb6d2077a1a58d91ca267e0fc5cb6d437807fb0725d10f23531e9258d2"
+
+[[artifacts]]
+version = "go1.23rc2"
+os = "linux"
+arch = "arm64"
+url = "https://go.dev/dl/go1.23rc2.linux-arm64.tar.gz"
+checksum = "sha256:56f89c249ba8a2fb642a23c62eadaaea10622e60a6c6149eaf853c951134b0af"
+
+[[artifacts]]
 version = "go1.23rc1"
 os = "linux"
 arch = "amd64"
