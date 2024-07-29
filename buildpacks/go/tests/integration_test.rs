@@ -46,7 +46,8 @@ impl From<IntegrationTestConfig> for BuildConfig {
 }
 
 fn test_go_fixture(fixture: &str, expect_loglines: &[&str], refute_loglines: &[&str]) {
-    TestRunner::default().build(&IntegrationTestConfig::new(fixture).into(), |ctx| {
+    let build_config: BuildConfig = IntegrationTestConfig::new(fixture).into();
+    TestRunner::default().build(build_config, |ctx| {
         let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
         for expect_line in expect_loglines {
             assert_contains!(logs, expect_line);
@@ -170,16 +171,14 @@ fn test_basic_http_122() {
 #[test]
 #[ignore = "integration test"]
 fn test_go_artifact_caching() {
-    TestRunner::default().build(
-        &IntegrationTestConfig::new("basic_http_116").into(),
-        |ctx| {
-            assert_contains!(ctx.pack_stdout, "Installing go1.16.",);
-            let config = ctx.config.clone();
-            ctx.rebuild(config, |ctx| {
-                assert_contains!(ctx.pack_stdout, "Reusing go1.16.");
-            });
-        },
-    );
+    let build_config: BuildConfig = IntegrationTestConfig::new("basic_http_116").into();
+    TestRunner::default().build(build_config, |ctx| {
+        assert_contains!(ctx.pack_stdout, "Installing go1.16.",);
+        let config = ctx.config.clone();
+        ctx.rebuild(config, |ctx| {
+            assert_contains!(ctx.pack_stdout, "Reusing go1.16.");
+        });
+    });
 }
 
 #[test]
@@ -191,7 +190,8 @@ fn test_go_binary_arch() {
         _ => (["(linux-amd64)", "linux-amd64.tar.gz"], "arm64"),
     };
 
-    TestRunner::default().build(&integration_config.into(), |ctx| {
+    let build_config: BuildConfig = integration_config.into();
+    TestRunner::default().build(build_config, |ctx| {
         for contain in contains {
             assert_contains!(ctx.pack_stdout, contain);
         }
