@@ -15,4 +15,4 @@ thiserror = "1"
 toml = "0.8"
 
 [dev-dependencies]
-serde_test = "1.0.176"
+serde_test = "1.0.177"
