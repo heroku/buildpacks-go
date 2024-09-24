@@ -1,6 +1,8 @@
 use crate::vrs;
-use heroku_inventory_utils::checksum::{self, Checksum};
-use heroku_inventory_utils::inv::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError};
+use libherokubuildpack::inventory::{
+    artifact::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError},
+    checksum::{self, Checksum},
+};
 use serde::Deserialize;
 use sha2::Sha256;
 use vrs::{GoVersion, GoVersionParseError};
@@ -31,10 +33,10 @@ pub enum GoFileConversionError {
     #[error(transparent)]
     Os(#[from] UnsupportedOsError),
     #[error(transparent)]
-    Checksum(#[from] checksum::Error),
+    Checksum(#[from] checksum::ChecksumParseError),
 }
 
-impl TryFrom<&GoFile> for Artifact<GoVersion, Sha256> {
+impl TryFrom<&GoFile> for Artifact<GoVersion, Sha256, Option<()>> {
     type Error = GoFileConversionError;
 
     fn try_from(value: &GoFile) -> Result<Self, Self::Error> {
@@ -42,8 +44,9 @@ impl TryFrom<&GoFile> for Artifact<GoVersion, Sha256> {
             version: value.version.clone().try_into()?,
             os: value.os.parse::<Os>()?,
             arch: value.arch.parse::<Arch>()?,
-            checksum: Checksum::try_from(value.sha256.clone())?,
+            checksum: format!("sha256:{}", value.sha256.clone()).parse::<Checksum<Sha256>>()?,
             url: format!("{}/{}", GO_HOST_URL, value.filename),
+            metadata: None,
         })
     }
 }
@@ -71,7 +74,7 @@ pub enum ListUpstreamArtifactsError {
 /// HTTP issues connecting to the upstream releases endpoint, as well
 /// as json and Go version parsing issues, will return an error.
 pub fn list_upstream_artifacts(
-) -> Result<Vec<Artifact<GoVersion, Sha256>>, ListUpstreamArtifactsError> {
+) -> Result<Vec<Artifact<GoVersion, Sha256, Option<()>>>, ListUpstreamArtifactsError> {
     ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
@@ -91,37 +94,18 @@ pub fn list_upstream_artifacts(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::hash::{BuildHasher, RandomState};
 
-    fn create_artifact() -> Artifact<GoVersion, Sha256> {
+    fn create_artifact() -> Artifact<GoVersion, Sha256, Option<()>> {
         Artifact {
             version: GoVersion::try_from("1.7.2".to_string()).unwrap(),
             os: Os::Linux,
             arch: Arch::Amd64,
             url: String::from("foo"),
-            checksum: Checksum::try_from(
-                "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890".to_string(),
-            )
-            .unwrap(),
+            checksum: "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+                .parse::<Checksum<Sha256>>()
+                .unwrap(),
+            metadata: None,
         }
-    }
-
-    #[test]
-    fn test_artifact_display_format() {
-        let artifact = create_artifact();
-
-        assert_eq!("1.7.2 (linux-amd64)", artifact.to_string());
-    }
-
-    #[test]
-    fn test_artifact_hash_implementation() {
-        let artifact = create_artifact();
-
-        let state = RandomState::new();
-        assert_eq!(
-            state.hash_one(&artifact.checksum.value),
-            state.hash_one(&artifact)
-        );
     }
 
     #[test]
@@ -132,7 +116,7 @@ mod tests {
             .contains("sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"));
         assert_eq!(
             artifact,
-            toml::from_str::<Artifact<GoVersion, Sha256>>(&serialized).unwrap()
+            toml::from_str::<Artifact<GoVersion, Sha256, Option<()>>>(&serialized).unwrap()
         );
     }
 }
