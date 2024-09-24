@@ -1,11 +1,11 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
 use heroku_go_utils::vrs::GoVersion;
-use heroku_inventory_utils::inv::Artifact;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
+use libherokubuildpack::inventory::artifact::Artifact;
 use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
@@ -13,13 +13,13 @@ use std::path::Path;
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub(crate) struct DistLayer {
-    pub(crate) artifact: Artifact<GoVersion, Sha256>,
+    pub(crate) artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
     layer_version: String,
-    artifact: Artifact<GoVersion, Sha256>,
+    artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -48,8 +48,8 @@ impl Layer for DistLayer {
         layer_path: &Path,
     ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
         log_info(format!(
-            "Installing {} from {}",
-            self.artifact, self.artifact.url
+            "Installing {} ({}-{}) from {}",
+            self.artifact.version, self.artifact.os, self.artifact.arch, self.artifact.url
         ));
         tgz::fetch_strip_filter_extract_verify(
             &self.artifact,
@@ -84,7 +84,10 @@ impl Layer for DistLayer {
         layer_data: &LayerData<Self::Metadata>,
     ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
         if layer_data.content_metadata.metadata == DistLayerMetadata::current(self) {
-            log_info(format!("Reusing {}", self.artifact));
+            log_info(format!(
+                "Reusing {} ({}-{})",
+                self.artifact.version, self.artifact.os, self.artifact.arch
+            ));
             Ok(ExistingLayerStrategy::Keep)
         } else {
             Ok(ExistingLayerStrategy::Recreate)
