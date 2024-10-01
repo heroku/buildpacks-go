@@ -14,4 +14,4 @@ serde = { version = "1", features = ["derive"] }
 thiserror = "1"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
-heroku-inventory-utils = { path = "../../common/inventory-utils" }
+libherokubuildpack = { git = "https://github.com/heroku/libcnb.rs", branch = "migrate-inventory-code", version = "=0.23.0", default-features = false, features = ["inventory", "log", "sha2"] }

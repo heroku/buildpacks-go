@@ -5,7 +5,6 @@ mod proc;
 mod tgz;
 
 use heroku_go_utils::vrs::GoVersion;
-use heroku_inventory_utils::inv::{resolve, Arch, Inventory, Os};
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
 use layers::dist::{DistLayer, DistLayerError};
@@ -19,6 +18,8 @@ use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
+use libherokubuildpack::inventory::artifact::{Arch, Os};
+use libherokubuildpack::inventory::Inventory;
 use libherokubuildpack::log::{log_error, log_header, log_info};
 use sha2::Sha256;
 use std::env::{self, consts};
@@ -63,7 +64,7 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let inv: Inventory<GoVersion, Sha256> =
+        let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
@@ -72,12 +73,15 @@ impl Buildpack for GoBuildpack {
         log_info(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
-            (Ok(os), Ok(arch)) => resolve(inv.artifacts.as_slice(), os, arch, &requirement),
+            (Ok(os), Ok(arch)) => inv.resolve(os, arch, &requirement),
             (_, _) => None,
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        log_info(format!("Resolved Go version: {artifact}"));
+        log_info(format!(
+            "Resolved Go version: {} ({}-{})",
+            artifact.version, artifact.os, artifact.arch
+        ));
 
         log_header("Installing Go distribution");
         go_env = context
