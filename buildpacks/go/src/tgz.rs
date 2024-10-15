@@ -1,4 +1,4 @@
-use flate2::read::GzDecoder;
+use flate2::read::MultiGzDecoder;
 use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
@@ -55,7 +55,7 @@ pub(crate) fn fetch_strip_filter_extract_verify<'a, D: Digest, V>(
         .map_err(Box::new)?
         .into_reader();
 
-    let mut archive = Archive::new(GzDecoder::new(DigestingReader::new(body, D::new())));
+    let mut archive = Archive::new(MultiGzDecoder::new(DigestingReader::new(body, D::new())));
     let filters: Vec<&str> = filter_prefixes.into_iter().collect();
     for entry in archive.entries().map_err(Error::Entries)? {
         let mut file = entry.map_err(Error::Entry)?;
