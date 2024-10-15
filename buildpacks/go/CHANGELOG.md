@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Adjust Go distribution tarball download process for improved reliability.
+
 ## [0.4.3] - 2024-08-13
 
 - Added go1.23.0 (linux-amd64), go1.23.0 (linux-arm64).
