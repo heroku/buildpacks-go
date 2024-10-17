@@ -443,7 +443,6 @@ version = "0.0.0"
 dependencies = [
  "flate2",
  "heroku-go-utils",
- "heroku-inventory-utils",
  "hex",
  "libcnb",
  "libcnb-test",
@@ -462,7 +461,7 @@ dependencies = [
 name = "heroku-go-utils"
 version = "0.0.0"
 dependencies = [
- "heroku-inventory-utils",
+ "libherokubuildpack",
  "regex",
  "semver",
  "serde",
@@ -470,19 +469,6 @@ dependencies = [
  "thiserror",
  "toml",
  "ureq",
-]
-
-[[package]]
-name = "heroku-inventory-utils"
-version = "0.0.0"
-dependencies = [
- "hex",
- "semver",
- "serde",
- "serde_test",
- "sha2",
- "thiserror",
- "toml",
 ]
 
 [[package]]
@@ -680,11 +666,16 @@ dependencies = [
 
 [[package]]
 name = "libherokubuildpack"
-version = "0.21.0"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "146f61983fd384cb5ab5373acdd8f53fcb4b27ecb200435a6bfb6a70b421bc9d"
+checksum = "bec33ef08ce0508ced826f7bdfcd0538bdfc2270632915e447d1ea72bce5645d"
 dependencies = [
+ "hex",
+ "serde",
+ "sha2",
  "termcolor",
+ "thiserror",
+ "toml",
 ]
 
 [[package]]
@@ -1045,15 +1036,6 @@ name = "serde_spanned"
 version = "0.6.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb5b1b31579f3811bf615c144393417496f152e12ac8b7663bf664f4a815306d"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "serde_test"
-version = "1.0.177"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f901ee573cab6b3060453d2d5f0bae4e6d628c23c0a962ff9b5f1d7c8d4f1ed"
 dependencies = [
  "serde",
 ]

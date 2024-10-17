@@ -14,4 +14,4 @@ serde = { version = "1", features = ["derive"] }
 thiserror = "1"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
-heroku-inventory-utils = { path = "../../common/inventory-utils" }
+libherokubuildpack = { version = "=0.24.0", default-features = false, features = ["inventory", "log", "inventory-sha2"] }
