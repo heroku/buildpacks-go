@@ -2,9 +2,9 @@
 #![allow(unused_crate_dependencies)]
 
 use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
-use heroku_inventory_utils::inv::{read_inventory_file, Artifact, Inventory};
+use libherokubuildpack::inventory::{artifact::Artifact, Inventory};
 use sha2::Sha256;
-use std::{collections::HashSet, env, fs, process};
+use std::{env, fs, process};
 
 /// Updates the local go inventory.toml with versions published on go.dev.
 fn main() {
@@ -13,15 +13,17 @@ fn main() {
         process::exit(2);
     });
 
-    let inventory_artifacts: HashSet<Artifact<GoVersion, Sha256>> =
-        read_inventory_file(&inventory_path)
-            .unwrap_or_else(|e| {
-                eprintln!("Error reading inventory at '{inventory_path}': {e}");
-                std::process::exit(1);
-            })
-            .artifacts
-            .into_iter()
-            .collect();
+    let inventory_artifacts = fs::read_to_string(&inventory_path)
+        .unwrap_or_else(|e| {
+            eprintln!("Error reading inventory at '{inventory_path}': {e}");
+            std::process::exit(1);
+        })
+        .parse::<Inventory<GoVersion, Sha256, Option<()>>>()
+        .unwrap_or_else(|e| {
+            eprintln!("Error parsing inventory file at '{inventory_path}': {e}");
+            process::exit(1);
+        })
+        .artifacts;
 
     // List available upstream release versions.
     let remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
@@ -43,25 +45,33 @@ fn main() {
         process::exit(7);
     });
 
-    let remote_artifacts: HashSet<Artifact<GoVersion, Sha256>> =
+    let remote_artifacts: Vec<Artifact<GoVersion, Sha256, Option<()>>> =
         inventory.artifacts.into_iter().collect();
 
     [
-        ("Added", &remote_artifacts - &inventory_artifacts),
-        ("Removed", &inventory_artifacts - &remote_artifacts),
+        ("Added", difference(&remote_artifacts, &inventory_artifacts)),
+        (
+            "Removed",
+            difference(&inventory_artifacts, &remote_artifacts),
+        ),
     ]
     .iter()
     .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
     .for_each(|(action, artifacts)| {
-        let mut list: Vec<&Artifact<GoVersion, Sha256>> = artifacts.iter().collect();
+        let mut list: Vec<_> = artifacts.iter().collect();
         list.sort_by_key(|a| &a.version);
         println!(
             "{} {}.",
             action,
             list.iter()
-                .map(ToString::to_string)
+                .map(|artifact| format!("{} ({}-{})", artifact.version, artifact.os, artifact.arch))
                 .collect::<Vec<_>>()
                 .join(", ")
         );
     });
+}
+
+/// Finds the difference between two slices.
+fn difference<'a, T: Eq>(a: &'a [T], b: &'a [T]) -> Vec<&'a T> {
+    a.iter().filter(|&artifact| !b.contains(artifact)).collect()
 }

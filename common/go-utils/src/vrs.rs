@@ -1,4 +1,4 @@
-use heroku_inventory_utils::inv::VersionRequirement;
+use libherokubuildpack::inventory::version::VersionRequirement;
 use regex::Regex;
 use semver;
 use serde::{Deserialize, Serialize};

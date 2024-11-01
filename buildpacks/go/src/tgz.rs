@@ -1,12 +1,11 @@
 use flate2::read::GzDecoder;
+use libherokubuildpack::inventory::artifact::Artifact;
 use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
 };
 use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
-
-use heroku_inventory_utils::inv::Artifact;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -44,7 +43,7 @@ pub(crate) enum Error {
 ///
 /// See `Error` for an enumeration of error scenarios.
 pub(crate) fn fetch_strip_filter_extract_verify<'a, D: Digest, V>(
-    artifact: &Artifact<V, D>,
+    artifact: &Artifact<V, D, Option<()>>,
     strip_prefix: impl AsRef<str>,
     filter_prefixes: impl Iterator<Item = &'a str>,
     dest_dir: impl AsRef<std::path::Path>,
@@ -113,9 +112,9 @@ impl<R: Read, H: sha2::Digest> Read for DigestingReader<R, H> {
 
 #[cfg(test)]
 mod tests {
-    use heroku_inventory_utils::{
+    use libherokubuildpack::inventory::{
+        artifact::{Arch, Os},
         checksum::Checksum,
-        inv::{Arch, Os},
     };
     use sha2::Sha256;
 
@@ -123,15 +122,16 @@ mod tests {
 
     #[test]
     fn test_fetch_strip_filter_extract_verify() {
-        let artifact = Artifact::<String, Sha256> {
+        let artifact = Artifact::<String, Sha256, Option<()>> {
             version: "0.0.1".to_string(),
             os: Os::Linux,
             arch: Arch::Amd64,
             url: "https://mirrors.edge.kernel.org/pub/software/scm/git/git-0.01.tar.gz".to_string(),
-            checksum: Checksum::try_from(
-                "9bdf8a4198b269c5cbe4263b1f581aae885170a6cb93339a2033cb468e57dcd3".to_string(),
-            )
-            .unwrap(),
+            checksum: "sha256:9bdf8a4198b269c5cbe4263b1f581aae885170a6cb93339a2033cb468e57dcd3"
+                .to_string()
+                .parse::<Checksum<Sha256>>()
+                .unwrap(),
+            metadata: None,
         };
         let dest = tempfile::tempdir().expect("Couldn't create test tmpdir");
 
