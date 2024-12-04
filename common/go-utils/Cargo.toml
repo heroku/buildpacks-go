@@ -11,7 +11,7 @@ regex = "1"
 sha2 = "0.10.8"
 semver = "1"
 serde = { version = "1", features = ["derive"] }
-thiserror = "1"
+thiserror = "2"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
 libherokubuildpack = { version = "=0.24.0", default-features = false, features = ["inventory", "log", "inventory-sha2"] }

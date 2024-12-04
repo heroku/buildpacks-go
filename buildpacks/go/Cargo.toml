@@ -18,7 +18,7 @@ semver = "1"
 serde = "1"
 sha2 = "0.10"
 tar = { version = "0.4", default-features = false }
-thiserror = "1"
+thiserror = "2"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
 
