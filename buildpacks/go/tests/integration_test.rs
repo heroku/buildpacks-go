@@ -121,6 +121,7 @@ fn test_worker_http_118() {
         &[
             "Detected Go version requirement: ~1.18.1",
             "Installing go1.18.",
+            "Detected processes",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",
         ],
@@ -139,6 +140,18 @@ fn test_basic_http_119() {
         ],
         &[],
     );
+}
+
+#[test]
+#[ignore = "integration test"]
+fn test_procfile_http_123() {
+    let build_config: BuildConfig = IntegrationTestConfig::new("procfile_http_123").into();
+    TestRunner::default().build(build_config, |ctx| {
+        assert_contains!(ctx.pack_stdout, "Detected Go version requirement: =1.23");
+        assert_contains!(ctx.pack_stdout, "Installing go1.23.");
+        assert_not_contains!(ctx.pack_stdout, "Setting launch table");
+        assert_not_contains!(ctx.pack_stdout, "Detected processes:");
+    });
 }
 
 #[test]

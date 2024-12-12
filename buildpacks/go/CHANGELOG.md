@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Now prefers processes set by Procfile, and no longer adds it's own processes if a Procfile is present.
+
 ## [0.4.7] - 2024-12-06
 
 - Added go1.22.10 (linux-amd64), go1.22.10 (linux-arm64), go1.23.4 (linux-amd64), go1.23.4 (linux-arm64).
