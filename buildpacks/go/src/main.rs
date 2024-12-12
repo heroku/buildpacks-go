@@ -140,8 +140,10 @@ impl Buildpack for GoBuildpack {
         cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         let mut procs: Vec<Process> = vec![];
-        if !Path::exists(&context.app_dir.join("Procfile")) {
-            log_header("Setting launch table");
+        if Path::exists(&context.app_dir.join("Procfile")) {
+            log_info("Skipping launch process registration (Procfile detected)");
+        } else {
+            log_header("Registering launch processes");
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
             log_info("Detected processes:");
             for proc in &procs {

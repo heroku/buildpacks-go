@@ -121,7 +121,7 @@ fn test_worker_http_118() {
         &[
             "Detected Go version requirement: ~1.18.1",
             "Installing go1.18.",
-            "Detected processes",
+            "Detected processes:",
             "example.com/worker_http_118/cmd/web",
             "example.com/worker_http_118/cmd/worker",
         ],
@@ -149,7 +149,8 @@ fn test_procfile_http_123() {
     TestRunner::default().build(build_config, |ctx| {
         assert_contains!(ctx.pack_stdout, "Detected Go version requirement: =1.23");
         assert_contains!(ctx.pack_stdout, "Installing go1.23.");
-        assert_not_contains!(ctx.pack_stdout, "Setting launch table");
+        assert_contains!(ctx.pack_stdout, "Skipping launch process registration");
+        assert_not_contains!(ctx.pack_stdout, "Registering launch processes");
         assert_not_contains!(ctx.pack_stdout, "Detected processes:");
     });
 }
