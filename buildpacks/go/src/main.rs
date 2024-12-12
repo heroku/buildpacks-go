@@ -11,7 +11,7 @@ use layers::dist::{DistLayer, DistLayerError};
 use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::LaunchBuilder;
+use libcnb::data::launch::{LaunchBuilder, Process};
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
@@ -139,11 +139,16 @@ impl Buildpack for GoBuildpack {
         }
         cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
-        log_header("Setting launch table");
-        let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-        log_info("Detected processes:");
-        for proc in &procs {
-            log_info(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
+        let mut procs: Vec<Process> = vec![];
+        if Path::exists(&context.app_dir.join("Procfile")) {
+            log_info("Skipping launch process registration (Procfile detected)");
+        } else {
+            log_header("Registering launch processes");
+            procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
+            log_info("Detected processes:");
+            for proc in &procs {
+                log_info(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
+            }
         }
 
         BuildResultBuilder::new()
