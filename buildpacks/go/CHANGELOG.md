@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.8] - 2024-12-13
+
 - Now prefers processes set by Procfile, and no longer adds it's own processes if a Procfile is present.
 
 ## [0.4.7] - 2024-12-06
@@ -199,7 +201,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs. ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.4.7...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.4.8...HEAD
+[0.4.8]: https://github.com/heroku/buildpacks-go/compare/v0.4.7...v0.4.8
 [0.4.7]: https://github.com/heroku/buildpacks-go/compare/v0.4.6...v0.4.7
 [0.4.6]: https://github.com/heroku/buildpacks-go/compare/v0.4.5...v0.4.6
 [0.4.5]: https://github.com/heroku/buildpacks-go/compare/v0.4.4...v0.4.5
