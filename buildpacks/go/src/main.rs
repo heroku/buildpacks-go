@@ -4,7 +4,7 @@ mod layers;
 mod proc;
 mod tgz;
 
-use bullet_stream::Print;
+use bullet_stream::{style, Print};
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
@@ -57,8 +57,6 @@ impl Buildpack for GoBuildpack {
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let mut build_output = Print::global().h2("Heroku Go Buildpack");
-        log_header("Reading build configuration");
-
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -66,6 +64,7 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
+        let bullet = build_output.bullet("Build configuration");
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
@@ -80,10 +79,14 @@ impl Buildpack for GoBuildpack {
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        log_info(format!(
-            "Resolved Go version: {} ({}-{})",
-            artifact.version, artifact.os, artifact.arch
-        ));
+        build_output = bullet
+            .sub_bullet(format!(
+                "Resolved Go version: {} ({}-{})",
+                style::value(artifact.version.to_string()),
+                artifact.os,
+                artifact.arch
+            ))
+            .done();
 
         (_, go_env) = {
             layers::dist::call(
