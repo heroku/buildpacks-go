@@ -8,7 +8,7 @@ use bullet_stream::Print;
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
-use layers::dist::{DistLayer, DistLayerError};
+use layers::dist::DistLayerError;
 use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
@@ -85,16 +85,14 @@ impl Buildpack for GoBuildpack {
             artifact.version, artifact.os, artifact.arch
         ));
 
-        log_header("Installing Go distribution");
-        go_env = context
-            .handle_layer(
-                layer_name!("go_dist"),
-                DistLayer {
-                    artifact: artifact.clone(),
-                },
-            )?
-            .env
-            .apply(Scope::Build, &go_env);
+        (_, go_env) = {
+            layers::dist::call(
+                &context,
+                build_output.bullet("Installing Go distribution"),
+                &layers::dist::DistLayerMetadata::new(artifact),
+            )
+            .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
+        };
 
         log_header("Building Go binaries");
 
