@@ -1,9 +1,13 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
-use bullet_stream::style;
+use bullet_stream::state::SubBullet;
+use bullet_stream::{style, Print};
 use cache_diff::CacheDiff;
+use commons::layer::diff_migrate::DiffMigrateLayer;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
+use libcnb::data::layer_name;
+use libcnb::layer::{EmptyLayerCause, LayerState};
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
@@ -12,7 +16,71 @@ use libherokubuildpack::log::log_info;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
+use std::io::Stdout;
 use std::path::Path;
+
+pub(crate) fn call<W>(
+    context: &BuildContext<GoBuildpack>,
+    mut bullet: Print<SubBullet<W>>,
+    metadata: &DistLayerMetadata,
+) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
+where
+    W: Write + Send + Sync + 'static,
+{
+    let layer_ref = DiffMigrateLayer {
+        build: true,
+        launch: true,
+    }
+    .cached_layer(layer_name!("go_dist"), context, metadata)?;
+    match &layer_ref.state {
+        LayerState::Restored { cause } => {
+            bullet = bullet.sub_bullet(cause);
+        }
+        LayerState::Empty { cause } => {
+            match cause {
+                EmptyLayerCause::NewlyCreated => {}
+                EmptyLayerCause::InvalidMetadataAction { cause }
+                | EmptyLayerCause::RestoredLayerAction { cause } => {
+                    bullet = bullet.sub_bullet(cause);
+                }
+            }
+            let timer = bullet.start_timer(format!(
+                "Installing {} ({}-{}) from {}",
+                metadata.artifact.version,
+                metadata.artifact.os,
+                metadata.artifact.arch,
+                metadata.artifact.url
+            ));
+            tgz::fetch_strip_filter_extract_verify(
+                &metadata.artifact,
+                "go",
+                ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
+                layer_ref.path(),
+            )
+            .map_err(DistLayerError::Tgz)
+            .map_err(GoBuildpackError::DistLayer)?;
+
+            bullet = timer.done();
+        }
+    }
+
+    layer_ref.write_env(
+        LayerEnv::new()
+            .chainable_insert(
+                Scope::Build,
+                ModificationBehavior::Override,
+                "GOROOT",
+                layer_ref.path(),
+            )
+            .chainable_insert(
+                Scope::Build,
+                ModificationBehavior::Override,
+                "GO111MODULE",
+                "on",
+            ),
+    )?;
+    Ok((bullet, layer_ref.read_env()?))
+}
 
 /// A layer that downloads and installs the Go distribution artifacts
 pub(crate) struct DistLayer {
