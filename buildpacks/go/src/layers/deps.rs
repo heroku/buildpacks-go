@@ -19,7 +19,7 @@ pub(crate) struct DepsLayer {
     pub(crate) go_env: Env,
 }
 
-#[derive(Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct DepsLayerMetadata {
     // Using float here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
     cache_usage_count: f32,

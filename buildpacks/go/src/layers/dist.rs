@@ -16,7 +16,7 @@ pub(crate) struct DistLayer {
     pub(crate) artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
     layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,

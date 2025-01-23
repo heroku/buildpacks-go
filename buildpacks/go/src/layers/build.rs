@@ -15,7 +15,7 @@ pub(crate) struct BuildLayer {
     pub(crate) go_version: GoVersion,
 }
 
-#[derive(Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct BuildLayerMetadata {
     layer_version: String,
     go_major_version: GoVersion,
