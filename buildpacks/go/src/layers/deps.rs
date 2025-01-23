@@ -1,4 +1,5 @@
 use crate::{cmd, GoBuildpack, GoBuildpackError};
+use cache_diff::CacheDiff;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
@@ -25,6 +26,23 @@ pub(crate) struct DepsLayerMetadata {
     // Using float here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
     cache_usage_count: f32,
     layer_version: String,
+}
+
+impl CacheDiff for DepsLayerMetadata {
+    fn diff(&self, old: &Self) -> Vec<String> {
+        let mut diff = Vec::new();
+        if self.cache_usage_count >= MAX_CACHE_USAGE_COUNT {
+            diff.push(format!("Max cache usage reached ({MAX_CACHE_USAGE_COUNT})"));
+        }
+
+        if self.layer_version != old.layer_version {
+            diff.push(format!(
+                "Buildpack author triggered (v{} to v{})",
+                old.layer_version, self.layer_version
+            ));
+        }
+        diff
+    }
 }
 
 magic_migrate::try_migrate_toml_chain!(
