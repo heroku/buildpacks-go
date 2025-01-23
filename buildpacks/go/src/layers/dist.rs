@@ -16,7 +16,7 @@ use libherokubuildpack::log::log_info;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use std::io::Stdout;
+use std::io::Write;
 use std::path::Path;
 
 pub(crate) fn call<W>(
