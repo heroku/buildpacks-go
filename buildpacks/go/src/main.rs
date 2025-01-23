@@ -56,7 +56,7 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let mut build_output = Print::global().without_header();
+        let mut build_output = Print::global().h2("Heroku Go Buildpack");
         log_header("Reading build configuration");
 
         let mut go_env = Env::new();
