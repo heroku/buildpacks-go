@@ -12,8 +12,8 @@ hex = "0.4.3"
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
 # libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
 # so it's pinned to an exact version to isolate it from lockfile refreshes.
-libcnb = { version = "=0.21.0", features = ["trace"] }
-libherokubuildpack = { version = "=0.24.0", default-features = false, features = ["inventory", "log"] }
+libcnb = { version = "=0.26.1", features = ["trace"] }
+libherokubuildpack = { version = "=0.26.1", default-features = false, features = ["inventory", "log"] }
 semver = "1"
 serde = "1"
 sha2 = "0.10"
@@ -21,7 +21,13 @@ tar = { version = "0.4", default-features = false }
 thiserror = "2"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
+magic_migrate = "1.0.1"
+bullet_stream = "0.4.0"
+cache_diff = { version = "1.0.1", features = ["bullet_stream"] }
+commons = { git = "https://github.com/heroku/buildpacks-ruby", branch = "main", version = "0.0.0" }
+# Needed until https://github.com/oli-obk/cargo_metadata/pull/280 is released
+serde_json = "1.0.118"
 
 [dev-dependencies]
-libcnb-test = "=0.21.0"
+libcnb-test = "=0.26.1"
 tempfile = "3"
