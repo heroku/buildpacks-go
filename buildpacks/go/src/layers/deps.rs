@@ -1,20 +1,64 @@
 use crate::{cmd, GoBuildpack, GoBuildpackError};
+use bullet_stream::state::SubBullet;
+use bullet_stream::Print;
 use cache_diff::CacheDiff;
+use commons::layer::diff_migrate::DiffMigrateLayer;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::data::layer_name;
+use libcnb::layer::{
+    EmptyLayerCause, ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder,
+    LayerState,
+};
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Env};
 use libherokubuildpack::log::log_info;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 
 const LAYER_VERSION: &str = "1";
 const MAX_CACHE_USAGE_COUNT: f32 = 100.0;
 const CACHE_ENV: &str = "GOMODCACHE";
 const CACHE_DIR: &str = "cache";
+
+pub(crate) fn call<W>(
+    context: &BuildContext<GoBuildpack>,
+    mut bullet: Print<SubBullet<W>>,
+    metadata: &DepsLayerMetadata,
+) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
+where
+    W: Write + Send + Sync + 'static,
+{
+    let layer_ref = DiffMigrateLayer {
+        build: true,
+        launch: true,
+    }
+    .cached_layer(layer_name!("go_deps"), context, metadata)?;
+    match &layer_ref.state {
+        LayerState::Restored { cause } => {
+            bullet = bullet.sub_bullet(cause);
+        }
+        LayerState::Empty { cause } => {
+            match cause {
+                EmptyLayerCause::NewlyCreated => {}
+                EmptyLayerCause::InvalidMetadataAction { cause }
+                | EmptyLayerCause::RestoredLayerAction { cause } => {
+                    bullet = bullet.sub_bullet(cause);
+                }
+            }
+            let timer = bullet.start_timer(format!(""));
+            todo!();
+
+            bullet = timer.done();
+        }
+    }
+
+    layer_ref.write_env(todo!())?;
+    Ok((bullet, layer_ref.read_env()?))
+}
 
 /// A layer that caches the go modules cache
 pub(crate) struct DepsLayer {
