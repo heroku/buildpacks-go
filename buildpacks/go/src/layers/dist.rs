@@ -7,6 +7,7 @@ use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::inventory::artifact::Artifact;
 use libherokubuildpack::log::log_info;
+use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use std::path::Path;
@@ -21,6 +22,14 @@ pub(crate) struct DistLayerMetadata {
     layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
+
+magic_migrate::try_migrate_toml_chain!(
+    error: MigrationError,
+    chain: [DistLayerMetadata]
+);
+
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum DistLayerError {

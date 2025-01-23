@@ -5,6 +5,7 @@ use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerR
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Env};
 use libherokubuildpack::log::log_info;
+use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
@@ -25,6 +26,14 @@ pub(crate) struct DepsLayerMetadata {
     cache_usage_count: f32,
     layer_version: String,
 }
+
+magic_migrate::try_migrate_toml_chain!(
+    error: MigrationError,
+    chain: [DepsLayerMetadata]
+);
+
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum DepsLayerError {

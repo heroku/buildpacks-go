@@ -6,6 +6,7 @@ use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerR
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Target};
 use libherokubuildpack::log::log_info;
+use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
@@ -24,6 +25,14 @@ pub(crate) struct BuildLayerMetadata {
     target_distro_version: String,
     cache_usage_count: f32,
 }
+
+magic_migrate::try_migrate_toml_chain!(
+    error: MigrationError,
+    chain: [BuildLayerMetadata]
+);
+
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 #[error("Couldn't write to build layer: {0}")]
