@@ -25,7 +25,7 @@ where
 {
     let layer_ref = DiffMigrateLayer {
         build: true,
-        launch: true,
+        launch: false,
     }
     .cached_layer(layer_name!("go_dist"), context, metadata)?;
     match &layer_ref.state {
