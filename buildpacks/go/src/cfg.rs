@@ -1,6 +1,6 @@
 use heroku_go_utils::vrs::parse_go_version_requirement;
 
-use std::fs;
+use fs_err as fs;
 use std::io::{BufRead, BufReader};
 use std::path;
 
@@ -29,7 +29,7 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
 ) -> Result<GoModConfig, ReadGoModConfigError> {
     let mut version: Option<semver::VersionReq> = None;
     let mut packages: Option<Vec<String>> = None;
-    let file = fs::File::open(gomod_path)?;
+    let file = fs::File::open(gomod_path.as_ref())?;
     for line_result in BufReader::new(file).lines() {
         let line = line_result?;
         let mut parts = line.split_whitespace().peekable();

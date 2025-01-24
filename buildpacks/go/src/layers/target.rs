@@ -1,10 +1,10 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use fs_err as fs;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::generic::GenericMetadata;
 use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, Scope};
-use std::fs;
 use std::io;
 use std::path::Path;
 

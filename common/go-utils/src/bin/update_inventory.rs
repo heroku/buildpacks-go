@@ -1,10 +1,11 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
+use fs_err as fs;
 use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
 use libherokubuildpack::inventory::{artifact::Artifact, Inventory};
 use sha2::Sha256;
-use std::{env, fs, process};
+use std::{env, process};
 
 /// Updates the local go inventory.toml with versions published on go.dev.
 fn main() {

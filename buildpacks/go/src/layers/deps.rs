@@ -3,6 +3,7 @@ use bullet_stream::state::SubBullet;
 use bullet_stream::Print;
 use cache_diff::CacheDiff;
 use commons::layer::diff_migrate::DiffMigrateLayer;
+use fs_err as fs;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::data::layer_name;
@@ -15,7 +16,6 @@ use libcnb::{Buildpack, Env};
 use libherokubuildpack::log::log_info;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::io::Write;
 use std::path::Path;
 
