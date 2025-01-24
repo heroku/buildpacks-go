@@ -10,7 +10,7 @@ use libcnb::layer::{
     EmptyLayerCause, ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder,
     LayerState,
 };
-use libcnb::layer_env::{LayerEnv, Scope};
+use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::{Buildpack, Env};
 use libherokubuildpack::log::log_info;
 use magic_migrate::TryMigrate;
@@ -34,9 +34,18 @@ where
 {
     let layer_ref = DiffMigrateLayer {
         build: true,
-        launch: true,
+        launch: false,
     }
     .cached_layer(layer_name!("go_deps"), context, metadata)?;
+
+    let cache_dir = layer_ref.path().join(CACHE_DIR);
+    let layer_env = LayerEnv::new().chainable_insert(
+        Scope::Build,
+        ModificationBehavior::Override,
+        CACHE_ENV,
+        &cache_dir,
+    );
+
     match &layer_ref.state {
         LayerState::Restored { cause } => {
             bullet = bullet.sub_bullet(cause);
@@ -49,14 +58,13 @@ where
                     bullet = bullet.sub_bullet(cause);
                 }
             }
-            let timer = bullet.start_timer(format!(""));
-            todo!();
-
-            bullet = timer.done();
+            bullet = bullet.sub_bullet("Creating go modules cache");
+            fs::create_dir(&cache_dir)
+                .map_err(DepsLayerError::Create)
+                .map_err(GoBuildpackError::DepsLayer)?;
         }
     }
-
-    layer_ref.write_env(todo!())?;
+    layer_ref.write_env(layer_env)?;
     Ok((bullet, layer_ref.read_env()?))
 }
 
