@@ -5,6 +5,7 @@ mod proc;
 mod tgz;
 
 use bullet_stream::{style, Print};
+use fs_err::PathExt;
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
@@ -12,6 +13,7 @@ use layers::dist::DistLayerError;
 use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
+use libcnb::data::buildpack::BuildpackIdError;
 use libcnb::data::launch::{LaunchBuilder, Process};
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
@@ -88,7 +90,7 @@ impl Buildpack for GoBuildpack {
             ))
             .done();
 
-        (_, go_env) = {
+        (build_output, go_env) = {
             layers::dist::call(
                 &context,
                 build_output.bullet("Installing Go distribution"),
@@ -97,21 +99,26 @@ impl Buildpack for GoBuildpack {
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };
 
-        log_header("Building Go binaries");
-
-        if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
-            log_info("Using vendored Go modules");
-        } else {
-            go_env = context
-                .handle_layer(
-                    layer_name!("go_deps"),
-                    DepsLayer {
-                        go_env: go_env.clone(),
-                    },
-                )?
-                .env
-                .apply(Scope::Build, &go_env);
-        }
+        (_, go_env) = {
+            let bullet = build_output.bullet("Go binaries");
+            if context
+                .app_dir
+                .join("vendor")
+                .join("modules.txt")
+                .fs_err_try_exists()
+                .map_err(GoBuildpackError::FsTryExist)?
+            {
+                (
+                    bullet.sub_bullet("Detected vendored Go modules").done(),
+                    go_env,
+                )
+            } else {
+                layers::deps::call(&context, bullet, &layers::deps::DepsLayerMetadata::new(1.0))
+                    .map(|(bullet, layer_env)| {
+                        (bullet.done(), layer_env.apply(Scope::Build, &go_env))
+                    })?
+            }
+        };
 
         go_env = context
             .handle_layer(layer_name!("go_target"), TargetLayer {})?
@@ -174,6 +181,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::GoBuild(_) => "go build",
                     GoBuildpackError::GoList(_) => "go list",
                     GoBuildpackError::Proc(_) => "launch process type",
+                    GoBuildpackError::FsTryExist(_) => "file system",
                 };
                 log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
             }
@@ -206,6 +214,8 @@ enum GoBuildpackError {
     VersionResolution(semver::VersionReq),
     #[error("Launch process error: {0}")]
     Proc(proc::Error),
+    #[error("Could not access file system due to error: {0}")]
+    FsTryExist(std::io::Error),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {
