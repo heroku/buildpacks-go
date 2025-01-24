@@ -2,7 +2,7 @@ use crate::{cmd, GoBuildpack, GoBuildpackError};
 use bullet_stream::state::SubBullet;
 use bullet_stream::Print;
 use cache_diff::CacheDiff;
-use commons::layer::diff_migrate::DiffMigrateLayer;
+use commons::layer::diff_migrate::{DiffMigrateLayer, Meta};
 use fs_err as fs;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
@@ -49,6 +49,13 @@ where
     match &layer_ref.state {
         LayerState::Restored { cause } => {
             bullet = bullet.sub_bullet(cause);
+            match cause {
+                Meta::Message(m) => unreachable!("Should never receive an Meta::Message in LayerState::Restored when using DiffMigrateLayer. Message: {m}"),
+                Meta::Data(previous) => {
+                    layer_ref
+                        .write_metadata(DepsLayerMetadata::new(previous.cache_usage_count + 1.0))?;
+                }
+            }
         }
         LayerState::Empty { cause } => {
             match cause {
@@ -68,6 +75,15 @@ where
     Ok((bullet, layer_ref.read_env()?))
 }
 
+impl DepsLayerMetadata {
+    pub(crate) fn new(usage_count: f32) -> Self {
+        Self {
+            cache_usage_count: usage_count,
+            layer_version: LAYER_VERSION.to_string(),
+        }
+    }
+}
+
 /// A layer that caches the go modules cache
 pub(crate) struct DepsLayer {
     pub(crate) go_env: Env,
@@ -83,7 +99,7 @@ pub(crate) struct DepsLayerMetadata {
 impl CacheDiff for DepsLayerMetadata {
     fn diff(&self, old: &Self) -> Vec<String> {
         let mut diff = Vec::new();
-        if self.cache_usage_count >= MAX_CACHE_USAGE_COUNT {
+        if old.cache_usage_count >= MAX_CACHE_USAGE_COUNT {
             diff.push(format!("Max cache usage reached ({MAX_CACHE_USAGE_COUNT})"));
         }
 
