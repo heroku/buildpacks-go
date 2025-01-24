@@ -10,7 +10,6 @@ use heroku_go_utils::vrs::GoVersion;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::DepsLayerError;
 use layers::dist::DistLayerError;
-use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, Process};
@@ -18,7 +17,8 @@ use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
-use libcnb::layer_env::Scope;
+use libcnb::layer::UncachedLayerDefinition;
+use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
@@ -56,6 +56,7 @@ impl Buildpack for GoBuildpack {
             .build()
     }
 
+    #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let mut build_output = Print::global().h2("Heroku Go Buildpack");
         let mut go_env = Env::new();
@@ -98,7 +99,7 @@ impl Buildpack for GoBuildpack {
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };
 
-        (_, go_env) = {
+        (build_output, go_env) = {
             let bullet = build_output.bullet("Go binaries");
             if context
                 .app_dir
@@ -119,10 +120,28 @@ impl Buildpack for GoBuildpack {
             }
         };
 
-        go_env = context
-            .handle_layer(layer_name!("go_target"), TargetLayer {})?
-            .env
-            .apply(Scope::Build, &go_env);
+        (_, go_env) = {
+            let layer_ref = context.uncached_layer(
+                layer_name!("go_target"),
+                UncachedLayerDefinition {
+                    build: true,
+                    launch: true,
+                },
+            )?;
+
+            fs_err::create_dir(layer_ref.path().join("bin"))
+                .map_err(GoBuildpackError::TargetLayer)?;
+            layer_ref.write_env(LayerEnv::new().chainable_insert(
+                Scope::Build,
+                libcnb::layer_env::ModificationBehavior::Override,
+                "GOBIN",
+                layer_ref.path().join("bin"),
+            ))?;
+            (
+                build_output,
+                layer_ref.read_env()?.apply(Scope::Build, &go_env),
+            )
+        };
 
         go_env = context
             .handle_layer(
@@ -206,7 +225,7 @@ enum GoBuildpackError {
     #[error("{0}")]
     DistLayer(#[from] DistLayerError),
     #[error("{0}")]
-    TargetLayer(#[from] TargetLayerError),
+    TargetLayer(std::io::Error),
     #[error("Couldn't parse go artifact inventory: {0}")]
     InventoryParse(toml::de::Error),
     #[error("Couldn't resolve go version for: {0}")]
