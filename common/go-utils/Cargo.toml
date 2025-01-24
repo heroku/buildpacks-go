@@ -15,3 +15,4 @@ thiserror = "2"
 toml = "0.8"
 ureq = { version = "2", features = ["json"] }
 libherokubuildpack = { version = "=0.26.1", default-features = false, features = ["inventory", "log", "inventory-sha2"] }
+fs-err.workspace = true

@@ -22,3 +22,7 @@ unwrap_used = "warn"
 
 [profile.release]
 strip = true
+
+
+[workspace.dependencies]
+fs-err = "3.0.0"

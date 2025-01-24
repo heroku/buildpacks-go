@@ -27,6 +27,7 @@ cache_diff = { version = "1.0.1", features = ["bullet_stream"] }
 commons = { git = "https://github.com/heroku/buildpacks-ruby", branch = "main", version = "0.0.0" }
 # Needed until https://github.com/oli-obk/cargo_metadata/pull/280 is released
 serde_json = "1.0.118"
+fs-err.workspace = true
 
 [dev-dependencies]
 libcnb-test = "=0.26.1"

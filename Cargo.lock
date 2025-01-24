@@ -635,6 +635,7 @@ dependencies = [
  "cache_diff",
  "commons",
  "flate2",
+ "fs-err",
  "heroku-go-utils",
  "hex",
  "libcnb",
@@ -656,6 +657,7 @@ dependencies = [
 name = "heroku-go-utils"
 version = "0.0.0"
 dependencies = [
+ "fs-err",
  "libherokubuildpack",
  "regex",
  "semver",
