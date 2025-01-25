@@ -1,16 +1,38 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use bullet_stream::state::SubBullet;
+use bullet_stream::Print;
 use cache_diff::CacheDiff;
+use commons::layer::diff_migrate::DiffMigrateLayer;
 use fs_err as fs;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
+use libcnb::data::layer_name;
 use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Target};
 use libherokubuildpack::log::log_info;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
+use std::io::Write;
 use std::path::Path;
+
+pub(crate) fn call<W>(
+    context: &BuildContext<GoBuildpack>,
+    mut bullet: Print<SubBullet<W>>,
+    metadata: &BuildLayerMetadata,
+) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
+where
+    W: Write + Send + Sync + 'static,
+{
+    let layer_ref = DiffMigrateLayer {
+        build: true,
+        launch: false,
+    }
+    .cached_layer(layer_name!("go_build"), context, metadata)?;
+
+    todo!();
+}
 
 /// A layer for go incremental build cache artifacts
 pub(crate) struct BuildLayer {
