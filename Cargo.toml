@@ -38,3 +38,6 @@ serde = { version = "1", features = ["derive"] }
 fs-err = "3.0.0"
 thiserror = "2"
 ureq = { version = "2", features = ["json"] }
+
+[patch.crates-io]
+cache_diff = { features = ["bullet_stream"], branch = "schneems/custom_fn", git = "https://github.com/heroku-buildpacks/cache_diff" }
