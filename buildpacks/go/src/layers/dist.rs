@@ -78,11 +78,6 @@ where
     Ok((bullet, layer_ref.read_env()?))
 }
 
-/// A layer that downloads and installs the Go distribution artifacts
-pub(crate) struct DistLayer {
-    pub(crate) artifact: Artifact<GoVersion, Sha256, Option<()>>,
-}
-
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
     layer_version: String,

@@ -22,7 +22,7 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::{log_error, log_header, log_info};
+use libherokubuildpack::log::{log_error, log_info};
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
