@@ -28,7 +28,7 @@ strip = true
 # libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
 # so it's pinned to an exact version to isolate it from lockfile refreshes.
 libcnb = { version = "=0.26.1", features = ["trace"] }
-libherokubuildpack = { version = "=0.26.1", default-features = false, features = ["inventory", "log", "inventory-sha2"] }
+libherokubuildpack = { version = "=0.26.1", default-features = false, features = ["inventory", "inventory-sha2"] }
 libcnb-test = "=0.26.1"
 
 toml = "0.8"

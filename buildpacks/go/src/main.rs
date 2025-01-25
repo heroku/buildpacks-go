@@ -4,6 +4,7 @@ mod layers;
 mod proc;
 mod tgz;
 
+use bullet_stream::global::print;
 use bullet_stream::{style, Print};
 use fs_err::PathExt;
 use heroku_go_utils::vrs::GoVersion;
@@ -22,7 +23,6 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::log_error;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
@@ -218,11 +218,11 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::Proc(_) => "launch process type",
                     GoBuildpackError::FsTryExist(_) => "file system",
                 };
-                log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
+                print::error(format!(
+                    "Heroku Go Buildpack {err_ctx} error\n\n{err_string}"
+                ));
             }
-            err => {
-                log_error("Heroku Go Buildpack internal error", err.to_string());
-            }
+            err => print::error(format!("Heroku Go Buildpack internal error\n\n{err}")),
         }
     }
 }
