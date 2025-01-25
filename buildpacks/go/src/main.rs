@@ -7,7 +7,7 @@ mod tgz;
 use bullet_stream::{style, Print};
 use fs_err::PathExt;
 use heroku_go_utils::vrs::GoVersion;
-use layers::build::{BuildLayer, BuildLayerError};
+use layers::build::BuildLayerError;
 use layers::deps::DepsLayerError;
 use layers::dist::DistLayerError;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
