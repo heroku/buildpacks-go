@@ -22,7 +22,7 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::{log_error, log_info};
+use libherokubuildpack::log::log_error;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
@@ -67,14 +67,15 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let bullet = build_output.bullet("Build configuration");
+        let mut bullet = build_output.bullet("Build configuration");
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
 
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
             .map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
-        log_info(format!("Detected Go version requirement: {requirement}"));
+
+        bullet = bullet.sub_bullet(format!("Go version requirement: {requirement}"));
 
         let artifact = match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => inv.resolve(os, arch, &requirement),
@@ -152,7 +153,7 @@ impl Buildpack for GoBuildpack {
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };
 
-        log_info("Resolving Go modules");
+        build_output = build_output.bullet("Go module resolution").done();
         let packages = config.packages.unwrap_or(
             // Use `go list` to determine packages to build. Do this eagerly,
             // even if the result is unused because it has the side effect of
