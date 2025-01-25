@@ -21,7 +21,7 @@ const CACHE_DIR: &str = "cache";
 pub(crate) fn call<W>(
     context: &BuildContext<GoBuildpack>,
     mut bullet: Print<SubBullet<W>>,
-    metadata: &DepsLayerMetadata,
+    metadata: &Metadata,
 ) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
 where
     W: Write + Send + Sync + 'static,
@@ -47,7 +47,7 @@ where
                 Meta::Message(m) => unreachable!("Should never receive an Meta::Message in LayerState::Restored when using DiffMigrateLayer. Message: {m}"),
                 Meta::Data(previous) => {
                     layer_ref
-                        .write_metadata(DepsLayerMetadata::new(previous.cache_usage_count + 1.0))?;
+                        .write_metadata(Metadata::new(previous.cache_usage_count + 1.0))?;
                 }
             }
         }
@@ -69,7 +69,7 @@ where
     Ok((bullet, layer_ref.read_env()?))
 }
 
-impl DepsLayerMetadata {
+impl Metadata {
     pub(crate) fn new(usage_count: f32) -> Self {
         Self {
             cache_usage_count: usage_count,
@@ -80,13 +80,14 @@ impl DepsLayerMetadata {
 
 /// A layer that caches the go modules cache
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
-pub(crate) struct DepsLayerMetadata {
+pub(crate) struct MetadataV1 {
     // Using float here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
     cache_usage_count: f32,
     layer_version: String,
 }
+pub(crate) type Metadata = MetadataV1;
 
-impl CacheDiff for DepsLayerMetadata {
+impl CacheDiff for Metadata {
     fn diff(&self, old: &Self) -> Vec<String> {
         let mut diff = Vec::new();
         if old.cache_usage_count >= MAX_CACHE_USAGE_COUNT {
@@ -105,7 +106,7 @@ impl CacheDiff for DepsLayerMetadata {
 
 magic_migrate::try_migrate_toml_chain!(
     error: MigrationError,
-    chain: [DepsLayerMetadata]
+    chain: [Metadata]
 );
 
 #[derive(Debug, thiserror::Error)]

@@ -115,10 +115,9 @@ impl Buildpack for GoBuildpack {
                     go_env,
                 )
             } else {
-                layers::deps::call(&context, bullet, &layers::deps::DepsLayerMetadata::new(1.0))
-                    .map(|(bullet, layer_env)| {
-                        (bullet.done(), layer_env.apply(Scope::Build, &go_env))
-                    })?
+                layers::deps::call(&context, bullet, &layers::deps::Metadata::new(1.0)).map(
+                    |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
+                )?
             }
         };
 
