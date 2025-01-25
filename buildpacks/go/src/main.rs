@@ -96,7 +96,7 @@ impl Buildpack for GoBuildpack {
             layers::dist::call(
                 &context,
                 build_output.bullet("Installing Go distribution"),
-                &layers::dist::DistLayerMetadata::new(artifact),
+                &layers::dist::Metadata::new(artifact),
             )
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };

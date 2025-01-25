@@ -18,7 +18,7 @@ use std::io::Write;
 pub(crate) fn call<W>(
     context: &BuildContext<GoBuildpack>,
     mut bullet: Print<SubBullet<W>>,
-    metadata: &DistLayerMetadata,
+    metadata: &Metadata,
 ) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
 where
     W: Write + Send + Sync + 'static,
@@ -79,15 +79,16 @@ where
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub(crate) struct DistLayerMetadata {
+pub(crate) struct MetadataV1 {
     layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
+pub(crate) type Metadata = MetadataV1;
 
-impl CacheDiff for DistLayerMetadata {
+impl CacheDiff for Metadata {
     fn diff(&self, old: &Self) -> Vec<String> {
         let mut diff = Vec::new();
-        let DistLayerMetadata {
+        let Metadata {
             layer_version,
             artifact:
                 Artifact {
@@ -135,7 +136,7 @@ impl CacheDiff for DistLayerMetadata {
 
 magic_migrate::try_migrate_toml_chain!(
     error: MigrationError,
-    chain: [DistLayerMetadata]
+    chain: [Metadata]
 );
 
 #[derive(Debug, thiserror::Error)]
@@ -149,9 +150,9 @@ pub(crate) enum DistLayerError {
 
 const LAYER_VERSION: &str = "1";
 
-impl DistLayerMetadata {
+impl Metadata {
     pub(crate) fn new(artifact: &Artifact<GoVersion, Sha256, Option<()>>) -> Self {
-        DistLayerMetadata {
+        Metadata {
             artifact: artifact.clone(),
             layer_version: String::from(LAYER_VERSION),
         }
@@ -182,11 +183,11 @@ mod tests {
 
     #[test]
     fn test_cache_diff_go_versions() {
-        let actual = DistLayerMetadata {
+        let actual = Metadata {
             layer_version: "1".to_string(),
             artifact: linux_amd_artifact("=1.22.7"),
         }
-        .diff(&DistLayerMetadata {
+        .diff(&Metadata {
             layer_version: "1".to_string(),
             artifact: linux_amd_artifact("= 1.23.4"),
         })
