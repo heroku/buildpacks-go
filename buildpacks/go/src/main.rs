@@ -163,7 +163,7 @@ impl Buildpack for GoBuildpack {
         build_output = {
             let mut bullet = build_output.bullet("Packages found");
             for pkg in &packages {
-                bullet = bullet.sub_bullet(format!("  - {pkg}"));
+                bullet = bullet.sub_bullet(pkg);
             }
             bullet = bullet.done().bullet("Go install");
             cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
