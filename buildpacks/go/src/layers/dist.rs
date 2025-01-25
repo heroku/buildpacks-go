@@ -42,10 +42,10 @@ where
             }
             let timer = bullet.start_timer(format!(
                 "Installing {} ({}-{}) from {}",
-                metadata.artifact.version,
+                style::value(metadata.artifact.version.to_string()),
                 metadata.artifact.os,
                 metadata.artifact.arch,
-                metadata.artifact.url
+                style::url(&metadata.artifact.url)
             ));
             tgz::fetch_strip_filter_extract_verify(
                 &metadata.artifact,
