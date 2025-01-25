@@ -148,7 +148,7 @@ impl Buildpack for GoBuildpack {
             layers::build::call(
                 &context,
                 build_output.bullet("Go build cache"),
-                &layers::build::BuildLayerMetadata::new(&artifact.version, &context.target),
+                &layers::build::Metadata::new(&artifact.version, &context.target),
             )
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };

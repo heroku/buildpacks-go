@@ -22,7 +22,7 @@ const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 pub(crate) fn call<W>(
     context: &BuildContext<GoBuildpack>,
     mut bullet: Print<SubBullet<W>>,
-    metadata: &BuildLayerMetadata,
+    metadata: &Metadata,
 ) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
 where
     W: Write + Send + Sync + 'static,
@@ -72,7 +72,7 @@ where
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff)]
 #[cache_diff(custom = custom_cache_diff)]
-pub(crate) struct BuildLayerMetadata {
+pub(crate) struct MetadataV1 {
     #[cache_diff(rename = "Buildpack author triggered")]
     layer_version: String,
     go_major_version: GoVersion,
@@ -85,10 +85,11 @@ pub(crate) struct BuildLayerMetadata {
     #[cache_diff(ignore = "custom")]
     cache_usage_count: f32,
 }
+pub(crate) type Metadata = MetadataV1;
 
-fn custom_cache_diff(old: &BuildLayerMetadata, now: &BuildLayerMetadata) -> Vec<String> {
+fn custom_cache_diff(old: &Metadata, now: &Metadata) -> Vec<String> {
     let mut diff = Vec::new();
-    let BuildLayerMetadata {
+    let Metadata {
         layer_version: _,
         go_major_version: _,
         target_arch: _,
@@ -118,7 +119,7 @@ fn custom_cache_diff(old: &BuildLayerMetadata, now: &BuildLayerMetadata) -> Vec<
 
 magic_migrate::try_migrate_toml_chain!(
     error: MigrationError,
-    chain: [BuildLayerMetadata]
+    chain: [Metadata]
 );
 
 #[derive(Debug, thiserror::Error)]
@@ -128,9 +129,9 @@ pub(crate) enum MigrationError {}
 #[error("Couldn't write to build layer: {0}")]
 pub(crate) struct BuildLayerError(std::io::Error);
 
-impl BuildLayerMetadata {
-    pub(crate) fn new(go_version: &GoVersion, target: &Target) -> BuildLayerMetadata {
-        BuildLayerMetadata {
+impl Metadata {
+    pub(crate) fn new(go_version: &GoVersion, target: &Target) -> Metadata {
+        Metadata {
             layer_version: LAYER_VERSION.to_string(),
             go_major_version: go_version.major_release_version(),
             target_arch: target.arch.to_string(),
