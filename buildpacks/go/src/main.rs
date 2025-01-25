@@ -120,7 +120,7 @@ impl Buildpack for GoBuildpack {
             }
         };
 
-        (_, go_env) = {
+        (build_output, go_env) = {
             let layer_ref = context.uncached_layer(
                 layer_name!("go_target"),
                 UncachedLayerDefinition {
@@ -142,16 +142,14 @@ impl Buildpack for GoBuildpack {
                 layer_ref.read_env()?.apply(Scope::Build, &go_env),
             )
         };
-
-        go_env = context
-            .handle_layer(
-                layer_name!("go_build"),
-                BuildLayer {
-                    go_version: artifact.version.clone(),
-                },
-            )?
-            .env
-            .apply(Scope::Build, &go_env);
+        (_, go_env) = {
+            layers::build::call(
+                &context,
+                build_output.bullet("Go build cache"),
+                &layers::build::BuildLayerMetadata::new(&artifact.version, &context.target),
+            )
+            .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
+        };
 
         log_info("Resolving Go modules");
         let packages = config.packages.unwrap_or(

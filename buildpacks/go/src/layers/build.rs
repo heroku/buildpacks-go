@@ -66,7 +66,7 @@ where
                     bullet = bullet.sub_bullet(cause);
                 }
             }
-            bullet = bullet.sub_bullet("Creating Go build cache");
+            bullet = bullet.sub_bullet("Creating cache dir");
             fs::create_dir(layer_ref.path().join(CACHE_DIR))
                 .map_err(BuildLayerError)
                 .map_err(GoBuildpackError::BuildLayer)?;
@@ -209,19 +209,15 @@ impl Layer for BuildLayer {
     }
 }
 
-impl BuildLayer {
-    fn generate_layer_metadata(
-        &self,
-        target: &Target,
-        cache_usage_count: f32,
-    ) -> BuildLayerMetadata {
+impl BuildLayerMetadata {
+    pub(crate) fn new(go_version: &GoVersion, target: &Target) -> BuildLayerMetadata {
         BuildLayerMetadata {
             layer_version: LAYER_VERSION.to_string(),
-            go_major_version: self.go_version.major_release_version(),
+            go_major_version: go_version.major_release_version(),
             target_arch: target.arch.to_string(),
             target_distro_name: target.distro_name.to_string(),
             target_distro_version: target.distro_version.to_string(),
-            cache_usage_count,
+            cache_usage_count: 1.0,
         }
     }
 }
