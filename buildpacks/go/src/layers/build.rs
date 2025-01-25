@@ -1,4 +1,5 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use cache_diff::CacheDiff;
 use fs_err as fs;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
@@ -16,14 +17,50 @@ pub(crate) struct BuildLayer {
     pub(crate) go_version: GoVersion,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff)]
+#[cache_diff(custom = custom_cache_diff)]
 pub(crate) struct BuildLayerMetadata {
+    #[cache_diff(rename = "Buildpack author triggered")]
     layer_version: String,
     go_major_version: GoVersion,
+    #[cache_diff(rename = "CPU architecture")]
     target_arch: String,
+    #[cache_diff(ignore = "custom")]
     target_distro_name: String,
+    #[cache_diff(ignore = "custom")]
     target_distro_version: String,
+    #[cache_diff(ignore = "custom")]
     cache_usage_count: f32,
+}
+
+fn custom_cache_diff(old: &BuildLayerMetadata, now: &BuildLayerMetadata) -> Vec<String> {
+    let mut diff = Vec::new();
+    let BuildLayerMetadata {
+        layer_version: _,
+        go_major_version: _,
+        target_arch: _,
+        target_distro_name,
+        target_distro_version,
+        cache_usage_count,
+    } = old;
+
+    if cache_usage_count >= &MAX_CACHE_USAGE_COUNT {
+        diff.push(format!("Max cache usage reached ({MAX_CACHE_USAGE_COUNT})"));
+    }
+
+    if target_distro_name != &now.target_distro_name
+        || target_distro_version != &now.target_distro_version
+    {
+        diff.push(format!(
+            "OS ({}-{} to {}-{})",
+            target_distro_name,
+            target_distro_version,
+            now.target_distro_name,
+            now.target_distro_version
+        ));
+    }
+
+    diff
 }
 
 magic_migrate::try_migrate_toml_chain!(
