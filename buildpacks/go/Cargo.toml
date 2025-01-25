@@ -26,6 +26,7 @@ commons = { git = "https://github.com/heroku/buildpacks-ruby", branch = "main", 
 # Needed until https://github.com/oli-obk/cargo_metadata/pull/280 is released
 serde_json = "1.0.118"
 fs-err.workspace = true
+fun_run = "0.4"
 
 [dev-dependencies]
 libcnb-test.workspace = true
