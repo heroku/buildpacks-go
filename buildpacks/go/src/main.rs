@@ -159,7 +159,7 @@ impl Buildpack for GoBuildpack {
             cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        _ = {
+        build_output = {
             let mut bullet = build_output.bullet("Packages found");
             for pkg in &packages {
                 bullet = bullet.sub_bullet(format!("  - {pkg}"));
@@ -169,17 +169,30 @@ impl Buildpack for GoBuildpack {
             bullet.done()
         };
 
-        let mut procs: Vec<Process> = vec![];
-        if Path::exists(&context.app_dir.join("Procfile")) {
-            log_info("Skipping launch process registration (Procfile detected)");
-        } else {
-            log_header("Registering launch processes");
-            procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-            log_info("Detected processes:");
-            for proc in &procs {
-                log_info(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
+        let (build_output, procs) = {
+            let mut bullet = build_output.bullet("Default processes");
+
+            let mut procs: Vec<Process> = vec![];
+            if Path::exists(&context.app_dir.join("Procfile")) {
+                bullet = bullet.sub_bullet("Skipping (Procfile detected)");
+            } else {
+                procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
+                if procs.is_empty() {
+                    bullet = bullet.sub_bullet("No processes found");
+                } else {
+                    for proc in &procs {
+                        bullet = bullet.sub_bullet(format!(
+                            "{}: {}",
+                            proc.r#type,
+                            style::command(proc.command.join(" "))
+                        ));
+                    }
+                }
             }
-        }
+
+            (bullet.done(), procs)
+        };
+        build_output.done();
 
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
