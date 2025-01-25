@@ -29,6 +29,7 @@ use std::path::Path;
 
 #[cfg(test)]
 use libcnb_test as _;
+use serde_json as _;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
