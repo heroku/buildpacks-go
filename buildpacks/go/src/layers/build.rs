@@ -2,13 +2,16 @@ use crate::{GoBuildpack, GoBuildpackError};
 use bullet_stream::state::SubBullet;
 use bullet_stream::Print;
 use cache_diff::CacheDiff;
-use commons::layer::diff_migrate::DiffMigrateLayer;
+use commons::layer::diff_migrate::{DiffMigrateLayer, Meta};
 use fs_err as fs;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_content_metadata::LayerTypes;
 use libcnb::data::layer_name;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::layer::{
+    EmptyLayerCause, ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder,
+    LayerState,
+};
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Target};
 use libherokubuildpack::log::log_info;
@@ -16,6 +19,11 @@ use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::path::Path;
+
+const CACHE_ENV: &str = "GOCACHE";
+const CACHE_DIR: &str = "cache";
+const LAYER_VERSION: &str = "1";
+const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 
 pub(crate) fn call<W>(
     context: &BuildContext<GoBuildpack>,
@@ -31,7 +39,41 @@ where
     }
     .cached_layer(layer_name!("go_build"), context, metadata)?;
 
-    todo!();
+    layer_ref.write_env(LayerEnv::new().chainable_insert(
+        Scope::Build,
+        libcnb::layer_env::ModificationBehavior::Override,
+        CACHE_ENV,
+        layer_ref.path().join(CACHE_DIR),
+    ))?;
+    match &layer_ref.state {
+        LayerState::Restored { cause } => {
+            bullet = bullet.sub_bullet(cause);
+            match cause {
+                Meta::Message(m) => unreachable!("Should never receive an Meta::Message in LayerState::Restored when using DiffMigrateLayer. Message: {m}"),
+                Meta::Data(previous) => {
+                    let mut new_metadata = metadata.clone();
+                    new_metadata.cache_usage_count = previous.cache_usage_count + 1.0;
+                    layer_ref
+                        .write_metadata(new_metadata)?;
+                }
+            }
+        }
+        LayerState::Empty { cause } => {
+            match cause {
+                EmptyLayerCause::NewlyCreated => {}
+                EmptyLayerCause::InvalidMetadataAction { cause }
+                | EmptyLayerCause::RestoredLayerAction { cause } => {
+                    bullet = bullet.sub_bullet(cause);
+                }
+            }
+            bullet = bullet.sub_bullet("Creating Go build cache");
+            fs::create_dir(layer_ref.path().join(CACHE_DIR))
+                .map_err(BuildLayerError)
+                .map_err(GoBuildpackError::BuildLayer)?;
+        }
+    }
+
+    Ok((bullet, layer_ref.read_env()?))
 }
 
 /// A layer for go incremental build cache artifacts
@@ -96,11 +138,6 @@ pub(crate) enum MigrationError {}
 #[derive(thiserror::Error, Debug)]
 #[error("Couldn't write to build layer: {0}")]
 pub(crate) struct BuildLayerError(std::io::Error);
-
-const CACHE_ENV: &str = "GOCACHE";
-const CACHE_DIR: &str = "cache";
-const LAYER_VERSION: &str = "1";
-const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 
 impl Layer for BuildLayer {
     type Buildpack = GoBuildpack;
