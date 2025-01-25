@@ -142,7 +142,7 @@ impl Buildpack for GoBuildpack {
                 layer_ref.read_env()?.apply(Scope::Build, &go_env),
             )
         };
-        (_, go_env) = {
+        (build_output, go_env) = {
             layers::build::call(
                 &context,
                 build_output.bullet("Go build cache"),
@@ -159,11 +159,15 @@ impl Buildpack for GoBuildpack {
             cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        log_info("Building packages:");
-        for pkg in &packages {
-            log_info(format!("  - {pkg}"));
-        }
-        cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
+        _ = {
+            let mut bullet = build_output.bullet("Packages found");
+            for pkg in &packages {
+                bullet = bullet.sub_bullet(format!("  - {pkg}"));
+            }
+            bullet = bullet.done().bullet("Go install");
+            cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
+            bullet.done()
+        };
 
         let mut procs: Vec<Process> = vec![];
         if Path::exists(&context.app_dir.join("Procfile")) {
