@@ -142,3 +142,42 @@ impl Metadata {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::convert::TryFrom;
+
+    #[test]
+    fn metadata_guard() {
+        let version: GoVersion = TryFrom::try_from("1.2.0".to_string()).unwrap();
+        let metadata = Metadata {
+            layer_version: LAYER_VERSION.to_string(),
+            go_major_version: version.major_release_version(),
+            target_arch: "amd64".to_string(),
+            target_distro_name: "ubuntu".to_string(),
+            target_distro_version: "24.04".to_string(),
+            cache_usage_count: 1.0,
+        };
+
+        let toml = r#"
+layer_version = "1"
+go_major_version = "1.2.0"
+target_arch = "amd64"
+target_distro_name = "ubuntu"
+target_distro_version = "24.04"
+cache_usage_count = 1.0
+        "#
+        .trim();
+        assert_eq!(
+            toml,
+            toml::to_string(&metadata)
+                .unwrap()
+                .to_string()
+                .as_str()
+                .trim()
+        );
+
+        assert_eq!(metadata, toml::from_str(toml).unwrap());
+    }
+}
