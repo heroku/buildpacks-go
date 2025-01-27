@@ -1,6 +1,5 @@
 use crate::{GoBuildpack, GoBuildpackError};
-use bullet_stream::state::SubBullet;
-use bullet_stream::Print;
+use bullet_stream::global::print;
 use cache_diff::CacheDiff;
 use commons::layer::diff_migrate::{DiffMigrateLayer, Meta};
 use fs_err as fs;
@@ -12,21 +11,16 @@ use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{Buildpack, Target};
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
-use std::io::Write;
 
 const CACHE_ENV: &str = "GOCACHE";
 const CACHE_DIR: &str = "cache";
 const LAYER_VERSION: &str = "1";
 const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 
-pub(crate) fn call<W>(
+pub(crate) fn call(
     context: &BuildContext<GoBuildpack>,
-    mut bullet: Print<SubBullet<W>>,
     metadata: &Metadata,
-) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
-where
-    W: Write + Send + Sync + 'static,
-{
+) -> libcnb::Result<LayerEnv, <GoBuildpack as Buildpack>::Error> {
     let layer_ref = DiffMigrateLayer {
         build: true,
         launch: false,
@@ -41,7 +35,7 @@ where
     ))?;
     match &layer_ref.state {
         LayerState::Restored { cause } => {
-            bullet = bullet.sub_bullet(cause);
+            print::sub_bullet(cause);
             match cause {
                 Meta::Message(m) => unreachable!("Should never receive an Meta::Message in LayerState::Restored when using DiffMigrateLayer. Message: {m}"),
                 Meta::Data(previous) => {
@@ -57,17 +51,18 @@ where
                 EmptyLayerCause::NewlyCreated => {}
                 EmptyLayerCause::InvalidMetadataAction { cause }
                 | EmptyLayerCause::RestoredLayerAction { cause } => {
-                    bullet = bullet.sub_bullet(cause);
+                    print::sub_bullet(cause);
                 }
             }
-            bullet = bullet.sub_bullet("Creating cache dir");
+
+            print::sub_bullet("Creating cache dir");
             fs::create_dir(layer_ref.path().join(CACHE_DIR))
                 .map_err(BuildLayerError)
                 .map_err(GoBuildpackError::BuildLayer)?;
         }
     }
 
-    Ok((bullet, layer_ref.read_env()?))
+    Ok(layer_ref.read_env()?)
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff, TryMigrate)]

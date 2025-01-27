@@ -141,14 +141,12 @@ impl Buildpack for GoBuildpack {
                 layer_ref.read_env()?.apply(Scope::Build, &go_env),
             )
         };
-        (build_output, go_env) = {
-            layers::build::call(
-                &context,
-                build_output.bullet("Go build cache"),
-                &layers::build::Metadata::new(&artifact.version, &context.target),
-            )
-            .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
-        };
+        print::bullet("Go build cache");
+        go_env = layers::build::call(
+            &context,
+            &layers::build::Metadata::new(&artifact.version, &context.target),
+        )
+        .map(|layer_env| layer_env.apply(Scope::Build, &go_env))?;
 
         print::bullet("Go module resolution");
         let packages = if let Some(packages) = config.packages {
