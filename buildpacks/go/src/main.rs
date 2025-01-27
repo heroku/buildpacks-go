@@ -60,7 +60,7 @@ impl Buildpack for GoBuildpack {
 
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let mut build_output = Print::global().h2("Heroku Go Buildpack");
+        print::h2("Heroku Go Buildpack");
         let started = Instant::now();
         let mut go_env = Env::new();
         env::vars()
@@ -69,14 +69,14 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let mut bullet = build_output.bullet("Go version");
+        print::bullet("Go version");
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
         let go_mod = context.app_dir.join("go.mod");
         let config = cfg::read_gomod_config(&go_mod).map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
 
-        bullet = bullet.sub_bullet(format!(
+        print::sub_bullet(format!(
             "Detected requirement {req} (from {file})",
             req = style::value(requirement.to_string()),
             file = go_mod.display()
@@ -88,7 +88,7 @@ impl Buildpack for GoBuildpack {
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        bullet = bullet.sub_bullet(format!(
+        print::sub_bullet(format!(
             "Resolved to {}",
             style::value(artifact.version.to_string()),
         ));
