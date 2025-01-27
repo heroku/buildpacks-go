@@ -80,6 +80,7 @@ impl Metadata {
 
 /// A layer that caches the go modules cache
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct MetadataV1 {
     // Using float here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
     cache_usage_count: f32,

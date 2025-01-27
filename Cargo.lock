@@ -206,8 +206,8 @@ checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "cache_diff"
-version = "1.0.2"
-source = "git+https://github.com/heroku-buildpacks/cache_diff?branch=schneems%2Fcustom_fn#e104e80d7174ed76727fc8671f83027e62227524"
+version = "1.1.0"
+source = "git+https://github.com/heroku-buildpacks/cache_diff?branch=schneems%2Fcustom_fn#13de0593c172c48ae7a3f378fd45e91b2d1c8ebe"
 dependencies = [
  "bullet_stream",
  "cache_diff_derive",
@@ -215,8 +215,8 @@ dependencies = [
 
 [[package]]
 name = "cache_diff_derive"
-version = "1.0.2"
-source = "git+https://github.com/heroku-buildpacks/cache_diff?branch=schneems%2Fcustom_fn#e104e80d7174ed76727fc8671f83027e62227524"
+version = "1.1.0"
+source = "git+https://github.com/heroku-buildpacks/cache_diff?branch=schneems%2Fcustom_fn#13de0593c172c48ae7a3f378fd45e91b2d1c8ebe"
 dependencies = [
  "proc-macro2",
  "quote",

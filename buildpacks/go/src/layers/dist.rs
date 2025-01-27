@@ -79,6 +79,7 @@ where
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct MetadataV1 {
     layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,

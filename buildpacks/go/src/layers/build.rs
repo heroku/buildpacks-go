@@ -71,6 +71,7 @@ where
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff)]
+#[serde(deny_unknown_fields)]
 #[cache_diff(custom = custom_cache_diff)]
 pub(crate) struct MetadataV1 {
     #[cache_diff(rename = "Buildpack author triggered")]
