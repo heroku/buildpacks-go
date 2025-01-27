@@ -151,15 +151,15 @@ impl Buildpack for GoBuildpack {
         };
 
         let bullet = build_output.bullet("Go module resolution");
-        let (bullet, packages) = if let Some(packages) = config.packages {
+        let (_, packages) = if let Some(packages) = config.packages {
             (bullet.sub_bullet("Found packages in go.mod"), packages)
         } else {
             cmd::go_list(bullet, &go_env).map_err(GoBuildpackError::GoList)?
         };
 
-        let mut bullet = bullet.done().bullet("Packages found");
+        print::bullet("Packages found");
         for pkg in &packages {
-            bullet = bullet.sub_bullet(style::value(pkg));
+            print::sub_bullet(style::value(pkg));
         }
 
         print::bullet("Go install");
