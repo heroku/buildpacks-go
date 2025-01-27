@@ -13,7 +13,7 @@ use layers::deps::DepsLayerError;
 use layers::dist::DistLayerError;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{LaunchBuilder, Process};
+use libcnb::data::launch::LaunchBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
@@ -26,6 +26,7 @@ use libherokubuildpack::inventory::Inventory;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
+use std::time::Instant;
 
 #[cfg(test)]
 use libcnb_test as _;
@@ -60,6 +61,7 @@ impl Buildpack for GoBuildpack {
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
         let mut build_output = Print::global().h2("Heroku Go Buildpack");
+        let started = Instant::now();
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -160,36 +162,34 @@ impl Buildpack for GoBuildpack {
             bullet = bullet.sub_bullet(style::value(pkg));
         }
 
-        build_output = {
+        _ = {
             bullet = cmd::go_install(bullet.done().bullet("Go install"), &packages, &go_env)
                 .map_err(GoBuildpackError::GoBuild)?;
             bullet.done()
         };
 
-        let (build_output, procs) = {
-            let mut bullet = build_output.bullet("Default processes");
+        print::bullet("Default processes");
 
-            let mut procs: Vec<Process> = vec![];
-            if Path::exists(&context.app_dir.join("Procfile")) {
-                bullet = bullet.sub_bullet("Skipping (Procfile detected)");
+        let procs = if Path::exists(&context.app_dir.join("Procfile")) {
+            print::sub_bullet("Skipping (Procfile detected)");
+            Vec::new()
+        } else {
+            let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
+            if procs.is_empty() {
+                print::sub_bullet("No processes found");
             } else {
-                procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-                if procs.is_empty() {
-                    bullet = bullet.sub_bullet("No processes found");
-                } else {
-                    for proc in &procs {
-                        bullet = bullet.sub_bullet(format!(
-                            "{}: {}",
-                            proc.r#type,
-                            style::command(proc.command.join(" "))
-                        ));
-                    }
+                for proc in &procs {
+                    print::sub_bullet(format!(
+                        "{}: {}",
+                        proc.r#type,
+                        style::command(proc.command.join(" "))
+                    ));
                 }
             }
-
-            (bullet.done(), procs)
+            procs
         };
-        build_output.done();
+
+        print::all_done(&Some(started));
 
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
