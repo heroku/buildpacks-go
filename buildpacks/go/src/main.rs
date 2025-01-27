@@ -150,11 +150,12 @@ impl Buildpack for GoBuildpack {
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };
 
-        let bullet = build_output.bullet("Go module resolution");
-        let (_, packages) = if let Some(packages) = config.packages {
-            (bullet.sub_bullet("Found packages in go.mod"), packages)
+        print::bullet("Go module resolution");
+        let packages = if let Some(packages) = config.packages {
+            print::sub_bullet("Found packages in go.mod");
+            packages
         } else {
-            cmd::go_list(bullet, &go_env).map_err(GoBuildpackError::GoList)?
+            cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?
         };
 
         print::bullet("Packages found");
