@@ -120,3 +120,33 @@ pub(crate) enum DepsLayerError {
     #[error("Couldn't clean Go modules cache: {0}")]
     Clean(#[from] cmd::Error),
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// See [`crate::build::tests::metadata_guard`] for info on what to do when this fails
+    #[test]
+    fn metadata_guard() {
+        let metadata = MetadataV1 {
+            cache_usage_count: 1.0,
+            layer_version: LAYER_VERSION.to_string(),
+        };
+
+        let toml = r#"
+cache_usage_count = 1.0
+layer_version = "1"
+        "#
+        .trim();
+        assert_eq!(
+            toml,
+            toml::to_string(&metadata)
+                .unwrap()
+                .to_string()
+                .as_str()
+                .trim()
+        );
+
+        assert_eq!(metadata, toml::from_str(toml).unwrap());
+    }
+}

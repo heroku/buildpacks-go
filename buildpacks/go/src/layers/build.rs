@@ -148,10 +148,21 @@ mod tests {
     use super::*;
     use std::convert::TryFrom;
 
+    /// If this test fails, you may need to implement a metadata migration. To do that:
+    ///
+    /// - Add a new struct with the next version number i.e. `MetadataV1 -> MetadataV2`
+    /// - Implement `std::convert::TryFrom` for that struct i.e. `impl TryFrom<MetadataV1> for MetadataV2`
+    /// - Update the [`magic_migrate::try_migrate_toml_chain`] macro with the next struct in the chain i.e. `chain: [MetadataV1, MetadataV2]`
+    /// - Update the type alias to the latest struct i.e. `pub(crate) type Metadata = MetadataV2;`
+    ///
+    /// Then
+    ///
+    /// - Add a test that the new struct can migrate from prior data i.e. `MetadataV2::try_from_str_migrations(&toml).unwrap()`
+    /// - Add a test that to guard the serialization/deserialization of the added struct
     #[test]
     fn metadata_guard() {
         let version: GoVersion = TryFrom::try_from("1.2.0".to_string()).unwrap();
-        let metadata = Metadata {
+        let metadata = MetadataV1 {
             layer_version: LAYER_VERSION.to_string(),
             go_major_version: version.major_release_version(),
             target_arch: "amd64".to_string(),
@@ -177,7 +188,6 @@ cache_usage_count = 1.0
                 .as_str()
                 .trim()
         );
-
         assert_eq!(metadata, toml::from_str(toml).unwrap());
     }
 }
