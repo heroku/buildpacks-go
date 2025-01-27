@@ -99,8 +99,8 @@ impl Buildpack for GoBuildpack {
             )?
         };
 
-        (build_output, go_env) = {
-            let bullet = build_output.bullet("Go binaries");
+        go_env = {
+            print::bullet("Go binaries");
             if context
                 .app_dir
                 .join("vendor")
@@ -108,14 +108,11 @@ impl Buildpack for GoBuildpack {
                 .fs_err_try_exists()
                 .map_err(GoBuildpackError::FsTryExist)?
             {
-                (
-                    bullet.sub_bullet("Using vendored Go modules").done(),
-                    go_env,
-                )
+                print::sub_bullet("Using vendored Go modules");
+                go_env
             } else {
-                layers::deps::call(&context, bullet, &layers::deps::Metadata::new(1.0)).map(
-                    |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
-                )?
+                layers::deps::call(&context, &layers::deps::Metadata::new(1.0))
+                    .map(|layer_env| layer_env.apply(Scope::Build, &go_env))?
             }
         };
 

@@ -1,6 +1,5 @@
 use crate::{cmd, GoBuildpack, GoBuildpackError};
-use bullet_stream::state::SubBullet;
-use bullet_stream::Print;
+use bullet_stream::global::print;
 use cache_diff::CacheDiff;
 use commons::layer::diff_migrate::{DiffMigrateLayer, Meta};
 use fs_err as fs;
@@ -11,21 +10,16 @@ use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
-use std::io::Write;
 
 const LAYER_VERSION: &str = "1";
 const MAX_CACHE_USAGE_COUNT: f32 = 100.0;
 const CACHE_ENV: &str = "GOMODCACHE";
 const CACHE_DIR: &str = "cache";
 
-pub(crate) fn call<W>(
+pub(crate) fn call(
     context: &BuildContext<GoBuildpack>,
-    mut bullet: Print<SubBullet<W>>,
     metadata: &Metadata,
-) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
-where
-    W: Write + Send + Sync + 'static,
-{
+) -> libcnb::Result<LayerEnv, <GoBuildpack as Buildpack>::Error> {
     let layer_ref = DiffMigrateLayer {
         build: true,
         launch: false,
@@ -42,7 +36,7 @@ where
 
     match &layer_ref.state {
         LayerState::Restored { cause } => {
-            bullet = bullet.sub_bullet(cause);
+            print::bullet(cause);
             match cause {
                 Meta::Message(m) => unreachable!("Should never receive an Meta::Message in LayerState::Restored when using DiffMigrateLayer. Message: {m}"),
                 Meta::Data(previous) => {
@@ -56,17 +50,17 @@ where
                 EmptyLayerCause::NewlyCreated => {}
                 EmptyLayerCause::InvalidMetadataAction { cause }
                 | EmptyLayerCause::RestoredLayerAction { cause } => {
-                    bullet = bullet.sub_bullet(cause);
+                    print::sub_bullet(cause);
                 }
             }
-            bullet = bullet.sub_bullet("Creating go modules cache");
+            print::sub_bullet("Creating go modules cache");
             fs::create_dir(&cache_dir)
                 .map_err(DepsLayerError::Create)
                 .map_err(GoBuildpackError::DepsLayer)?;
         }
     }
     layer_ref.write_env(layer_env)?;
-    Ok((bullet, layer_ref.read_env()?))
+    layer_ref.read_env()
 }
 
 impl Metadata {
