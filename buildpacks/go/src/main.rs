@@ -67,15 +67,18 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let mut bullet = build_output.bullet("Build configuration");
+        let mut bullet = build_output.bullet("Go version");
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
-
-        let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
-            .map_err(GoBuildpackError::GoModConfig)?;
+        let go_mod = context.app_dir.join("go.mod");
+        let config = cfg::read_gomod_config(&go_mod).map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
 
-        bullet = bullet.sub_bullet(format!("Go version requirement: {requirement}"));
+        bullet = bullet.sub_bullet(format!(
+            "Detected requirement {req} (from {file})",
+            req = style::value(requirement.to_string()),
+            file = go_mod.display()
+        ));
 
         let artifact = match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => inv.resolve(os, arch, &requirement),
@@ -83,22 +86,15 @@ impl Buildpack for GoBuildpack {
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        build_output = bullet
-            .sub_bullet(format!(
-                "Resolved Go version: {} ({}-{})",
-                style::value(artifact.version.to_string()),
-                artifact.os,
-                artifact.arch
-            ))
-            .done();
+        bullet = bullet.sub_bullet(format!(
+            "Resolved to {}",
+            style::value(artifact.version.to_string()),
+        ));
 
         (build_output, go_env) = {
-            layers::dist::call(
-                &context,
-                build_output.bullet("Installing Go distribution"),
-                &layers::dist::Metadata::new(artifact),
-            )
-            .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
+            layers::dist::call(&context, bullet, &layers::dist::Metadata::new(artifact)).map(
+                |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
+            )?
         };
 
         (build_output, go_env) = {
@@ -111,7 +107,7 @@ impl Buildpack for GoBuildpack {
                 .map_err(GoBuildpackError::FsTryExist)?
             {
                 (
-                    bullet.sub_bullet("Detected vendored Go modules").done(),
+                    bullet.sub_bullet("Using vendored Go modules").done(),
                     go_env,
                 )
             } else {
@@ -163,7 +159,7 @@ impl Buildpack for GoBuildpack {
         build_output = {
             let mut bullet = build_output.bullet("Packages found");
             for pkg in &packages {
-                bullet = bullet.sub_bullet(pkg);
+                bullet = bullet.sub_bullet(style::value(pkg));
             }
             bullet = bullet.done().bullet("Go install");
             cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
