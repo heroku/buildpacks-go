@@ -45,10 +45,7 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
-    mut bullet: Print<SubBullet<W>>,
-    go_env: &Env,
-) -> Result<(Print<SubBullet<W>>, Vec<String>), Error> {
+pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
     let mut cmd = Command::new("go");
     cmd.args(vec![
         "list",
@@ -60,15 +57,16 @@ pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
     ])
     .envs(go_env);
 
-    bullet
-        .stream_cmd(cmd)
-        .map_err(Error::FailedCommand)
-        .map(|output| {
-            output
-                .stdout_lossy()
-                .split_whitespace()
-                .map(|s| s.trim().to_string())
-                .collect()
-        })
-        .map(|list| (bullet, list))
+    print::sub_stream_with(
+        format!("Running {}", style::command(cmd.name())),
+        |stdout, stderr| cmd.stream_output(stdout, stderr),
+    )
+    .map_err(Error::FailedCommand)
+    .map(|output| {
+        output
+            .stdout_lossy()
+            .split_whitespace()
+            .map(|s| s.trim().to_string())
+            .collect()
+    })
 }
