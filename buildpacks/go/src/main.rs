@@ -119,7 +119,7 @@ impl Buildpack for GoBuildpack {
             }
         };
 
-        (build_output, go_env) = {
+        go_env = {
             let layer_ref = context.uncached_layer(
                 layer_name!("go_target"),
                 UncachedLayerDefinition {
@@ -136,11 +136,10 @@ impl Buildpack for GoBuildpack {
                 "GOBIN",
                 layer_ref.path().join("bin"),
             ))?;
-            (
-                build_output,
-                layer_ref.read_env()?.apply(Scope::Build, &go_env),
-            )
+
+            layer_ref.read_env()?.apply(Scope::Build, &go_env)
         };
+
         print::bullet("Go build cache");
         go_env = layers::build::call(
             &context,
