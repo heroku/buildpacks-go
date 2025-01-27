@@ -162,14 +162,10 @@ impl Buildpack for GoBuildpack {
             bullet = bullet.sub_bullet(style::value(pkg));
         }
 
-        _ = {
-            bullet = cmd::go_install(bullet.done().bullet("Go install"), &packages, &go_env)
-                .map_err(GoBuildpackError::GoBuild)?;
-            bullet.done()
-        };
+        print::bullet("Go install");
+        cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         print::bullet("Default processes");
-
         let procs = if Path::exists(&context.app_dir.join("Procfile")) {
             print::sub_bullet("Skipping (Procfile detected)");
             Vec::new()
