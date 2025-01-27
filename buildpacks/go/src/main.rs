@@ -148,19 +148,19 @@ impl Buildpack for GoBuildpack {
             .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
         };
 
-        build_output = build_output.bullet("Go module resolution").done();
-        let packages = config.packages.unwrap_or(
-            // Use `go list` to determine packages to build. Do this eagerly,
-            // even if the result is unused because it has the side effect of
-            // downloading any required go modules.
-            cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
-        );
+        let bullet = build_output.bullet("Go module resolution");
+        let (bullet, packages) = if let Some(packages) = config.packages {
+            (bullet.sub_bullet("Found packages in go.mod"), packages)
+        } else {
+            cmd::go_list(bullet, &go_env).map_err(GoBuildpackError::GoList)?
+        };
+
+        let mut bullet = bullet.done().bullet("Packages found");
+        for pkg in &packages {
+            bullet = bullet.sub_bullet(style::value(pkg));
+        }
 
         build_output = {
-            let mut bullet = build_output.bullet("Packages found");
-            for pkg in &packages {
-                bullet = bullet.sub_bullet(style::value(pkg));
-            }
             bullet = cmd::go_install(bullet.done().bullet("Go install"), &packages, &go_env)
                 .map_err(GoBuildpackError::GoBuild)?;
             bullet.done()
