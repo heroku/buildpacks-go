@@ -1,7 +1,6 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
 use bullet_stream::global::print;
-use bullet_stream::state::SubBullet;
-use bullet_stream::{style, Print};
+use bullet_stream::style;
 use cache_diff::CacheDiff;
 use commons::layer::diff_migrate::DiffMigrateLayer;
 use heroku_go_utils::vrs::GoVersion;
@@ -14,7 +13,6 @@ use libherokubuildpack::inventory::artifact::Artifact;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use std::io::Write;
 
 pub(crate) fn call(
     context: &BuildContext<GoBuildpack>,

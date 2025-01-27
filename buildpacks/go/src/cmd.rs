@@ -1,7 +1,7 @@
-use bullet_stream::{global::print, state::SubBullet, style, Print};
+use bullet_stream::{global::print, style};
 use fun_run::{CmdError, CommandWithName};
 use libcnb::Env;
-use std::{io::Write, process::Command};
+use std::process::Command;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {

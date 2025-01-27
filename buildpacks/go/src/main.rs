@@ -5,7 +5,7 @@ mod proc;
 mod tgz;
 
 use bullet_stream::global::print;
-use bullet_stream::{style, Print};
+use bullet_stream::style;
 use fs_err::PathExt;
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::BuildLayerError;
