@@ -1,7 +1,7 @@
-use bullet_stream::{global::print, style};
+use bullet_stream::{global::print, state::SubBullet, style, Print};
 use fun_run::{CmdError, CommandWithName};
 use libcnb::Env;
-use std::process::Command;
+use std::{io::Write, process::Command};
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -20,7 +20,11 @@ pub(crate) enum Error {
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Error> {
+pub(crate) fn go_install<S: AsRef<str>, W: Write + Send + Sync + 'static>(
+    mut bullet: Print<SubBullet<W>>,
+    packages: &[S],
+    go_env: &Env,
+) -> Result<Print<SubBullet<W>>, Error> {
     let mut args = vec!["install", "-tags", "heroku"];
     for pkg in packages {
         args.push(pkg.as_ref());
@@ -28,12 +32,13 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
     let mut cmd = Command::new("go");
     cmd.args(args).envs(go_env);
 
-    print::sub_stream_with(
-        format!("Running {}", style::command(cmd.name())),
-        |stdout, stderr| cmd.stream_output(stdout, stderr),
-    )
-    .map(|_| ())
-    .map_err(Error::FailedCommand)
+    bullet
+        .stream_with(
+            format!("Running {}", style::command(cmd.name())),
+            |stdout, stderr| cmd.stream_output(stdout, stderr),
+        )
+        .map(|_| bullet)
+        .map_err(Error::FailedCommand)
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing

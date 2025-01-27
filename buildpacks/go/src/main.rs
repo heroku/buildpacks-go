@@ -161,8 +161,8 @@ impl Buildpack for GoBuildpack {
             for pkg in &packages {
                 bullet = bullet.sub_bullet(style::value(pkg));
             }
-            bullet = bullet.done().bullet("Go install");
-            cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
+            bullet = cmd::go_install(bullet.done().bullet("Go install"), &packages, &go_env)
+                .map_err(GoBuildpackError::GoBuild)?;
             bullet.done()
         };
 
