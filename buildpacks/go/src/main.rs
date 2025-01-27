@@ -93,11 +93,8 @@ impl Buildpack for GoBuildpack {
             style::value(artifact.version.to_string()),
         ));
 
-        (build_output, go_env) = {
-            layers::dist::call(&context, bullet, &layers::dist::Metadata::new(artifact)).map(
-                |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
-            )?
-        };
+        go_env = layers::dist::call(&context, &layers::dist::Metadata::new(artifact))
+            .map(|layer_env| layer_env.apply(Scope::Build, &go_env))?;
 
         go_env = {
             print::bullet("Go binaries");
