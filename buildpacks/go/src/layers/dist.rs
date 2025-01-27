@@ -199,4 +199,35 @@ mod tests {
         let expected = vec!["Go version (`go1.23.4` to `go1.22.7`)".to_string()];
         assert_eq!(expected, actual);
     }
+
+    /// See [`crate::build::tests::metadata_guard`] for info on what to do when this fails
+    #[test]
+    fn metadata_guard() {
+        let metadata = MetadataV1 {
+            layer_version: LAYER_VERSION.to_string(),
+            artifact: linux_amd_artifact("=1.22.7"),
+        };
+
+        let toml = r#"
+layer_version = "1"
+
+[artifact]
+version = "go1.22.7"
+os = "linux"
+arch = "amd64"
+url = "https://go.dev/dl/go1.22.7.linux-amd64.tar.gz"
+checksum = "sha256:fc5d49b7a5035f1f1b265c17aa86e9819e6dc9af8260ad61430ee7fbe27881bb"
+        "#
+        .trim();
+        assert_eq!(
+            toml,
+            toml::to_string(&metadata)
+                .unwrap()
+                .to_string()
+                .as_str()
+                .trim()
+        );
+
+        assert_eq!(metadata, toml::from_str(toml).unwrap());
+    }
 }
