@@ -62,7 +62,7 @@ pub(crate) fn call(
         }
     }
 
-    Ok(layer_ref.read_env()?)
+    layer_ref.read_env()
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff, TryMigrate)]
