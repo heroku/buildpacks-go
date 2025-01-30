@@ -1,26 +1,147 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
+use bullet_stream::state::SubBullet;
+use bullet_stream::{style, Print};
+use cache_diff::CacheDiff;
+use commons::layer::diff_migrate::DiffMigrateLayer;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::data::layer_name;
+use libcnb::layer::{EmptyLayerCause, LayerState};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libcnb::Buildpack;
 use libherokubuildpack::inventory::artifact::Artifact;
-use libherokubuildpack::log::log_info;
+use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use std::path::Path;
+use std::io::Write;
 
-/// A layer that downloads and installs the Go distribution artifacts
-pub(crate) struct DistLayer {
-    pub(crate) artifact: Artifact<GoVersion, Sha256, Option<()>>,
+pub(crate) fn call<W>(
+    context: &BuildContext<GoBuildpack>,
+    mut bullet: Print<SubBullet<W>>,
+    metadata: &Metadata,
+) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
+where
+    W: Write + Send + Sync + 'static,
+{
+    let layer_ref = DiffMigrateLayer {
+        build: true,
+        launch: false,
+    }
+    .cached_layer(layer_name!("go_dist"), context, metadata)?;
+    match &layer_ref.state {
+        LayerState::Restored { cause } => {
+            bullet = bullet.sub_bullet(cause);
+        }
+        LayerState::Empty { cause } => {
+            match cause {
+                EmptyLayerCause::NewlyCreated => {}
+                EmptyLayerCause::InvalidMetadataAction { cause }
+                | EmptyLayerCause::RestoredLayerAction { cause } => {
+                    bullet = bullet.sub_bullet(cause);
+                }
+            }
+            let timer = bullet.start_timer(format!(
+                "Installing {} ({}-{}) from {}",
+                style::value(metadata.artifact.version.to_string()),
+                metadata.artifact.os,
+                metadata.artifact.arch,
+                style::url(&metadata.artifact.url)
+            ));
+            tgz::fetch_strip_filter_extract_verify(
+                &metadata.artifact,
+                "go",
+                ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
+                layer_ref.path(),
+            )
+            .map_err(DistLayerError::Tgz)
+            .map_err(GoBuildpackError::DistLayer)?;
+
+            bullet = timer.done();
+        }
+    }
+
+    layer_ref.write_env(
+        LayerEnv::new()
+            .chainable_insert(
+                Scope::Build,
+                ModificationBehavior::Override,
+                "GOROOT",
+                layer_ref.path(),
+            )
+            .chainable_insert(
+                Scope::Build,
+                ModificationBehavior::Override,
+                "GO111MODULE",
+                "on",
+            ),
+    )?;
+    Ok((bullet, layer_ref.read_env()?))
 }
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
-pub(crate) struct DistLayerMetadata {
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct MetadataV1 {
     layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
+pub(crate) type Metadata = MetadataV1;
+
+impl CacheDiff for Metadata {
+    fn diff(&self, old: &Self) -> Vec<String> {
+        let mut diff = Vec::new();
+        let Metadata {
+            layer_version,
+            artifact:
+                Artifact {
+                    version,
+                    os,
+                    arch,
+                    url: _,
+                    checksum,
+                    metadata: _,
+                },
+        } = &self;
+
+        if layer_version != &old.layer_version {
+            diff.push(format!(
+                "Layer version ({} to {})",
+                style::value(&old.layer_version),
+                style::value(&self.layer_version)
+            ));
+        }
+
+        if version != &old.artifact.version {
+            diff.push(format!(
+                "Go version ({} to {})",
+                style::value(old.artifact.version.to_string()),
+                style::value(version.to_string())
+            ));
+        } else if checksum != &old.artifact.checksum {
+            diff.push(format!(
+                "Go binary checksum ({} to {})",
+                style::value(hex::encode(&old.artifact.checksum.value)),
+                style::value(hex::encode(&checksum.value))
+            ));
+        }
+
+        if os != &old.artifact.os || arch != &old.artifact.arch {
+            diff.push(format!(
+                "OS ({}-{} to {}-{})",
+                old.artifact.os, old.artifact.arch, os, arch
+            ));
+        }
+
+        diff
+    }
+}
+
+magic_migrate::try_migrate_toml_chain!(
+    error: MigrationError,
+    chain: [Metadata]
+);
+
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum DistLayerError {
@@ -30,76 +151,83 @@ pub(crate) enum DistLayerError {
 
 const LAYER_VERSION: &str = "1";
 
-impl Layer for DistLayer {
-    type Buildpack = GoBuildpack;
-    type Metadata = DistLayerMetadata;
-
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
-            build: true,
-            launch: false,
-            cache: true,
-        }
-    }
-
-    fn create(
-        &mut self,
-        _ctx: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        log_info(format!(
-            "Installing {} ({}-{}) from {}",
-            self.artifact.version, self.artifact.os, self.artifact.arch, self.artifact.url
-        ));
-        tgz::fetch_strip_filter_extract_verify(
-            &self.artifact,
-            "go",
-            ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
-            layer_path,
-        )
-        .map_err(DistLayerError::Tgz)?;
-
-        LayerResultBuilder::new(DistLayerMetadata::current(self))
-            .env(
-                LayerEnv::new()
-                    .chainable_insert(
-                        Scope::Build,
-                        ModificationBehavior::Override,
-                        "GOROOT",
-                        layer_path,
-                    )
-                    .chainable_insert(
-                        Scope::Build,
-                        ModificationBehavior::Override,
-                        "GO111MODULE",
-                        "on",
-                    ),
-            )
-            .build()
-    }
-
-    fn existing_layer_strategy(
-        &mut self,
-        _ctx: &BuildContext<Self::Buildpack>,
-        layer_data: &LayerData<Self::Metadata>,
-    ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        if layer_data.content_metadata.metadata == DistLayerMetadata::current(self) {
-            log_info(format!(
-                "Reusing {} ({}-{})",
-                self.artifact.version, self.artifact.os, self.artifact.arch
-            ));
-            Ok(ExistingLayerStrategy::Keep)
-        } else {
-            Ok(ExistingLayerStrategy::Recreate)
+impl Metadata {
+    pub(crate) fn new(artifact: &Artifact<GoVersion, Sha256, Option<()>>) -> Self {
+        Metadata {
+            artifact: artifact.clone(),
+            layer_version: String::from(LAYER_VERSION),
         }
     }
 }
 
-impl DistLayerMetadata {
-    fn current(layer: &DistLayer) -> Self {
-        DistLayerMetadata {
-            artifact: layer.artifact.clone(),
-            layer_version: String::from(LAYER_VERSION),
+#[cfg(test)]
+mod tests {
+    use libherokubuildpack::inventory::{
+        artifact::{Arch, Os},
+        Inventory,
+    };
+
+    use super::*;
+
+    fn linux_amd_artifact(version: &str) -> Artifact<GoVersion, Sha256, Option<()>> {
+        let inv: Inventory<GoVersion, Sha256, Option<()>> =
+            toml::from_str(include_str!("../../inventory.toml")).unwrap();
+
+        inv.resolve(
+            Os::Linux,
+            Arch::Amd64,
+            &semver::VersionReq::parse(version).unwrap(),
+        )
+        .unwrap()
+        .to_owned()
+    }
+
+    #[test]
+    fn test_cache_diff_go_versions() {
+        let actual = Metadata {
+            layer_version: "1".to_string(),
+            artifact: linux_amd_artifact("=1.22.7"),
         }
+        .diff(&Metadata {
+            layer_version: "1".to_string(),
+            artifact: linux_amd_artifact("= 1.23.4"),
+        })
+        .iter()
+        .map(bullet_stream::strip_ansi)
+        .collect::<Vec<_>>();
+
+        let expected = vec!["Go version (`go1.23.4` to `go1.22.7`)".to_string()];
+        assert_eq!(expected, actual);
+    }
+
+    /// See [`crate::build::tests::metadata_guard`] for info on what to do when this fails
+    #[test]
+    fn metadata_guard() {
+        let metadata = MetadataV1 {
+            layer_version: LAYER_VERSION.to_string(),
+            artifact: linux_amd_artifact("=1.22.7"),
+        };
+
+        let toml = r#"
+layer_version = "1"
+
+[artifact]
+version = "go1.22.7"
+os = "linux"
+arch = "amd64"
+url = "https://go.dev/dl/go1.22.7.linux-amd64.tar.gz"
+checksum = "sha256:fc5d49b7a5035f1f1b265c17aa86e9819e6dc9af8260ad61430ee7fbe27881bb"
+        "#
+        .trim();
+        assert_eq!(
+            toml,
+            toml::to_string(&metadata)
+                .unwrap()
+                .to_string()
+                .as_str()
+                .trim()
+        );
+
+        assert_eq!(metadata, toml::from_str(toml).unwrap());
     }
 }

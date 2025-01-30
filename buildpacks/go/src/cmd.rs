@@ -1,27 +1,15 @@
+use bullet_stream::{state::SubBullet, style, Print};
+use fun_run::{CmdError, CommandWithName};
 use libcnb::Env;
-use std::process::{Command, ExitStatus, Stdio};
+use std::{io::Write, process::Command};
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
+    #[error("{0}")]
+    FailedCommand(#[from] CmdError),
+
     #[error("Command IO error: {0}")]
     IO(#[from] std::io::Error),
-    #[error("Command did not exit successfully: {0}")]
-    Exit(ExitStatus),
-}
-
-/// Run `go clean -tags heroku`. Useful for clearing the modcache or buildcache.
-///
-/// # Errors
-///
-/// Returns an error of the command exit code is not 0 or if there is an IO
-/// issue with the command.
-pub(crate) fn go_clean<S: AsRef<str>>(flag: S, go_env: &Env) -> Result<(), Error> {
-    let status = Command::new("go")
-        .args(["clean", "-tags", "heroku", flag.as_ref()])
-        .envs(go_env)
-        .status()?;
-
-    status.success().then_some(()).ok_or(Error::Exit(status))
 }
 
 /// Run `go install -tags heroku pkg [..pkgn]`. Useful for compiling a list
@@ -32,13 +20,25 @@ pub(crate) fn go_clean<S: AsRef<str>>(flag: S, go_env: &Env) -> Result<(), Error
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Error> {
+pub(crate) fn go_install<S: AsRef<str>, W: Write + Send + Sync + 'static>(
+    mut bullet: Print<SubBullet<W>>,
+    packages: &[S],
+    go_env: &Env,
+) -> Result<Print<SubBullet<W>>, Error> {
     let mut args = vec!["install", "-tags", "heroku"];
     for pkg in packages {
         args.push(pkg.as_ref());
     }
-    let status = Command::new("go").args(args).envs(go_env).status()?;
-    status.success().then_some(()).ok_or(Error::Exit(status))
+    let mut cmd = Command::new("go");
+    cmd.args(args).envs(go_env);
+
+    bullet
+        .stream_with(
+            format!("Running {}", style::command(cmd.name())),
+            |stdout, stderr| cmd.stream_output(stdout, stderr),
+        )
+        .map(|_| bullet)
+        .map_err(Error::FailedCommand)
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
@@ -50,29 +50,33 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
-    let result = Command::new("go")
-        .args(vec![
-            "list",
-            "-tags",
-            "heroku",
-            "-f",
-            "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
-            "./...",
-        ])
-        .envs(go_env)
-        .stderr(Stdio::inherit())
-        .stdout(Stdio::piped())
-        .output()?;
+pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
+    mut bullet: Print<SubBullet<W>>,
+    go_env: &Env,
+) -> Result<(Print<SubBullet<W>>, Vec<String>), Error> {
+    let mut cmd = Command::new("go");
+    cmd.args(vec![
+        "list",
+        "-tags",
+        "heroku",
+        "-f",
+        "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
+        "./...",
+    ])
+    .envs(go_env);
 
-    result
-        .status
-        .success()
-        .then_some(())
-        .ok_or(Error::Exit(result.status))?;
-
-    Ok(String::from_utf8_lossy(&result.stdout)
-        .split_whitespace()
-        .map(|s| s.trim().to_string())
-        .collect())
+    bullet
+        .stream_with(
+            format!("Running {}", style::command(cmd.name())),
+            |stdout, stderr| cmd.stream_output(stdout, stderr),
+        )
+        .map_err(Error::FailedCommand)
+        .map(|output| {
+            output
+                .stdout_lossy()
+                .split_whitespace()
+                .map(|s| s.trim().to_string())
+                .collect()
+        })
+        .map(|list| (bullet, list))
 }

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Changed buildpack output style to the "bullet_stream" format.
+
 ## [0.5.2] - 2025-01-21
 
 - Added go1.22.11 (linux-amd64), go1.22.11 (linux-arm64), go1.23.5 (linux-amd64), go1.23.5 (linux-arm64), go1.24rc2 (linux-amd64), go1.24rc2 (linux-arm64).
