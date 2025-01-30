@@ -5,7 +5,7 @@ mod proc;
 mod tgz;
 
 use bullet_stream::global::print;
-use bullet_stream::{style, Print};
+use bullet_stream::style;
 use fs_err::PathExt;
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::BuildLayerError;
@@ -13,7 +13,7 @@ use layers::deps::DepsLayerError;
 use layers::dist::DistLayerError;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
-use libcnb::data::launch::{LaunchBuilder, Process};
+use libcnb::data::launch::LaunchBuilder;
 use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
@@ -26,6 +26,7 @@ use libherokubuildpack::inventory::Inventory;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
+use std::time::Instant;
 
 #[cfg(test)]
 use libcnb_test as _;
@@ -59,7 +60,8 @@ impl Buildpack for GoBuildpack {
 
     #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        let mut build_output = Print::global().h2("Heroku Go Buildpack");
+        print::h2("Heroku Go Buildpack");
+        let started = Instant::now();
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -67,14 +69,14 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
-        let mut bullet = build_output.bullet("Go version");
+        print::bullet("Go version");
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
         let go_mod = context.app_dir.join("go.mod");
         let config = cfg::read_gomod_config(&go_mod).map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
 
-        bullet = bullet.sub_bullet(format!(
+        print::sub_bullet(format!(
             "Detected requirement {req} (from {file})",
             req = style::value(requirement.to_string()),
             file = go_mod.display()
@@ -86,19 +88,16 @@ impl Buildpack for GoBuildpack {
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        bullet = bullet.sub_bullet(format!(
+        print::sub_bullet(format!(
             "Resolved to {}",
             style::value(artifact.version.to_string()),
         ));
 
-        (build_output, go_env) = {
-            layers::dist::call(&context, bullet, &layers::dist::Metadata::new(artifact)).map(
-                |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
-            )?
-        };
+        go_env = layers::dist::call(&context, &layers::dist::Metadata::new(artifact))
+            .map(|layer_env| layer_env.apply(Scope::Build, &go_env))?;
 
-        (build_output, go_env) = {
-            let bullet = build_output.bullet("Go binaries");
+        go_env = {
+            print::bullet("Go binaries");
             if context
                 .app_dir
                 .join("vendor")
@@ -106,18 +105,15 @@ impl Buildpack for GoBuildpack {
                 .fs_err_try_exists()
                 .map_err(GoBuildpackError::FsTryExist)?
             {
-                (
-                    bullet.sub_bullet("Using vendored Go modules").done(),
-                    go_env,
-                )
+                print::sub_bullet("Using vendored Go modules");
+                go_env
             } else {
-                layers::deps::call(&context, bullet, &layers::deps::Metadata::new(1.0)).map(
-                    |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
-                )?
+                layers::deps::call(&context, &layers::deps::Metadata::new(1.0))
+                    .map(|layer_env| layer_env.apply(Scope::Build, &go_env))?
             }
         };
 
-        (build_output, go_env) = {
+        go_env = {
             let layer_ref = context.uncached_layer(
                 layer_name!("go_target"),
                 UncachedLayerDefinition {
@@ -134,62 +130,54 @@ impl Buildpack for GoBuildpack {
                 "GOBIN",
                 layer_ref.path().join("bin"),
             ))?;
-            (
-                build_output,
-                layer_ref.read_env()?.apply(Scope::Build, &go_env),
-            )
-        };
-        (build_output, go_env) = {
-            layers::build::call(
-                &context,
-                build_output.bullet("Go build cache"),
-                &layers::build::Metadata::new(&artifact.version, &context.target),
-            )
-            .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
+
+            layer_ref.read_env()?.apply(Scope::Build, &go_env)
         };
 
-        let bullet = build_output.bullet("Go module resolution");
-        let (bullet, packages) = if let Some(packages) = config.packages {
-            (bullet.sub_bullet("Found packages in go.mod"), packages)
+        print::bullet("Go build cache");
+        go_env = layers::build::call(
+            &context,
+            &layers::build::Metadata::new(&artifact.version, &context.target),
+        )
+        .map(|layer_env| layer_env.apply(Scope::Build, &go_env))?;
+
+        print::bullet("Go module resolution");
+        let packages = if let Some(packages) = config.packages {
+            print::sub_bullet("Found packages in go.mod");
+            packages
         } else {
-            cmd::go_list(bullet, &go_env).map_err(GoBuildpackError::GoList)?
+            cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?
         };
 
-        let mut bullet = bullet.done().bullet("Packages found");
+        print::bullet("Packages found");
         for pkg in &packages {
-            bullet = bullet.sub_bullet(style::value(pkg));
+            print::sub_bullet(style::value(pkg));
         }
 
-        build_output = {
-            bullet = cmd::go_install(bullet.done().bullet("Go install"), &packages, &go_env)
-                .map_err(GoBuildpackError::GoBuild)?;
-            bullet.done()
-        };
+        print::bullet("Go install");
+        cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
-        let (build_output, procs) = {
-            let mut bullet = build_output.bullet("Default processes");
-
-            let mut procs: Vec<Process> = vec![];
-            if Path::exists(&context.app_dir.join("Procfile")) {
-                bullet = bullet.sub_bullet("Skipping (Procfile detected)");
+        print::bullet("Default processes");
+        let procs = if Path::exists(&context.app_dir.join("Procfile")) {
+            print::sub_bullet("Skipping (Procfile detected)");
+            Vec::new()
+        } else {
+            let procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
+            if procs.is_empty() {
+                print::sub_bullet("No processes found");
             } else {
-                procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-                if procs.is_empty() {
-                    bullet = bullet.sub_bullet("No processes found");
-                } else {
-                    for proc in &procs {
-                        bullet = bullet.sub_bullet(format!(
-                            "{}: {}",
-                            proc.r#type,
-                            style::command(proc.command.join(" "))
-                        ));
-                    }
+                for proc in &procs {
+                    print::sub_bullet(format!(
+                        "{}: {}",
+                        proc.r#type,
+                        style::command(proc.command.join(" "))
+                    ));
                 }
             }
-
-            (bullet.done(), procs)
+            procs
         };
-        build_output.done();
+
+        print::all_done(&Some(started));
 
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
