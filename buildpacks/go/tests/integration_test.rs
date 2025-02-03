@@ -76,13 +76,17 @@ fn test_go_fixture(fixture: &str, expect_loglines: &[&str], refute_loglines: &[&
 fn test_basic_http_116() {
     test_go_fixture(
         "basic_http_116",
-        &[
-            "Detected Go version requirement: ~1.16.2",
-            "Resolved Go version: go1.16.",
-            "Installing go1.16.",
-        ],
+        &[&requirement_line("~1.16.2"), &installing_line("go1.16.")],
         &[],
     );
+}
+
+fn requirement_line(requirement: &str) -> String {
+    format!("Detected requirement `{requirement}`")
+}
+
+fn installing_line(version: &str) -> String {
+    format!("Installing `{version}")
 }
 
 #[test]
@@ -91,8 +95,8 @@ fn test_vendor_gorilla_117() {
     test_go_fixture(
         "vendor_gorilla_117",
         &[
-            "Detected Go version requirement: =1.17.8",
-            "Installing go1.17.8",
+            &requirement_line("=1.17.8"),
+            &installing_line("go1.17.8"),
             "Using vendored Go modules",
         ],
         &["downloading github.com/gorilla/mux v1.8.0"],
@@ -105,8 +109,8 @@ fn test_modules_gin_121() {
     test_go_fixture(
         "modules_gin_121",
         &[
-            "Detected Go version requirement: =1.21",
-            "Installing go1.21",
+            &requirement_line("=1.21"),
+            &installing_line("go1.21"),
             "downloading github.com/gin-gonic/gin v1.8.1",
         ],
         &[],
@@ -119,13 +123,13 @@ fn test_worker_http_118() {
     test_go_fixture(
         "worker_http_118",
         &[
-            "Detected Go version requirement: ~1.18.1",
-            "Installing go1.18.",
-            "Detected processes:",
-            "example.com/worker_http_118/cmd/web",
-            "example.com/worker_http_118/cmd/worker",
+            &requirement_line("~1.18.1"),
+            &installing_line("go1.18"),
+            "Default processes",
+            "- `example.com/worker_http_118/cmd/web`",
+            "- `example.com/worker_http_118/cmd/worker`",
         ],
-        &["example.com/worker_http_118/cmd/script"],
+        &["- `example.com/worker_http_118/cmd/script`"],
     );
 }
 
@@ -134,10 +138,7 @@ fn test_worker_http_118() {
 fn test_basic_http_119() {
     test_go_fixture(
         "basic_http_119",
-        &[
-            "Detected Go version requirement: ~1.19.4",
-            "Installing go1.19.",
-        ],
+        &[&requirement_line("~1.19.4"), &installing_line("go1.19")],
         &[],
     );
 }
@@ -147,11 +148,10 @@ fn test_basic_http_119() {
 fn test_procfile_http_123() {
     let build_config: BuildConfig = IntegrationTestConfig::new("procfile_http_123").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_contains!(ctx.pack_stdout, "Detected Go version requirement: =1.23");
-        assert_contains!(ctx.pack_stdout, "Installing go1.23.");
-        assert_contains!(ctx.pack_stdout, "Skipping launch process registration");
-        assert_not_contains!(ctx.pack_stdout, "Registering launch processes");
-        assert_not_contains!(ctx.pack_stdout, "Detected processes:");
+        let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
+        assert_contains!(logs, &requirement_line("=1.23"));
+        assert_contains!(logs, &installing_line("go1.23."));
+        assert_contains!(logs, "Skipping (Procfile detected)");
     });
 }
 
@@ -161,8 +161,8 @@ fn test_vendor_fasthttp_120() {
     test_go_fixture(
         "vendor_fasthttp_120",
         &[
-            "Detected Go version requirement: =1.20",
-            "Installing go1.20.",
+            &requirement_line("=1.20"),
+            &installing_line("go1.20."),
             "Using vendored Go modules",
         ],
         &["downloading github.com/valyala/fasthttp"],
@@ -174,10 +174,7 @@ fn test_vendor_fasthttp_120() {
 fn test_basic_http_122() {
     test_go_fixture(
         "basic_http_122",
-        &[
-            "Detected Go version requirement: ~1.22.0",
-            "Installing go1.22.",
-        ],
+        &[&requirement_line("~1.22.0"), &installing_line("go1.22.")],
         &[],
     );
 }
@@ -187,10 +184,13 @@ fn test_basic_http_122() {
 fn test_go_artifact_caching() {
     let build_config: BuildConfig = IntegrationTestConfig::new("basic_http_116").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_contains!(ctx.pack_stdout, "Installing go1.16.",);
+        let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
+        assert_contains!(&logs, &installing_line("go1.16."));
         let config = ctx.config.clone();
         ctx.rebuild(config, |ctx| {
-            assert_contains!(ctx.pack_stdout, "Reusing go1.16.");
+            let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
+            assert_contains!(&logs, "Resolved to `go1.16.");
+            assert_contains!(&logs, "Using cache");
         });
     });
 }
@@ -206,9 +206,10 @@ fn test_go_binary_arch() {
 
     let build_config: BuildConfig = integration_config.into();
     TestRunner::default().build(build_config, |ctx| {
+        let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
         for contain in contains {
-            assert_contains!(ctx.pack_stdout, contain);
+            assert_contains!(&logs, contain);
         }
-        assert_not_contains!(ctx.pack_stdout, not_contain);
+        assert_not_contains!(&logs, not_contain);
     });
 }

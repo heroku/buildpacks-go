@@ -1,10 +1,11 @@
 use flate2::read::GzDecoder;
+use fs_err as fs;
 use libherokubuildpack::inventory::artifact::Artifact;
 use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
 };
-use std::{fs, io::Read, path::StripPrefixError};
+use std::{io::Read, path::StripPrefixError};
 use tar::Archive;
 
 #[derive(thiserror::Error, Debug)]

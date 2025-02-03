@@ -4,11 +4,13 @@ mod layers;
 mod proc;
 mod tgz;
 
+use bullet_stream::global::print;
+use bullet_stream::{style, Print};
+use fs_err::PathExt;
 use heroku_go_utils::vrs::GoVersion;
-use layers::build::{BuildLayer, BuildLayerError};
-use layers::deps::{DepsLayer, DepsLayerError};
-use layers::dist::{DistLayer, DistLayerError};
-use layers::target::{TargetLayer, TargetLayerError};
+use layers::build::BuildLayerError;
+use layers::deps::DepsLayerError;
+use layers::dist::DistLayerError;
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, Process};
@@ -16,17 +18,18 @@ use libcnb::data::layer_name;
 use libcnb::detect::{DetectContext, DetectResult, DetectResultBuilder};
 use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
-use libcnb::layer_env::Scope;
+use libcnb::layer::UncachedLayerDefinition;
+use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::{log_error, log_header, log_info};
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
 
 #[cfg(test)]
 use libcnb_test as _;
+use serde_json as _;
 
 const INVENTORY: &str = include_str!("../inventory.toml");
 
@@ -54,9 +57,9 @@ impl Buildpack for GoBuildpack {
             .build()
     }
 
+    #[allow(clippy::too_many_lines)]
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Reading build configuration");
-
+        let mut build_output = Print::global().h2("Heroku Go Buildpack");
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -64,13 +67,18 @@ impl Buildpack for GoBuildpack {
                 go_env.insert(k, v);
             });
 
+        let mut bullet = build_output.bullet("Go version");
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
-
-        let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
-            .map_err(GoBuildpackError::GoModConfig)?;
+        let go_mod = context.app_dir.join("go.mod");
+        let config = cfg::read_gomod_config(&go_mod).map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
-        log_info(format!("Detected Go version requirement: {requirement}"));
+
+        bullet = bullet.sub_bullet(format!(
+            "Detected requirement {req} (from {file})",
+            req = style::value(requirement.to_string()),
+            file = go_mod.display()
+        ));
 
         let artifact = match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => inv.resolve(os, arch, &requirement),
@@ -78,78 +86,110 @@ impl Buildpack for GoBuildpack {
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        log_info(format!(
-            "Resolved Go version: {} ({}-{})",
-            artifact.version, artifact.os, artifact.arch
+        bullet = bullet.sub_bullet(format!(
+            "Resolved to {}",
+            style::value(artifact.version.to_string()),
         ));
 
-        log_header("Installing Go distribution");
-        go_env = context
-            .handle_layer(
-                layer_name!("go_dist"),
-                DistLayer {
-                    artifact: artifact.clone(),
-                },
+        (build_output, go_env) = {
+            layers::dist::call(&context, bullet, &layers::dist::Metadata::new(artifact)).map(
+                |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
             )?
-            .env
-            .apply(Scope::Build, &go_env);
+        };
 
-        log_header("Building Go binaries");
-
-        if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
-            log_info("Using vendored Go modules");
-        } else {
-            go_env = context
-                .handle_layer(
-                    layer_name!("go_deps"),
-                    DepsLayer {
-                        go_env: go_env.clone(),
-                    },
+        (build_output, go_env) = {
+            let bullet = build_output.bullet("Go binaries");
+            if context
+                .app_dir
+                .join("vendor")
+                .join("modules.txt")
+                .fs_err_try_exists()
+                .map_err(GoBuildpackError::FsTryExist)?
+            {
+                (
+                    bullet.sub_bullet("Using vendored Go modules").done(),
+                    go_env,
+                )
+            } else {
+                layers::deps::call(&context, bullet, &layers::deps::Metadata::new(1.0)).map(
+                    |(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)),
                 )?
-                .env
-                .apply(Scope::Build, &go_env);
-        }
-
-        go_env = context
-            .handle_layer(layer_name!("go_target"), TargetLayer {})?
-            .env
-            .apply(Scope::Build, &go_env);
-
-        go_env = context
-            .handle_layer(
-                layer_name!("go_build"),
-                BuildLayer {
-                    go_version: artifact.version.clone(),
-                },
-            )?
-            .env
-            .apply(Scope::Build, &go_env);
-
-        log_info("Resolving Go modules");
-        let packages = config.packages.unwrap_or(
-            // Use `go list` to determine packages to build. Do this eagerly,
-            // even if the result is unused because it has the side effect of
-            // downloading any required go modules.
-            cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
-        );
-
-        log_info("Building packages:");
-        for pkg in &packages {
-            log_info(format!("  - {pkg}"));
-        }
-        cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
-
-        let mut procs: Vec<Process> = vec![];
-        if Path::exists(&context.app_dir.join("Procfile")) {
-            log_info("Skipping launch process registration (Procfile detected)");
-        } else {
-            log_header("Registering launch processes");
-            procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-            log_info("Detected processes:");
-            for proc in &procs {
-                log_info(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
             }
+        };
+
+        (build_output, go_env) = {
+            let layer_ref = context.uncached_layer(
+                layer_name!("go_target"),
+                UncachedLayerDefinition {
+                    build: true,
+                    launch: true,
+                },
+            )?;
+
+            fs_err::create_dir(layer_ref.path().join("bin"))
+                .map_err(GoBuildpackError::TargetLayer)?;
+            layer_ref.write_env(LayerEnv::new().chainable_insert(
+                Scope::Build,
+                libcnb::layer_env::ModificationBehavior::Override,
+                "GOBIN",
+                layer_ref.path().join("bin"),
+            ))?;
+            (
+                build_output,
+                layer_ref.read_env()?.apply(Scope::Build, &go_env),
+            )
+        };
+        (build_output, go_env) = {
+            layers::build::call(
+                &context,
+                build_output.bullet("Go build cache"),
+                &layers::build::Metadata::new(&artifact.version, &context.target),
+            )
+            .map(|(bullet, layer_env)| (bullet.done(), layer_env.apply(Scope::Build, &go_env)))?
+        };
+
+        let bullet = build_output.bullet("Go module resolution");
+        let (bullet, packages) = if let Some(packages) = config.packages {
+            (bullet.sub_bullet("Found packages in go.mod"), packages)
+        } else {
+            cmd::go_list(bullet, &go_env).map_err(GoBuildpackError::GoList)?
+        };
+
+        let mut bullet = bullet.done().bullet("Packages found");
+        for pkg in &packages {
+            bullet = bullet.sub_bullet(style::value(pkg));
         }
+
+        build_output = {
+            bullet = cmd::go_install(bullet.done().bullet("Go install"), &packages, &go_env)
+                .map_err(GoBuildpackError::GoBuild)?;
+            bullet.done()
+        };
+
+        let (build_output, procs) = {
+            let mut bullet = build_output.bullet("Default processes");
+
+            let mut procs: Vec<Process> = vec![];
+            if Path::exists(&context.app_dir.join("Procfile")) {
+                bullet = bullet.sub_bullet("Skipping (Procfile detected)");
+            } else {
+                procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
+                if procs.is_empty() {
+                    bullet = bullet.sub_bullet("No processes found");
+                } else {
+                    for proc in &procs {
+                        bullet = bullet.sub_bullet(format!(
+                            "{}: {}",
+                            proc.r#type,
+                            style::command(proc.command.join(" "))
+                        ));
+                    }
+                }
+            }
+
+            (bullet.done(), procs)
+        };
+        build_output.done();
 
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
@@ -171,12 +211,13 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::GoBuild(_) => "go build",
                     GoBuildpackError::GoList(_) => "go list",
                     GoBuildpackError::Proc(_) => "launch process type",
+                    GoBuildpackError::FsTryExist(_) => "file system",
                 };
-                log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
+                print::error(format!(
+                    "Heroku Go Buildpack {err_ctx} error\n\n{err_string}"
+                ));
             }
-            err => {
-                log_error("Heroku Go Buildpack internal error", err.to_string());
-            }
+            err => print::error(format!("Heroku Go Buildpack internal error\n\n{err}")),
         }
     }
 }
@@ -196,13 +237,15 @@ enum GoBuildpackError {
     #[error("{0}")]
     DistLayer(#[from] DistLayerError),
     #[error("{0}")]
-    TargetLayer(#[from] TargetLayerError),
+    TargetLayer(std::io::Error),
     #[error("Couldn't parse go artifact inventory: {0}")]
     InventoryParse(toml::de::Error),
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(semver::VersionReq),
     #[error("Launch process error: {0}")]
     Proc(proc::Error),
+    #[error("Could not access file system due to error: {0}")]
+    FsTryExist(std::io::Error),
 }
 
 impl From<GoBuildpackError> for libcnb::Error<GoBuildpackError> {

@@ -6,7 +6,7 @@ members = [
 ]
 
 [workspace.package]
-rust-version = "1.75"
+rust-version = "1.84"
 edition = "2021"
 
 [workspace.lints.rust]
@@ -22,3 +22,20 @@ unwrap_used = "warn"
 
 [profile.release]
 strip = true
+
+
+[workspace.dependencies]
+# libcnb has a much bigger impact on buildpack behaviour than any other dependencies,
+# so it's pinned to an exact version to isolate it from lockfile refreshes.
+libcnb = { version = "=0.26.1", features = ["trace"] }
+libherokubuildpack = { version = "=0.26.1", default-features = false, features = ["inventory", "inventory-sha2"] }
+libcnb-test = "=0.26.1"
+
+toml = "0.8"
+sha2 = "0.10"
+semver = "1"
+serde = { version = "1", features = ["derive"] }
+fs-err = "3.0.0"
+thiserror = "2"
+ureq = { version = "2", features = ["json"] }
+
