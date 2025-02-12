@@ -19,14 +19,14 @@ tar = { version = "0.4", default-features = false }
 thiserror.workspace = true
 toml.workspace = true
 ureq.workspace = true
-magic_migrate = "1.0.1"
-bullet_stream = "0.4.0"
+magic_migrate = "1.1"
+bullet_stream = ">=0.7.0,<1.0"
 cache_diff = { version = "1.1", features = ["bullet_stream"] }
 commons = { git = "https://github.com/heroku/buildpacks-ruby", branch = "main", version = "0.0.0" }
 # Needed until https://github.com/oli-obk/cargo_metadata/pull/280 is released
 serde_json = "1.0.118"
 fs-err.workspace = true
-fun_run = "0.4"
+fun_run = ">=0.5,<1.0"
 
 [dev-dependencies]
 libcnb-test.workspace = true
