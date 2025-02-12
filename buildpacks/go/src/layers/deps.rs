@@ -79,8 +79,9 @@ impl Metadata {
 }
 
 /// A layer that caches the go modules cache
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, TryMigrate)]
 #[serde(deny_unknown_fields)]
+#[try_migrate(from = None)]
 pub(crate) struct MetadataV1 {
     // Using float here due to [an issue with lifecycle's handling of integers](https://github.com/buildpacks/lifecycle/issues/884)
     cache_usage_count: f32,
@@ -104,14 +105,6 @@ impl CacheDiff for Metadata {
         diff
     }
 }
-
-magic_migrate::try_migrate_toml_chain!(
-    error: MigrationError,
-    chain: [Metadata]
-);
-
-#[derive(Debug, thiserror::Error)]
-pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum DepsLayerError {

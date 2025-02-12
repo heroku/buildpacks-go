@@ -78,8 +78,9 @@ where
     Ok((bullet, layer_ref.read_env()?))
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TryMigrate)]
 #[serde(deny_unknown_fields)]
+#[try_migrate(from = None)]
 pub(crate) struct MetadataV1 {
     layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,
@@ -134,14 +135,6 @@ impl CacheDiff for Metadata {
         diff
     }
 }
-
-magic_migrate::try_migrate_toml_chain!(
-    error: MigrationError,
-    chain: [Metadata]
-);
-
-#[derive(Debug, thiserror::Error)]
-pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum DistLayerError {

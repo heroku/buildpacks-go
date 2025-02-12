@@ -70,9 +70,10 @@ where
     Ok((bullet, layer_ref.read_env()?))
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, CacheDiff, TryMigrate)]
 #[serde(deny_unknown_fields)]
 #[cache_diff(custom = custom_cache_diff)]
+#[try_migrate(from = None)]
 pub(crate) struct MetadataV1 {
     #[cache_diff(rename = "Buildpack author triggered")]
     layer_version: String,
@@ -117,14 +118,6 @@ fn custom_cache_diff(old: &Metadata, now: &Metadata) -> Vec<String> {
 
     diff
 }
-
-magic_migrate::try_migrate_toml_chain!(
-    error: MigrationError,
-    chain: [Metadata]
-);
-
-#[derive(Debug, thiserror::Error)]
-pub(crate) enum MigrationError {}
 
 #[derive(thiserror::Error, Debug)]
 #[error("Couldn't write to build layer: {0}")]
