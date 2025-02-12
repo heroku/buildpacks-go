@@ -1,5 +1,5 @@
-use bullet_stream::{state::SubBullet, style, Print};
-use fun_run::{CmdError, CommandWithName};
+use bullet_stream::{state::SubBullet, Print};
+use fun_run::CmdError;
 use libcnb::Env;
 use std::{io::Write, process::Command};
 
@@ -33,10 +33,7 @@ pub(crate) fn go_install<S: AsRef<str>, W: Write + Send + Sync + 'static>(
     cmd.args(args).envs(go_env);
 
     bullet
-        .stream_with(
-            format!("Running {}", style::command(cmd.name())),
-            |stdout, stderr| cmd.stream_output(stdout, stderr),
-        )
+        .stream_cmd(cmd)
         .map(|_| bullet)
         .map_err(Error::FailedCommand)
 }
@@ -66,10 +63,7 @@ pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
     .envs(go_env);
 
     bullet
-        .stream_with(
-            format!("Running {}", style::command(cmd.name())),
-            |stdout, stderr| cmd.stream_output(stdout, stderr),
-        )
+        .stream_cmd(cmd)
         .map_err(Error::FailedCommand)
         .map(|output| {
             output
