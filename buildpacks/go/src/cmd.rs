@@ -1,7 +1,7 @@
-use bullet_stream::{state::SubBullet, Print};
+use bullet_stream::global::print;
 use fun_run::CmdError;
 use libcnb::Env;
-use std::{io::Write, process::Command};
+use std::process::Command;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -20,11 +20,7 @@ pub(crate) enum Error {
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub(crate) fn go_install<S: AsRef<str>, W: Write + Send + Sync + 'static>(
-    mut bullet: Print<SubBullet<W>>,
-    packages: &[S],
-    go_env: &Env,
-) -> Result<Print<SubBullet<W>>, Error> {
+pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<(), Error> {
     let mut args = vec!["install", "-tags", "heroku"];
     for pkg in packages {
         args.push(pkg.as_ref());
@@ -32,9 +28,8 @@ pub(crate) fn go_install<S: AsRef<str>, W: Write + Send + Sync + 'static>(
     let mut cmd = Command::new("go");
     cmd.args(args).envs(go_env);
 
-    bullet
-        .stream_cmd(cmd)
-        .map(|_| bullet)
+    print::sub_stream_cmd(cmd)
+        .map(|_| ())
         .map_err(Error::FailedCommand)
 }
 
@@ -47,10 +42,7 @@ pub(crate) fn go_install<S: AsRef<str>, W: Write + Send + Sync + 'static>(
 ///
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
-pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
-    mut bullet: Print<SubBullet<W>>,
-    go_env: &Env,
-) -> Result<(Print<SubBullet<W>>, Vec<String>), Error> {
+pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
     let mut cmd = Command::new("go");
     cmd.args(vec![
         "list",
@@ -62,8 +54,7 @@ pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
     ])
     .envs(go_env);
 
-    bullet
-        .stream_cmd(cmd)
+    print::sub_stream_cmd(cmd)
         .map_err(Error::FailedCommand)
         .map(|output| {
             output
@@ -72,5 +63,4 @@ pub(crate) fn go_list<W: Write + Send + Sync + 'static>(
                 .map(|s| s.trim().to_string())
                 .collect()
         })
-        .map(|list| (bullet, list))
 }

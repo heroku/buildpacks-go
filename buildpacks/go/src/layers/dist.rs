@@ -1,6 +1,6 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
-use bullet_stream::state::SubBullet;
-use bullet_stream::{style, Print};
+use bullet_stream::global::print;
+use bullet_stream::style;
 use cache_diff::CacheDiff;
 use commons::layer::diff_migrate::DiffMigrateLayer;
 use heroku_go_utils::vrs::GoVersion;
@@ -13,16 +13,11 @@ use libherokubuildpack::inventory::artifact::Artifact;
 use magic_migrate::TryMigrate;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use std::io::Write;
 
-pub(crate) fn call<W>(
+pub(crate) fn call(
     context: &BuildContext<GoBuildpack>,
-    mut bullet: Print<SubBullet<W>>,
     metadata: &Metadata,
-) -> libcnb::Result<(Print<SubBullet<W>>, LayerEnv), <GoBuildpack as Buildpack>::Error>
-where
-    W: Write + Send + Sync + 'static,
-{
+) -> libcnb::Result<LayerEnv, <GoBuildpack as Buildpack>::Error> {
     let layer_ref = DiffMigrateLayer {
         build: true,
         launch: false,
@@ -30,17 +25,17 @@ where
     .cached_layer(layer_name!("go_dist"), context, metadata)?;
     match &layer_ref.state {
         LayerState::Restored { cause } => {
-            bullet = bullet.sub_bullet(cause);
+            print::sub_bullet(cause);
         }
         LayerState::Empty { cause } => {
             match cause {
                 EmptyLayerCause::NewlyCreated => {}
                 EmptyLayerCause::InvalidMetadataAction { cause }
                 | EmptyLayerCause::RestoredLayerAction { cause } => {
-                    bullet = bullet.sub_bullet(cause);
+                    print::sub_bullet(cause);
                 }
             }
-            let timer = bullet.start_timer(format!(
+            let timer = print::sub_start_timer(format!(
                 "Installing {} ({}-{}) from {}",
                 style::value(metadata.artifact.version.to_string()),
                 metadata.artifact.os,
@@ -56,7 +51,7 @@ where
             .map_err(DistLayerError::Tgz)
             .map_err(GoBuildpackError::DistLayer)?;
 
-            bullet = timer.done();
+            let _ = timer.done();
         }
     }
 
@@ -75,7 +70,8 @@ where
                 "on",
             ),
     )?;
-    Ok((bullet, layer_ref.read_env()?))
+
+    layer_ref.read_env()
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TryMigrate)]
