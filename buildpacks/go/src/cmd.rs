@@ -1,5 +1,5 @@
-use bullet_stream::{global::print, style};
-use fun_run::{CmdError, CommandWithName};
+use bullet_stream::global::print;
+use fun_run::CmdError;
 use libcnb::Env;
 use std::process::Command;
 
@@ -28,12 +28,9 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
     let mut cmd = Command::new("go");
     cmd.args(args).envs(go_env);
 
-    print::sub_stream_with(
-        format!("Running {}", style::command(cmd.name())),
-        |stdout, stderr| cmd.stream_output(stdout, stderr),
-    )
-    .map(|_| ())
-    .map_err(Error::FailedCommand)
+    print::sub_stream_cmd(cmd)
+        .map(|_| ())
+        .map_err(Error::FailedCommand)
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
@@ -57,16 +54,13 @@ pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
     ])
     .envs(go_env);
 
-    print::sub_stream_with(
-        format!("Running {}", style::command(cmd.name())),
-        |stdout, stderr| cmd.stream_output(stdout, stderr),
-    )
-    .map_err(Error::FailedCommand)
-    .map(|output| {
-        output
-            .stdout_lossy()
-            .split_whitespace()
-            .map(|s| s.trim().to_string())
-            .collect()
-    })
+    print::sub_stream_cmd(cmd)
+        .map_err(Error::FailedCommand)
+        .map(|output| {
+            output
+                .stdout_lossy()
+                .split_whitespace()
+                .map(|s| s.trim().to_string())
+                .collect()
+        })
 }
