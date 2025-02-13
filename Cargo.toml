@@ -31,6 +31,7 @@ libherokubuildpack = { version = "=0.26.1", default-features = false, features =
     "log",
     "inventory-sha2",
 ] }
+semver = "1"
 serde = { version = "1", features = ["derive"] }
 sha2 = "0.10"
 thiserror = "2"
