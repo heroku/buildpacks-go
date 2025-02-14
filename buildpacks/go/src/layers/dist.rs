@@ -54,7 +54,7 @@ pub(crate) fn handle_dist_layer(
                 artifact.version, artifact.os, artifact.arch, artifact.url
             ));
             tgz::fetch_strip_filter_extract_verify(
-                &artifact,
+                artifact,
                 "go",
                 ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
                 layer_ref.path(),
