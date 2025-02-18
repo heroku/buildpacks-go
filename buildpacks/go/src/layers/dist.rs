@@ -22,6 +22,7 @@ pub(crate) enum DistLayerError {
     Tgz(tgz::Error),
 }
 
+/// Downloads and installs the Go distribution / toolchain.
 pub(crate) fn handle_dist_layer(
     context: &BuildContext<GoBuildpack>,
     artifact: &Artifact<GoVersion, Sha256, Option<()>>,
