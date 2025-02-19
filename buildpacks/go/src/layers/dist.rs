@@ -1,24 +1,18 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::layer::{ExistingLayerStrategy, Layer, LayerData, LayerResult, LayerResultBuilder};
+use libcnb::data::layer_name;
+use libcnb::layer::{
+    CachedLayerDefinition, InvalidMetadataAction, LayerRef, LayerState, RestoredLayerAction,
+};
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
-use libcnb::Buildpack;
 use libherokubuildpack::inventory::artifact::Artifact;
 use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use std::path::Path;
-
-/// A layer that downloads and installs the Go distribution artifacts
-pub(crate) struct DistLayer {
-    pub(crate) artifact: Artifact<GoVersion, Sha256, Option<()>>,
-}
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub(crate) struct DistLayerMetadata {
-    layer_version: String,
     artifact: Artifact<GoVersion, Sha256, Option<()>>,
 }
 
@@ -28,45 +22,56 @@ pub(crate) enum DistLayerError {
     Tgz(tgz::Error),
 }
 
-const LAYER_VERSION: &str = "1";
-
-impl Layer for DistLayer {
-    type Buildpack = GoBuildpack;
-    type Metadata = DistLayerMetadata;
-
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
+/// Downloads and installs the Go distribution / toolchain.
+pub(crate) fn handle_dist_layer(
+    context: &BuildContext<GoBuildpack>,
+    artifact: &Artifact<GoVersion, Sha256, Option<()>>,
+) -> libcnb::Result<LayerRef<GoBuildpack, (), ()>, GoBuildpackError> {
+    let layer_ref = context.cached_layer(
+        layer_name!("go_dist"),
+        CachedLayerDefinition {
             build: true,
             launch: false,
-            cache: true,
+            invalid_metadata_action: &|_| InvalidMetadataAction::DeleteLayer,
+            restored_layer_action: &|restored_metadata: &DistLayerMetadata, _| {
+                if artifact == &restored_metadata.artifact {
+                    return RestoredLayerAction::KeepLayer;
+                }
+                RestoredLayerAction::DeleteLayer
+            },
+        },
+    )?;
+
+    match layer_ref.state {
+        LayerState::Restored { .. } => {
+            log_info(format!(
+                "Reusing {} ({}-{})",
+                artifact.version, artifact.os, artifact.arch
+            ));
         }
-    }
+        LayerState::Empty { .. } => {
+            log_info(format!(
+                "Installing {} ({}-{}) from {}",
+                artifact.version, artifact.os, artifact.arch, artifact.url
+            ));
+            tgz::fetch_strip_filter_extract_verify(
+                artifact,
+                "go",
+                ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
+                layer_ref.path(),
+            )
+            .map_err(DistLayerError::Tgz)?;
 
-    fn create(
-        &mut self,
-        _ctx: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        log_info(format!(
-            "Installing {} ({}-{}) from {}",
-            self.artifact.version, self.artifact.os, self.artifact.arch, self.artifact.url
-        ));
-        tgz::fetch_strip_filter_extract_verify(
-            &self.artifact,
-            "go",
-            ["bin", "src", "pkg", "go.env", "LICENSE"].into_iter(),
-            layer_path,
-        )
-        .map_err(DistLayerError::Tgz)?;
-
-        LayerResultBuilder::new(DistLayerMetadata::current(self))
-            .env(
+            layer_ref.write_metadata(DistLayerMetadata {
+                artifact: artifact.clone(),
+            })?;
+            layer_ref.write_env(
                 LayerEnv::new()
                     .chainable_insert(
                         Scope::Build,
                         ModificationBehavior::Override,
                         "GOROOT",
-                        layer_path,
+                        layer_ref.path(),
                     )
                     .chainable_insert(
                         Scope::Build,
@@ -74,32 +79,14 @@ impl Layer for DistLayer {
                         "GO111MODULE",
                         "on",
                     ),
-            )
-            .build()
-    }
-
-    fn existing_layer_strategy(
-        &mut self,
-        _ctx: &BuildContext<Self::Buildpack>,
-        layer_data: &LayerData<Self::Metadata>,
-    ) -> Result<ExistingLayerStrategy, <Self::Buildpack as Buildpack>::Error> {
-        if layer_data.content_metadata.metadata == DistLayerMetadata::current(self) {
-            log_info(format!(
-                "Reusing {} ({}-{})",
-                self.artifact.version, self.artifact.os, self.artifact.arch
-            ));
-            Ok(ExistingLayerStrategy::Keep)
-        } else {
-            Ok(ExistingLayerStrategy::Recreate)
+            )?;
         }
     }
+    Ok(layer_ref)
 }
 
-impl DistLayerMetadata {
-    fn current(layer: &DistLayer) -> Self {
-        DistLayerMetadata {
-            artifact: layer.artifact.clone(),
-            layer_version: String::from(LAYER_VERSION),
-        }
+impl From<DistLayerError> for libcnb::Error<GoBuildpackError> {
+    fn from(value: DistLayerError) -> Self {
+        libcnb::Error::BuildpackError(GoBuildpackError::DistLayer(value))
     }
 }
