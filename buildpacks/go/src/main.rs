@@ -6,7 +6,7 @@ mod tgz;
 
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::{BuildLayer, BuildLayerError};
-use layers::deps::{DepsLayer, DepsLayerError};
+use layers::deps::{handle_deps_layer, DepsLayerError};
 use layers::dist::{handle_dist_layer, DistLayerError};
 use layers::target::{TargetLayer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
@@ -93,14 +93,8 @@ impl Buildpack for GoBuildpack {
         if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
             log_info("Using vendored Go modules");
         } else {
-            go_env = context
-                .handle_layer(
-                    layer_name!("go_deps"),
-                    DepsLayer {
-                        go_env: go_env.clone(),
-                    },
-                )?
-                .env
+            go_env = handle_deps_layer(&context)?
+                .read_env()?
                 .apply(Scope::Build, &go_env);
         }
 
