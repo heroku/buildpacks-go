@@ -123,7 +123,7 @@ pub(crate) fn handle_build_layer(
             log_info("Discarding invalid Go build cache");
         }
         LayerState::Restored { .. } => {
-            log_info("Reusing Go build cache");
+            log_info("Reusing existing Go build cache");
         }
     }
 
