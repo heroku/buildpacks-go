@@ -5,7 +5,7 @@ mod proc;
 mod tgz;
 
 use heroku_go_utils::vrs::GoVersion;
-use layers::build::{BuildLayer, BuildLayerError};
+use layers::build::{handle_build_layer, BuildLayerError};
 use layers::deps::{DepsLayer, DepsLayerError};
 use layers::dist::{handle_dist_layer, DistLayerError};
 use layers::target::{TargetLayer, TargetLayerError};
@@ -109,14 +109,8 @@ impl Buildpack for GoBuildpack {
             .env
             .apply(Scope::Build, &go_env);
 
-        go_env = context
-            .handle_layer(
-                layer_name!("go_build"),
-                BuildLayer {
-                    go_version: artifact.version.clone(),
-                },
-            )?
-            .env
+        go_env = handle_build_layer(&context, &artifact.version)?
+            .read_env()?
             .apply(Scope::Build, &go_env);
 
         log_info("Resolving Go modules");
