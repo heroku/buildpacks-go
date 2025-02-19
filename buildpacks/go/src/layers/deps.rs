@@ -2,7 +2,7 @@ use crate::{GoBuildpack, GoBuildpackError};
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{
-    CachedLayerDefinition, InvalidMetadataAction, LayerRef, LayerState, RestoredLayerAction,
+    CachedLayerDefinition, EmptyLayerCause, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, Scope};
 use libherokubuildpack::log::log_info;
@@ -28,7 +28,7 @@ pub(crate) enum DepsLayerError {
 /// Create or restore the layer for the go modules cache (non-vendored dependencies)
 pub(crate) fn handle_deps_layer(
     context: &BuildContext<GoBuildpack>,
-) -> libcnb::Result<LayerRef<GoBuildpack, (), f32>, GoBuildpackError> {
+) -> libcnb::Result<LayerEnv, GoBuildpackError> {
     let layer_ref = context.cached_layer(
         layer_name!("go_deps"),
         CachedLayerDefinition {
@@ -37,28 +37,35 @@ pub(crate) fn handle_deps_layer(
             invalid_metadata_action: &|_| InvalidMetadataAction::DeleteLayer,
             restored_layer_action: &|restored_metadata: &DepsLayerMetadata, _| {
                 if restored_metadata.cache_usage_count >= MAX_CACHE_USAGE_COUNT {
-                    log_info("Expired Go modules cache");
-                    return Ok((
+                    return (
                         RestoredLayerAction::DeleteLayer,
                         restored_metadata.cache_usage_count,
-                    ));
+                    );
                 }
-                Ok((
+                (
                     RestoredLayerAction::KeepLayer,
                     restored_metadata.cache_usage_count,
-                ))
+                )
             },
         },
     )?;
+
+    match layer_ref.state {
+        LayerState::Empty {
+            cause: EmptyLayerCause::NewlyCreated,
+        } => (),
+        LayerState::Empty {
+            cause: EmptyLayerCause::RestoredLayerAction { .. },
+        } => log_info("Discarding expired Go modules cache"),
+        LayerState::Empty { .. } => log_info("Discarding invalid Go modules cache"),
+        LayerState::Restored { .. } => log_info("Reusing Go modules cache"),
+    }
 
     let mut cache_usage_count = 1.0;
     match layer_ref.state {
         LayerState::Restored {
             cause: previous_cache_usage_count,
-        } => {
-            log_info("Reusing Go modules cache");
-            cache_usage_count += previous_cache_usage_count;
-        }
+        } => cache_usage_count += previous_cache_usage_count,
         LayerState::Empty { .. } => {
             log_info("Creating new Go modules cache");
             let cache_dir = layer_ref.path().join(CACHE_DIR);
@@ -72,7 +79,7 @@ pub(crate) fn handle_deps_layer(
         }
     }
     layer_ref.write_metadata(DepsLayerMetadata { cache_usage_count })?;
-    Ok(layer_ref)
+    layer_ref.read_env()
 }
 
 impl From<DepsLayerError> for libcnb::Error<GoBuildpackError> {
