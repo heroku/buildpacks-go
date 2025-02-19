@@ -17,7 +17,6 @@ pub(crate) struct BuildLayer {
 
 #[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub(crate) struct BuildLayerMetadata {
-    layer_version: String,
     go_major_version: GoVersion,
     target_arch: String,
     target_distro_name: String,
@@ -31,7 +30,6 @@ pub(crate) struct BuildLayerError(std::io::Error);
 
 const CACHE_ENV: &str = "GOCACHE";
 const CACHE_DIR: &str = "cache";
-const LAYER_VERSION: &str = "1";
 const MAX_CACHE_USAGE_COUNT: f32 = 200.0;
 
 impl Layer for BuildLayer {
@@ -111,7 +109,6 @@ impl BuildLayer {
         cache_usage_count: f32,
     ) -> BuildLayerMetadata {
         BuildLayerMetadata {
-            layer_version: LAYER_VERSION.to_string(),
             go_major_version: self.go_version.major_release_version(),
             target_arch: target.arch.to_string(),
             target_distro_name: target.distro_name.to_string(),
