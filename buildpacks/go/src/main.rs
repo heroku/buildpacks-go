@@ -97,9 +97,7 @@ impl Buildpack for GoBuildpack {
 
         go_env = handle_target_layer(&context)?.apply(Scope::Build, &go_env);
 
-        go_env = handle_build_layer(&context, &artifact.version)?
-            .read_env()?
-            .apply(Scope::Build, &go_env);
+        go_env = handle_build_layer(&context, &artifact.version)?.apply(Scope::Build, &go_env);
 
         log_info("Resolving Go modules");
         let packages = config.packages.unwrap_or(

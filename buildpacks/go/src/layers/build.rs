@@ -3,8 +3,7 @@ use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{
-    CachedLayerDefinition, EmptyLayerCause, InvalidMetadataAction, LayerRef, LayerState,
-    RestoredLayerAction,
+    CachedLayerDefinition, EmptyLayerCause, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Target;
@@ -57,10 +56,7 @@ enum BuildLayerCacheState {
 pub(crate) fn handle_build_layer(
     context: &BuildContext<GoBuildpack>,
     go_version: &GoVersion,
-) -> libcnb::Result<
-    LayerRef<GoBuildpack, BuildLayerCacheState, (BuildLayerCacheState, f32)>,
-    GoBuildpackError,
-> {
+) -> libcnb::Result<LayerEnv, GoBuildpackError> {
     let mut metadata = BuildLayerMetadata::new(go_version, &context.target);
     let layer_ref = context.cached_layer(
         layer_name!("go_build"),
@@ -146,5 +142,5 @@ pub(crate) fn handle_build_layer(
         }
     }
     layer_ref.write_metadata(metadata)?;
-    Ok(layer_ref)
+    layer_ref.read_env()
 }
