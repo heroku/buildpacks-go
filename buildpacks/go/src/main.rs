@@ -8,7 +8,7 @@ use heroku_go_utils::vrs::GoVersion;
 use layers::build::{BuildLayer, BuildLayerError};
 use layers::deps::{handle_deps_layer, DepsLayerError};
 use layers::dist::{handle_dist_layer, DistLayerError};
-use layers::target::{TargetLayer, TargetLayerError};
+use layers::target::{handle_target_layer, TargetLayerError};
 use libcnb::build::{BuildContext, BuildResult, BuildResultBuilder};
 use libcnb::data::build_plan::BuildPlanBuilder;
 use libcnb::data::launch::{LaunchBuilder, Process};
@@ -96,10 +96,7 @@ impl Buildpack for GoBuildpack {
             go_env = handle_deps_layer(&context)?.apply(Scope::Build, &go_env);
         }
 
-        go_env = context
-            .handle_layer(layer_name!("go_target"), TargetLayer {})?
-            .env
-            .apply(Scope::Build, &go_env);
+        go_env = handle_target_layer(&context)?.apply(Scope::Build, &go_env);
 
         go_env = context
             .handle_layer(

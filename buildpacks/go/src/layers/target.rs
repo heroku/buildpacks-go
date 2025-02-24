@@ -1,47 +1,39 @@
 use crate::{GoBuildpack, GoBuildpackError};
 use libcnb::build::BuildContext;
-use libcnb::data::layer_content_metadata::LayerTypes;
-use libcnb::generic::GenericMetadata;
-use libcnb::layer::{Layer, LayerResult, LayerResultBuilder};
+use libcnb::data::layer_name;
+use libcnb::layer::UncachedLayerDefinition;
 use libcnb::layer_env::{LayerEnv, Scope};
 use std::fs;
 use std::io;
-use std::path::Path;
-
-/// An empty, run-only, layer for compiled Go app binaries.
-pub(crate) struct TargetLayer {}
 
 #[derive(thiserror::Error, Debug)]
 #[error("Couldn't write to target layer: {0}")]
 pub(crate) struct TargetLayerError(io::Error);
 
-impl Layer for TargetLayer {
-    type Buildpack = GoBuildpack;
-    type Metadata = GenericMetadata;
+impl From<TargetLayerError> for libcnb::Error<GoBuildpackError> {
+    fn from(value: TargetLayerError) -> Self {
+        libcnb::Error::BuildpackError(GoBuildpackError::TargetLayer(value))
+    }
+}
 
-    fn types(&self) -> LayerTypes {
-        LayerTypes {
+// Create the layer for compiled Go binaries
+pub(crate) fn handle_target_layer(
+    context: &BuildContext<GoBuildpack>,
+) -> libcnb::Result<LayerEnv, GoBuildpackError> {
+    let layer_ref = context.uncached_layer(
+        layer_name!("go_target"),
+        UncachedLayerDefinition {
             build: true,
             launch: true,
-            cache: false,
-        }
-    }
-
-    // This layer creates the `GOBIN` directory, which is the target for `go install` later.
-    fn create(
-        &mut self,
-        _context: &BuildContext<Self::Buildpack>,
-        layer_path: &Path,
-    ) -> Result<LayerResult<Self::Metadata>, GoBuildpackError> {
-        let bin_dir = layer_path.join("bin");
-        fs::create_dir(&bin_dir).map_err(TargetLayerError)?;
-        LayerResultBuilder::new(GenericMetadata::default())
-            .env(LayerEnv::new().chainable_insert(
-                Scope::Build,
-                libcnb::layer_env::ModificationBehavior::Override,
-                "GOBIN",
-                bin_dir,
-            ))
-            .build()
-    }
+        },
+    )?;
+    let bin_dir = layer_ref.path().join("bin");
+    fs::create_dir(&bin_dir).map_err(TargetLayerError)?;
+    layer_ref.write_env(LayerEnv::new().chainable_insert(
+        Scope::Build,
+        libcnb::layer_env::ModificationBehavior::Override,
+        "GOBIN",
+        bin_dir,
+    ))?;
+    layer_ref.read_env()
 }
