@@ -44,6 +44,7 @@ jobs:
     name: integration-tests ${{ matrix.builder }} / ${{ matrix.arch }}
     runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-24.04-arm-medium' || 'ubuntu-24.04' }}
     strategy:
+      fail-fast: false
       matrix:
         arch: ["amd64"]
         builder: ["heroku/builder:20", "heroku/builder:22", "heroku/builder:24"]
