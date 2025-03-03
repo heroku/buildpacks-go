@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated libcnb to 0.27.0, which includes opentelemetry 0.28 and the new custom OTLP File Exporter. ([#345](https://github.com/heroku/buildpacks-go/pull/345))
+
 ## [0.5.4] - 2025-02-12
 
 - Added go1.24.0 (linux-amd64), go1.24.0 (linux-arm64).
