@@ -4,9 +4,9 @@ use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
 };
-use tracing::instrument;
 use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
+use tracing::instrument;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -44,7 +44,11 @@ pub(crate) enum Error {
 ///
 /// See `Error` for an enumeration of error scenarios.
 #[instrument(name = "download_go", err)]
-pub(crate) fn fetch_strip_filter_extract_verify<'a, D: Digest + std::fmt::Debug, V: std::fmt::Debug>(
+pub(crate) fn fetch_strip_filter_extract_verify<
+    'a,
+    D: Digest + std::fmt::Debug,
+    V: std::fmt::Debug,
+>(
     artifact: &Artifact<V, D, Option<()>>,
     strip_prefix: impl AsRef<str> + std::fmt::Debug,
     filter_prefixes: impl Iterator<Item = &'a str> + std::fmt::Debug,
