@@ -13,50 +13,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.4] - 2025-02-12
 
+### Added
+
 - Added go1.24.0 (linux-amd64), go1.24.0 (linux-arm64).
 
 ## [0.5.3] - 2025-02-06
+
+### Added
 
 - Added go1.22.12 (linux-amd64), go1.22.12 (linux-arm64), go1.23.6 (linux-amd64), go1.23.6 (linux-arm64), go1.24rc3 (linux-amd64), go1.24rc3 (linux-arm64).
 
 ## [0.5.2] - 2025-01-21
 
+### Added
+
 - Added go1.22.11 (linux-amd64), go1.22.11 (linux-arm64), go1.23.5 (linux-amd64), go1.23.5 (linux-arm64), go1.24rc2 (linux-amd64), go1.24rc2 (linux-arm64).
 
 ## [0.5.1] - 2025-01-06
+
+### Added
 
 - Added go1.24rc1 (linux-amd64), go1.24rc1 (linux-arm64).
 
 ## [0.5.0] - 2024-12-13
 
+### Changed
+
 - Now prefers processes set by Procfile, and no longer adds it's own processes if a Procfile is present.
 
 ## [0.4.7] - 2024-12-06
+
+### Added
 
 - Added go1.22.10 (linux-amd64), go1.22.10 (linux-arm64), go1.23.4 (linux-amd64), go1.23.4 (linux-arm64).
 
 ## [0.4.6] - 2024-11-12
 
+### Added
+
 - Added go1.22.9 (linux-amd64), go1.22.9 (linux-arm64), go1.23.3 (linux-amd64), go1.23.3 (linux-arm64).
 
 ## [0.4.5] - 2024-10-01
+
+### Added
 
 - Added go1.22.8 (linux-amd64), go1.22.8 (linux-arm64), go1.23.2 (linux-amd64), go1.23.2 (linux-arm64).
 
 ## [0.4.4] - 2024-09-05
 
+### Added
+
 - Added go1.22.7 (linux-amd64), go1.22.7 (linux-arm64), go1.23.1 (linux-amd64), go1.23.1 (linux-arm64).
 
 ## [0.4.3] - 2024-08-13
+
+### Added
 
 - Added go1.23.0 (linux-amd64), go1.23.0 (linux-arm64).
 
 ## [0.4.2] - 2024-08-07
 
+### Added
+
 - Added go1.21.13 (linux-arm64), go1.21.13 (linux-amd64), go1.22.6 (linux-amd64), go1.22.6 (linux-arm64).
 - Added go1.23rc2 (linux-arm64), go1.23rc2 (linux-amd64).
 
 ## [0.4.1] - 2024-07-15
+
+### Added
 
 - Added go1.21.12 (linux-amd64), go1.21.12 (linux-arm64), go1.22.5 (linux-amd64), go1.22.5 (linux-arm64), go1.23rc1 (linux-arm64), go1.23rc1 (linux-amd64).
 
@@ -74,6 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.1] - 2024-05-07
 
+### Added
+
 - Added go1.21.10 (linux-amd64), go1.21.10 (linux-arm64), go1.22.3 (linux-amd64), go1.22.3 (linux-arm64).
 
 ## [0.3.0] - 2024-05-02
@@ -84,15 +110,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.1] - 2024-04-05
 
+### Added
+
 - Added go1.21.9 (linux-aarch64), go1.21.9 (linux-x86_64), go1.22.2 (linux-aarch64), go1.22.2 (linux-x86_64).
+- Added linux aarch64 artifacts for >= go1.8.5. ([#230](https://github.com/heroku/buildpacks-go/pull/230))
+- Added linux/arm64 buildpack target. ([#233](https://github.com/heroku/buildpacks-go/pull/233))
+
 ### Changed
 
 - Implement Buildpack API 0.10. ([#231](https://github.com/heroku/buildpacks-go/pull/231))
-
-### Added
-
-- Added linux aarch64 artifacts for >= go1.8.5. ([#230](https://github.com/heroku/buildpacks-go/pull/230))
-- Added linux/arm64 buildpack target. ([#233](https://github.com/heroku/buildpacks-go/pull/233))
 
 ## [0.2.0] - 2024-03-06
 
@@ -112,15 +138,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.16] - 2024-02-08
 
+### Added
+
 - Added go1.20.14, go1.21.7, go1.22.0.
 
 ## [0.1.15] - 2024-02-06
+
+### Added
 
 - Added go1.22rc2.
 
 ## [0.1.14] - 2024-01-16
 
+### Added
+
 - Added go1.20.13, go1.21.6.
+
 ### Changed
 
 - Separated buildpack and supplementary binaries into independent crates. ([#200](https://github.com/heroku/buildpacks-go/pull/200))
