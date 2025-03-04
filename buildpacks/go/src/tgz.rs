@@ -6,6 +6,7 @@ use sha2::{
 };
 use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
+use tracing::instrument;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -42,11 +43,16 @@ pub(crate) enum Error {
 /// # Errors
 ///
 /// See `Error` for an enumeration of error scenarios.
-pub(crate) fn fetch_strip_filter_extract_verify<'a, D: Digest, V>(
+#[instrument(name = "download-go", err)]
+pub(crate) fn fetch_strip_filter_extract_verify<
+    'a,
+    D: Digest + std::fmt::Debug,
+    V: std::fmt::Debug,
+>(
     artifact: &Artifact<V, D, Option<()>>,
-    strip_prefix: impl AsRef<str>,
-    filter_prefixes: impl Iterator<Item = &'a str>,
-    dest_dir: impl AsRef<std::path::Path>,
+    strip_prefix: impl AsRef<str> + std::fmt::Debug,
+    filter_prefixes: impl Iterator<Item = &'a str> + std::fmt::Debug,
+    dest_dir: impl AsRef<std::path::Path> + std::fmt::Debug,
 ) -> Result<(), Error> {
     let destination = dest_dir.as_ref();
     let body = ureq::get(artifact.url.as_ref())
