@@ -43,7 +43,7 @@ pub(crate) enum Error {
 /// # Errors
 ///
 /// See `Error` for an enumeration of error scenarios.
-#[instrument(name = "download_go", err)]
+#[instrument(name = "download-go", err)]
 pub(crate) fn fetch_strip_filter_extract_verify<
     'a,
     D: Digest + std::fmt::Debug,
