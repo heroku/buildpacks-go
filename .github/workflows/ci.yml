@@ -53,7 +53,9 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@f0deed1e0edfc6a9be95417288c0e1099b1eeec3 # v2.7.7
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+        uses: taiki-e/install-action@62730e3d4f6bd81d824694e963e06d7153968c93 # v2.49.29
+        with:
+          tool: cargo-llvm-cov
       - name: Run unit tests and generate coverage report
         run: cargo +nightly llvm-cov --locked --html
       - name: Upload HTML coverage report
