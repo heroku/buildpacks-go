@@ -28,6 +28,7 @@ use libherokubuildpack::log::{log_error, log_header, log_info};
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
+use tracing::info;
 
 #[cfg(test)]
 use libcnb_test as _;
@@ -86,6 +87,12 @@ impl Buildpack for GoBuildpack {
             "Resolved Go version: {} ({}-{})",
             artifact.version, artifact.os, artifact.arch
         ));
+        info!(
+            requested_version = %requirement,
+            resolved_version = %artifact.version.semver,
+            resolved_release = %artifact.version.major_release_version(),
+            "resolve-version",
+        );
 
         log_header("Installing Go distribution");
         go_env = handle_dist_layer(&context, artifact)?
