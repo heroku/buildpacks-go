@@ -6,7 +6,7 @@ use std::fmt::Display;
 
 impl VersionRequirement<GoVersion> for semver::VersionReq {
     fn satisfies(&self, version: &GoVersion) -> bool {
-        self.matches(&version.semantic_version)
+        self.matches(&version.semver)
     }
 }
 
@@ -37,7 +37,7 @@ pub fn parse_go_version_requirement(input: &str) -> Result<semver::VersionReq, s
 pub struct GoVersion {
     pub value: String,
     #[serde(skip)]
-    semantic_version: semver::Version,
+    pub semver: semver::Version,
 }
 
 impl GoVersion {
@@ -46,12 +46,11 @@ impl GoVersion {
     /// semver this corresponds to a change to major and/or minor identifiers.
     #[must_use]
     pub fn major_release_version(&self) -> GoVersion {
-        let go_major_release =
-            semver::Version::new(self.semantic_version.major, self.semantic_version.minor, 0);
+        let go_major_release = semver::Version::new(self.semver.major, self.semver.minor, 0);
 
         GoVersion {
             value: go_major_release.to_string(),
-            semantic_version: go_major_release,
+            semver: go_major_release,
         }
     }
 }
@@ -70,7 +69,7 @@ impl From<GoVersion> for String {
 
 impl Ord for GoVersion {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.semantic_version.cmp(&other.semantic_version)
+        self.semver.cmp(&other.semver)
     }
 }
 
@@ -111,11 +110,8 @@ impl TryFrom<String> for GoVersion {
             composed_version.push('-');
             composed_version.push_str(pre.as_str());
         };
-        let semantic_version = semver::Version::parse(&composed_version)?;
-        Ok(GoVersion {
-            value,
-            semantic_version,
-        })
+        let semver = semver::Version::parse(&composed_version)?;
+        Ok(GoVersion { value, semver })
     }
 }
 
@@ -146,9 +142,9 @@ mod tests {
             let expected = semver::Version::parse(expected_str).unwrap();
 
             assert_eq!(
-                expected, actual.semantic_version,
+                expected, actual.semver,
                 "Expected {input} to parse as {expected} but got {}.",
-                actual.semantic_version
+                actual.semver
             );
             assert_eq!(
                 input,
