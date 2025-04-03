@@ -110,7 +110,7 @@ impl TryFrom<String> for GoVersion {
         if let Some(pre) = caps.get(4) {
             composed_version.push('-');
             composed_version.push_str(pre.as_str());
-        };
+        }
         let semantic_version = semver::Version::parse(&composed_version)?;
         Ok(GoVersion {
             value,
