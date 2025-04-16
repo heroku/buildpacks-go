@@ -25,7 +25,6 @@ use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::log_error;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
@@ -151,10 +150,12 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::GoList(_) => "go list",
                     GoBuildpackError::Proc(_) => "launch process type",
                 };
-                log_error(format!("Heroku Go Buildpack {err_ctx} error"), err_string);
+                print::error(format!(
+                    "Heroku Go Buildpack {err_ctx} error\n\n{err_string}"
+                ));
             }
             err => {
-                log_error("Heroku Go Buildpack internal error", err.to_string());
+                print::error(format!("Heroku Go Buildpack internal error\n\n{err}"));
             }
         }
     }
