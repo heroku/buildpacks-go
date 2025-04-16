@@ -25,10 +25,15 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
         args.push(pkg.as_ref());
     }
 
-    match print::sub_stream_cmd(Command::new("go").args(args).envs(go_env)) {
-        Ok(_) => Ok(()),
-        Err(CmdError::SystemError(_, error)) => Err(Error::IO(error)),
-        Err(error) => Err(Error::Exit(error.status())),
+    print::sub_stream_cmd(Command::new("go").args(args).envs(go_env)).map_err(command_error)?;
+    Ok(())
+}
+
+fn command_error(error: CmdError) -> Error {
+    if let CmdError::SystemError(_, error) = error {
+        Error::IO(error)
+    } else {
+        Error::Exit(error.status())
     }
 }
 
