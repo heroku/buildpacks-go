@@ -122,10 +122,9 @@ fn test_worker_http_118() {
             "Detected Go version requirement: ~1.18.1",
             "Installing go1.18.",
             "Detected processes:",
-            "example.com/worker_http_118/cmd/web",
-            "example.com/worker_http_118/cmd/worker",
+            "Running `go install -tags heroku example.com/worker_http_118/cmd/web example.com/worker_http_118/cmd/worker`",
         ],
-        &["example.com/worker_http_118/cmd/script"],
+        &[],
     );
 }
 
