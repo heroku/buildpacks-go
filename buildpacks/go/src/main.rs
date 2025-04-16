@@ -25,7 +25,7 @@ use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::{log_error, log_info};
+use libherokubuildpack::log::log_error;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
@@ -75,7 +75,7 @@ impl Buildpack for GoBuildpack {
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
             .map_err(GoBuildpackError::GoModConfig)?;
         let requirement = config.version.unwrap_or_default();
-        log_info(format!("Detected Go version requirement: {requirement}"));
+        print::sub_bullet(format!("Detected Go version requirement: {requirement}"));
 
         let artifact = match (consts::OS.parse::<Os>(), consts::ARCH.parse::<Arch>()) {
             (Ok(os), Ok(arch)) => inv.resolve(os, arch, &requirement),
@@ -83,7 +83,7 @@ impl Buildpack for GoBuildpack {
         }
         .ok_or(GoBuildpackError::VersionResolution(requirement.clone()))?;
 
-        log_info(format!(
+        print::sub_bullet(format!(
             "Resolved Go version: {} ({}-{})",
             artifact.version, artifact.os, artifact.arch
         ));
@@ -95,7 +95,7 @@ impl Buildpack for GoBuildpack {
 
         print::bullet("Building Go binaries");
         if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
-            log_info("Using vendored Go modules");
+            print::sub_bullet("Using vendored Go modules");
         } else {
             go_env = handle_deps_layer(&context)?.apply(Scope::Build, &go_env);
         }
@@ -104,7 +104,7 @@ impl Buildpack for GoBuildpack {
 
         go_env = handle_build_layer(&context, &artifact.version)?.apply(Scope::Build, &go_env);
 
-        log_info("Resolving Go modules");
+        print::sub_bullet("Resolving Go modules");
         let packages = config.packages.unwrap_or(
             // Use `go list` to determine packages to build. Do this eagerly,
             // even if the result is unused because it has the side effect of
@@ -112,21 +112,21 @@ impl Buildpack for GoBuildpack {
             cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        log_info("Building packages:");
+        print::sub_bullet("Building packages:");
         for pkg in &packages {
-            log_info(format!("  - {pkg}"));
+            print::sub_bullet(format!("  - {pkg}"));
         }
         cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
         let mut procs: Vec<Process> = vec![];
         if Path::exists(&context.app_dir.join("Procfile")) {
-            log_info("Skipping launch process registration (Procfile detected)");
+            print::sub_bullet("Skipping launch process registration (Procfile detected)");
         } else {
             print::bullet("Registering launch processes");
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-            log_info("Detected processes:");
+            print::sub_bullet("Detected processes:");
             for proc in &procs {
-                log_info(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
+                print::sub_bullet(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
             }
         }
 
