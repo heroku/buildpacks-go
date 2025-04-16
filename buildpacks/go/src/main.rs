@@ -9,6 +9,7 @@ mod layers;
 mod proc;
 mod tgz;
 
+use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::{handle_build_layer, BuildLayerError};
 use layers::deps::{handle_deps_layer, DepsLayerError};
@@ -24,7 +25,7 @@ use libcnb::layer_env::Scope;
 use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
-use libherokubuildpack::log::{log_error, log_header, log_info};
+use libherokubuildpack::log::{log_error, log_info};
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
@@ -59,7 +60,7 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        log_header("Reading build configuration");
+        print::h2("Reading build configuration");
 
         let mut go_env = Env::new();
         env::vars()
@@ -87,13 +88,12 @@ impl Buildpack for GoBuildpack {
             artifact.version, artifact.os, artifact.arch
         ));
 
-        log_header("Installing Go distribution");
+        print::bullet("Installing Go distribution");
         go_env = handle_dist_layer(&context, artifact)?
             .read_env()?
             .apply(Scope::Build, &go_env);
 
-        log_header("Building Go binaries");
-
+        print::bullet("Building Go binaries");
         if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
             log_info("Using vendored Go modules");
         } else {
@@ -122,7 +122,7 @@ impl Buildpack for GoBuildpack {
         if Path::exists(&context.app_dir.join("Procfile")) {
             log_info("Skipping launch process registration (Procfile detected)");
         } else {
-            log_header("Registering launch processes");
+            print::bullet("Registering launch processes");
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
             log_info("Detected processes:");
             for proc in &procs {
