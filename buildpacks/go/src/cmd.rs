@@ -1,7 +1,7 @@
 use bullet_stream::global::print;
 use fun_run::CmdError;
 use libcnb::Env;
-use std::process::{Command, ExitStatus, Stdio};
+use std::process::{Command, ExitStatus};
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -47,27 +47,22 @@ fn command_error(error: CmdError) -> Error {
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
 pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
-    let result = Command::new("go")
-        .args(vec![
-            "list",
-            "-tags",
-            "heroku",
-            "-f",
-            "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
-            "./...",
-        ])
-        .envs(go_env)
-        .stderr(Stdio::inherit())
-        .stdout(Stdio::piped())
-        .output()?;
+    let output = print::sub_stream_cmd(
+        Command::new("go")
+            .args(vec![
+                "list",
+                "-tags",
+                "heroku",
+                "-f",
+                "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
+                "./...",
+            ])
+            .envs(go_env),
+    )
+    .map_err(command_error)?;
 
-    result
-        .status
-        .success()
-        .then_some(())
-        .ok_or(Error::Exit(result.status))?;
-
-    Ok(String::from_utf8_lossy(&result.stdout)
+    Ok(output
+        .stdout_lossy()
         .split_whitespace()
         .map(|s| s.trim().to_string())
         .collect())
