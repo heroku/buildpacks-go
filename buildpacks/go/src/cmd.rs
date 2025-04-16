@@ -1,3 +1,5 @@
+use bullet_stream::global::print;
+use fun_run::CmdError;
 use libcnb::Env;
 use std::process::{Command, ExitStatus, Stdio};
 
@@ -22,8 +24,12 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
     for pkg in packages {
         args.push(pkg.as_ref());
     }
-    let status = Command::new("go").args(args).envs(go_env).status()?;
-    status.success().then_some(()).ok_or(Error::Exit(status))
+
+    match print::sub_stream_cmd(Command::new("go").args(args).envs(go_env)) {
+        Ok(_) => Ok(()),
+        Err(CmdError::SystemError(_, error)) => Err(Error::IO(error)),
+        Err(error) => Err(Error::Exit(error.status())),
+    }
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing

@@ -496,6 +496,7 @@ version = "0.0.0"
 dependencies = [
  "bullet_stream",
  "flate2",
+ "fun_run",
  "heroku-go-utils",
  "hex",
  "libcnb",
