@@ -1,14 +1,12 @@
 use bullet_stream::global::print;
 use fun_run::CmdError;
 use libcnb::Env;
-use std::process::{Command, ExitStatus};
+use std::process::Command;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
-    #[error("Command IO error: {0}")]
-    IO(#[from] std::io::Error),
-    #[error("Command did not exit successfully: {0}")]
-    Exit(ExitStatus),
+    #[error("{0}")]
+    Command(CmdError),
 }
 
 /// Run `go install -tags heroku pkg [..pkgn]`. Useful for compiling a list
@@ -25,16 +23,8 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
         args.push(pkg.as_ref());
     }
 
-    print::sub_stream_cmd(Command::new("go").args(args).envs(go_env)).map_err(command_error)?;
+    print::sub_stream_cmd(Command::new("go").args(args).envs(go_env)).map_err(Error::Command)?;
     Ok(())
-}
-
-fn command_error(error: CmdError) -> Error {
-    if let CmdError::SystemError(_, error) = error {
-        Error::IO(error)
-    } else {
-        Error::Exit(error.status())
-    }
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
@@ -59,7 +49,7 @@ pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
             ])
             .envs(go_env),
     )
-    .map_err(command_error)?;
+    .map_err(Error::Command)?;
 
     Ok(output
         .stdout_lossy()
