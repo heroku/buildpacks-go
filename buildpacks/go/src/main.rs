@@ -28,6 +28,7 @@ use libherokubuildpack::inventory::Inventory;
 use sha2::Sha256;
 use std::env::{self, consts};
 use std::path::Path;
+use std::time::Instant;
 
 #[cfg(test)]
 use libcnb_test as _;
@@ -62,6 +63,7 @@ impl Buildpack for GoBuildpack {
         print::h2("Heroku Go Buildpack");
         print::bullet("Reading build configuration");
 
+        let started = Instant::now();
         let mut go_env = Env::new();
         env::vars()
             .filter(|(k, _v)| k == "PATH")
@@ -130,6 +132,7 @@ impl Buildpack for GoBuildpack {
             }
         }
 
+        print::all_done(&Some(started));
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
             .build()
