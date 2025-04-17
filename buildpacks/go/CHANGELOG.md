@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update build output style ([#368](https://github.com/heroku/buildpacks-php/pull/368))
+
 ## [0.5.8] - 2025-04-02
 
 - Added go1.23.8 (linux-amd64), go1.23.8 (linux-arm64), go1.24.2 (linux-amd64), go1.24.2 (linux-arm64).

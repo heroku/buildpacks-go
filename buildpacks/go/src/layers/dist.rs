@@ -1,4 +1,5 @@
 use crate::{tgz, GoBuildpack, GoBuildpackError};
+use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
@@ -7,7 +8,6 @@ use libcnb::layer::{
 };
 use libcnb::layer_env::{LayerEnv, ModificationBehavior, Scope};
 use libherokubuildpack::inventory::artifact::Artifact;
-use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 
@@ -44,13 +44,13 @@ pub(crate) fn handle_dist_layer(
 
     match layer_ref.state {
         LayerState::Restored { .. } => {
-            log_info(format!(
+            print::sub_bullet(format!(
                 "Reusing {} ({}-{})",
                 artifact.version, artifact.os, artifact.arch
             ));
         }
         LayerState::Empty { .. } => {
-            log_info(format!(
+            print::sub_bullet(format!(
                 "Installing {} ({}-{}) from {}",
                 artifact.version, artifact.os, artifact.arch, artifact.url
             ));

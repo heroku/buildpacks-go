@@ -1,4 +1,5 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
@@ -7,7 +8,6 @@ use libcnb::layer::{
 };
 use libcnb::layer_env::{LayerEnv, Scope};
 use libcnb::Target;
-use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
@@ -113,13 +113,13 @@ pub(crate) fn handle_build_layer(
                     cause: (BuildLayerCacheState::Expired, _),
                 },
         } => {
-            log_info("Discarding expired Go build cache");
+            print::sub_bullet("Discarding expired Go build cache");
         }
         LayerState::Empty { .. } => {
-            log_info("Discarding invalid Go build cache");
+            print::sub_bullet("Discarding invalid Go build cache");
         }
         LayerState::Restored { .. } => {
-            log_info("Reusing existing Go build cache");
+            print::sub_bullet("Reusing existing Go build cache");
         }
     }
 
@@ -130,7 +130,7 @@ pub(crate) fn handle_build_layer(
             metadata.cache_usage_count += cache_usage_count;
         }
         LayerState::Empty { .. } => {
-            log_info("Creating Go build cache");
+            print::sub_bullet("Creating Go build cache");
             let cache_dir = layer_ref.path().join(CACHE_DIR);
             fs::create_dir(&cache_dir).map_err(BuildLayerError)?;
             layer_ref.write_env(LayerEnv::new().chainable_insert(
