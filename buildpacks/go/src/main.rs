@@ -122,7 +122,7 @@ impl Buildpack for GoBuildpack {
 
         let mut procs: Vec<Process> = vec![];
         if Path::exists(&context.app_dir.join("Procfile")) {
-            print::sub_bullet("Skipping launch process registration (Procfile detected)");
+            print::bullet("Skipping launch process registration (Procfile detected)");
         } else {
             print::bullet("Registering launch processes");
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
