@@ -59,7 +59,8 @@ impl Buildpack for GoBuildpack {
     }
 
     fn build(&self, context: BuildContext<Self>) -> libcnb::Result<BuildResult, Self::Error> {
-        print::h2("Reading build configuration");
+        print::h2("Heroku Go Buildpack");
+        print::bullet("Reading build configuration");
 
         let mut go_env = Env::new();
         env::vars()
@@ -111,9 +112,9 @@ impl Buildpack for GoBuildpack {
             cmd::go_list(&go_env).map_err(GoBuildpackError::GoList)?,
         );
 
-        print::sub_bullet("Building packages:");
+        print::bullet("Building packages:");
         for pkg in &packages {
-            print::sub_bullet(format!("  - {pkg}"));
+            print::sub_bullet(pkg);
         }
         cmd::go_install(&packages, &go_env).map_err(GoBuildpackError::GoBuild)?;
 
