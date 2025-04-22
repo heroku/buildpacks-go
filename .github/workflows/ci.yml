@@ -140,12 +140,14 @@ jobs:
           set euo --pipefail
           echo "## Getting Started output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never |& tee -a $GITHUB_STEP_SUMMARY
+          pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never \
+            |& tee >(sed -e 's/\x1b\[[0-9;]*m//g' >> $GITHUB_STEP_SUMMARY)
           echo '```' >> $GITHUB_STEP_SUMMARY
       - name: "PRINT: Cached getting started guide output"
         run: |
           set -euo pipefail
           echo "## Cached Output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never |& tee -a $GITHUB_STEP_SUMMARY
+          pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never \
+            |& tee >(sed -e 's/\x1b\[[0-9;]*m//g' >> $GITHUB_STEP_SUMMARY)
           echo '```' >> $GITHUB_STEP_SUMMARY
