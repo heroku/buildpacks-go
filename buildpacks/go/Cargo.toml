@@ -21,7 +21,7 @@ toml = { workspace = true }
 tracing = "0.1"
 ureq = { workspace = true }
 bullet_stream = "0.7.0"
-fun_run = "0.5.0"
+fun_run = "0.6.0"
 
 [dev-dependencies]
 libcnb-test = { workspace = true }

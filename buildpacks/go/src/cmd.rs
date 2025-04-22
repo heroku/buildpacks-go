@@ -1,5 +1,5 @@
 use bullet_stream::global::print;
-use fun_run::CmdError;
+use fun_run::{CmdError, CommandWithName, NamedCommand};
 use libcnb::Env;
 use std::process::Command;
 
@@ -37,19 +37,18 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
 pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
-    let output = print::sub_stream_cmd(
-        Command::new("go")
-            .args(vec![
-                "list",
-                "-tags",
-                "heroku",
-                "-f",
-                "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
-                "./...",
-            ])
-            .envs(go_env),
-    )
-    .map_err(Error::Command)?;
+    let mut command = std::process::Command::new("go");
+    let mut short: NamedCommand = command
+        .envs(go_env)
+        .args(["list", "-tags", "heroku"])
+        .into();
+    // Hide these (possibly confusing) flags from build output
+    short.mut_cmd().args([
+        "-f",
+        "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
+        "./...",
+    ]);
+    let output = print::sub_stream_cmd(short).map_err(Error::Command)?;
 
     Ok(output
         .stdout_lossy()
