@@ -122,10 +122,9 @@ fn test_worker_http_118() {
             "Detected Go version requirement: ~1.18.1",
             "Installing go1.18.",
             "Detected processes:",
-            "example.com/worker_http_118/cmd/web",
-            "example.com/worker_http_118/cmd/worker",
+            "Running `go install -tags heroku example.com/worker_http_118/cmd/web example.com/worker_http_118/cmd/worker`",
         ],
-        &["example.com/worker_http_118/cmd/script"],
+        &[],
     );
 }
 
@@ -147,11 +146,11 @@ fn test_basic_http_119() {
 fn test_procfile_http_123() {
     let build_config: BuildConfig = IntegrationTestConfig::new("procfile_http_123").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_contains!(ctx.pack_stdout, "Detected Go version requirement: =1.23");
-        assert_contains!(ctx.pack_stdout, "Installing go1.23.");
-        assert_contains!(ctx.pack_stdout, "Skipping launch process registration");
-        assert_not_contains!(ctx.pack_stdout, "Registering launch processes");
-        assert_not_contains!(ctx.pack_stdout, "Detected processes:");
+        assert_contains!(ctx.pack_stderr, "Detected Go version requirement: =1.23");
+        assert_contains!(ctx.pack_stderr, "Installing go1.23.");
+        assert_contains!(ctx.pack_stderr, "Skipping launch process registration");
+        assert_not_contains!(ctx.pack_stderr, "Registering launch processes");
+        assert_not_contains!(ctx.pack_stderr, "Detected processes:");
     });
 }
 
@@ -187,10 +186,10 @@ fn test_basic_http_122() {
 fn test_go_artifact_caching() {
     let build_config: BuildConfig = IntegrationTestConfig::new("basic_http_116").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_contains!(ctx.pack_stdout, "Installing go1.16.",);
+        assert_contains!(ctx.pack_stderr, "Installing go1.16.",);
         let config = ctx.config.clone();
         ctx.rebuild(config, |ctx| {
-            assert_contains!(ctx.pack_stdout, "Reusing go1.16.");
+            assert_contains!(ctx.pack_stderr, "Reusing go1.16.");
         });
     });
 }
@@ -207,8 +206,8 @@ fn test_go_binary_arch() {
     let build_config: BuildConfig = integration_config.into();
     TestRunner::default().build(build_config, |ctx| {
         for contain in contains {
-            assert_contains!(ctx.pack_stdout, contain);
+            assert_contains!(ctx.pack_stderr, contain);
         }
-        assert_not_contains!(ctx.pack_stdout, not_contain);
+        assert_not_contains!(ctx.pack_stderr, not_contain);
     });
 }

@@ -1,11 +1,11 @@
 use crate::{GoBuildpack, GoBuildpackError};
+use bullet_stream::global::print;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{
     CachedLayerDefinition, EmptyLayerCause, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, Scope};
-use libherokubuildpack::log::log_info;
 use serde::{Deserialize, Serialize};
 use std::fs;
 
@@ -56,9 +56,9 @@ pub(crate) fn handle_deps_layer(
         } => (),
         LayerState::Empty {
             cause: EmptyLayerCause::RestoredLayerAction { .. },
-        } => log_info("Discarding expired Go modules cache"),
-        LayerState::Empty { .. } => log_info("Discarding invalid Go modules cache"),
-        LayerState::Restored { .. } => log_info("Reusing Go modules cache"),
+        } => print::sub_bullet("Discarding expired Go modules cache"),
+        LayerState::Empty { .. } => print::sub_bullet("Discarding invalid Go modules cache"),
+        LayerState::Restored { .. } => print::sub_bullet("Reusing Go modules cache"),
     }
 
     let mut cache_usage_count = 1.0;
@@ -67,7 +67,7 @@ pub(crate) fn handle_deps_layer(
             cause: previous_cache_usage_count,
         } => cache_usage_count += previous_cache_usage_count,
         LayerState::Empty { .. } => {
-            log_info("Creating new Go modules cache");
+            print::sub_bullet("Creating new Go modules cache");
             let cache_dir = layer_ref.path().join(CACHE_DIR);
             fs::create_dir(&cache_dir).map_err(DepsLayerError::Create)?;
             layer_ref.write_env(LayerEnv::new().chainable_insert(

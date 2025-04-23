@@ -1,12 +1,12 @@
+use bullet_stream::global::print;
+use fun_run::{CmdError, CommandWithName, NamedCommand};
 use libcnb::Env;
-use std::process::{Command, ExitStatus, Stdio};
+use std::process::Command;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
-    #[error("Command IO error: {0}")]
-    IO(#[from] std::io::Error),
-    #[error("Command did not exit successfully: {0}")]
-    Exit(ExitStatus),
+    #[error("{0}")]
+    Command(CmdError),
 }
 
 /// Run `go install -tags heroku pkg [..pkgn]`. Useful for compiling a list
@@ -22,8 +22,9 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
     for pkg in packages {
         args.push(pkg.as_ref());
     }
-    let status = Command::new("go").args(args).envs(go_env).status()?;
-    status.success().then_some(()).ok_or(Error::Exit(status))
+
+    print::sub_stream_cmd(Command::new("go").args(args).envs(go_env)).map_err(Error::Command)?;
+    Ok(())
 }
 
 /// Run `go list -tags -f {{ .ImportPath }} ./...`. Useful for listing
@@ -36,27 +37,21 @@ pub(crate) fn go_install<S: AsRef<str>>(packages: &[S], go_env: &Env) -> Result<
 /// Returns an error if the command exit code is not 0 or if there is an IO
 /// issue with the command.
 pub(crate) fn go_list(go_env: &Env) -> Result<Vec<String>, Error> {
-    let result = Command::new("go")
-        .args(vec![
-            "list",
-            "-tags",
-            "heroku",
-            "-f",
-            "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
-            "./...",
-        ])
+    let mut command = std::process::Command::new("go");
+    let mut short: NamedCommand = command
         .envs(go_env)
-        .stderr(Stdio::inherit())
-        .stdout(Stdio::piped())
-        .output()?;
+        .args(["list", "-tags", "heroku"])
+        .into();
+    // Hide these (possibly confusing) flags from build output
+    short.mut_cmd().args([
+        "-f",
+        "{{ if eq .Name \"main\" }}{{ .ImportPath }}{{ end }}",
+        "./...",
+    ]);
+    let output = print::sub_stream_cmd(short).map_err(Error::Command)?;
 
-    result
-        .status
-        .success()
-        .then_some(())
-        .ok_or(Error::Exit(result.status))?;
-
-    Ok(String::from_utf8_lossy(&result.stdout)
+    Ok(output
+        .stdout_lossy()
         .split_whitespace()
         .map(|s| s.trim().to_string())
         .collect())
