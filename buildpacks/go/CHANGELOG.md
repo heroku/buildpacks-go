@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-04-24
+
 ### Changed
 
 - Update build output style ([#368](https://github.com/heroku/buildpacks-php/pull/368))
@@ -272,7 +274,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs. ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v0.5.8...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/heroku/buildpacks-go/compare/v0.5.8...v1.0.0
 [0.5.8]: https://github.com/heroku/buildpacks-go/compare/v0.5.7...v0.5.8
 [0.5.7]: https://github.com/heroku/buildpacks-go/compare/v0.5.6...v0.5.7
 [0.5.6]: https://github.com/heroku/buildpacks-go/compare/v0.5.5...v0.5.6
