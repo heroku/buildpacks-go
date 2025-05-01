@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update build output style ([#368](https://github.com/heroku/buildpacks-php/pull/368))
+- Update build output style ([#368](https://github.com/heroku/buildpacks-go/pull/368))
 
 ## [0.5.8] - 2025-04-02
 
