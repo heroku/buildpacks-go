@@ -2,11 +2,3 @@
 #ECCN:Open Source
 #GUSINFO:Languages,Heroku Go Platform
 * @heroku/languages
-
-# However, request review from the repository maintainer instead for files that are updated 
-# by Dependabot or inventory/release automation, to reduce team review request noise.
-buildpack.toml @joshwlewis
-CHANGELOG.md @joshwlewis
-Cargo.toml @joshwlewis
-Cargo.lock @joshwlewis
-inventory.toml @joshwlewis
