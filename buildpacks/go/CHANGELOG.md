@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- The buildpack will now retry downloading Go up to 4 times ([#386](https://github.com/heroku/buildpacks-go/pull/386))
+
 ## [1.0.3] - 2025-07-09
 
 - Added go1.23.11 (linux-amd64), go1.23.11 (linux-arm64), go1.24.5 (linux-amd64), go1.24.5 (linux-arm64), go1.25rc2 (linux-amd64), go1.25rc2 (linux-arm64).
