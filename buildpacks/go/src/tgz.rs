@@ -7,6 +7,7 @@ use sha2::{
 use std::{fs, io::Read, path::StripPrefixError};
 use tar::Archive;
 use tracing::instrument;
+use ureq::Response;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -55,10 +56,7 @@ pub(crate) fn fetch_strip_filter_extract_verify<
     dest_dir: impl AsRef<std::path::Path> + std::fmt::Debug,
 ) -> Result<(), Error> {
     let destination = dest_dir.as_ref();
-    let body = ureq::get(artifact.url.as_ref())
-        .call()
-        .map_err(Box::new)?
-        .into_reader();
+    let body = download_result(&artifact.url)?.into_reader();
 
     let mut archive = Archive::new(GzDecoder::new(DigestingReader::new(body, D::new())));
     let filters: Vec<&str> = filter_prefixes.into_iter().collect();
@@ -89,6 +87,10 @@ pub(crate) fn fetch_strip_filter_extract_verify<
                 hex::encode(actual_digest),
             )
         })
+}
+
+fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
+    Ok(ureq::get(url).call()?)
 }
 
 struct DigestingReader<R: Read, H: sha2::Digest> {
