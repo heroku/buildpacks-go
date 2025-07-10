@@ -100,7 +100,13 @@ fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
         let result = ureq::get(url).call();
         match result {
             Ok(response) => OperationResult::Ok(response),
-            Err(error) => OperationResult::Retry(error),
+            Err(error) => match &error {
+                ureq::Error::Status(code, _) => match code {
+                    408 | 429 | 500 | 502 | 503 | 504 => OperationResult::Retry(error),
+                    _ => OperationResult::Err(error),
+                },
+                ureq::Error::Transport(_) => OperationResult::Retry(error),
+            },
         }
     })
     .map_err(|error| error.error)?)
