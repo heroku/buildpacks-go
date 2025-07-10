@@ -1,10 +1,12 @@
 use flate2::read::GzDecoder;
 use libherokubuildpack::inventory::artifact::Artifact;
+use retry::retry;
+use retry::{delay::Exponential, OperationResult};
 use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
 };
-use std::{fs, io::Read, path::StripPrefixError};
+use std::{fs, io::Read, path::StripPrefixError, time::Duration};
 use tar::Archive;
 use tracing::instrument;
 use ureq::Response;
@@ -89,8 +91,19 @@ pub(crate) fn fetch_strip_filter_extract_verify<
         })
 }
 
+const MAX_RETRIES: usize = 4;
+const RETRY_DELAY: Duration = Duration::from_secs(1);
+
 fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
-    Ok(ureq::get(url).call()?)
+    let retry_strategy = Exponential::from(RETRY_DELAY).take(MAX_RETRIES);
+    Ok(retry(retry_strategy, || {
+        let result = ureq::get(url).call();
+        match result {
+            Ok(response) => OperationResult::Ok(response),
+            Err(error) => OperationResult::Retry(error),
+        }
+    })
+    .map_err(|error| error.error)?)
 }
 
 struct DigestingReader<R: Read, H: sha2::Digest> {
