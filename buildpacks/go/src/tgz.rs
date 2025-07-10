@@ -101,11 +101,9 @@ fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
     retry(retry_strategy, || match ureq::get(url).call() {
         Ok(response) => OperationResult::Ok(response),
         Err(error) => match &error {
-            ureq::Error::Status(code, _) => match code {
-                408 | 429 | 500 | 502 | 503 | 504 => OperationResult::Retry(error),
-                _ => OperationResult::Err(error),
-            },
-            ureq::Error::Transport(_) => OperationResult::Retry(error),
+            ureq::Error::Status(408 | 429 | 500 | 502 | 503 | 504, _)
+            | ureq::Error::Transport(_) => OperationResult::Retry(error),
+            ureq::Error::Status(..) => OperationResult::Err(error),
         },
     })
     .map_err(|error| Box::new(error.error))
