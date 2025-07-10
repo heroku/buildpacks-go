@@ -92,10 +92,10 @@ pub(crate) fn fetch_strip_filter_extract_verify<
 }
 
 const MAX_RETRIES: usize = 4;
-const RETRY_DELAY: Duration = Duration::from_secs(1);
+const INITIAL_DELAY: Duration = Duration::from_secs(1);
 
 fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
-    let retry_strategy = Exponential::from(RETRY_DELAY).take(MAX_RETRIES);
+    let retry_strategy = Exponential::from(INITIAL_DELAY).take(MAX_RETRIES);
     Ok(retry(retry_strategy, || match ureq::get(url).call() {
         Ok(response) => OperationResult::Ok(response),
         Err(error) => match &error {
