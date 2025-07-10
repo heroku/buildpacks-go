@@ -97,6 +97,7 @@ const INITIAL_DELAY: Duration = Duration::from_secs(1);
 fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
     let retry_strategy = Exponential::from(INITIAL_DELAY) // using default exponential backoff factor of `2.0`
         .take(MAX_RETRIES);
+
     Ok(retry(retry_strategy, || match ureq::get(url).call() {
         Ok(response) => OperationResult::Ok(response),
         Err(error) => match &error {
