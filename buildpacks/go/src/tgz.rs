@@ -98,7 +98,7 @@ fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
     let retry_strategy = Exponential::from(INITIAL_DELAY) // using default exponential backoff factor of `2.0`
         .take(MAX_RETRIES);
 
-    Ok(retry(retry_strategy, || match ureq::get(url).call() {
+    retry(retry_strategy, || match ureq::get(url).call() {
         Ok(response) => OperationResult::Ok(response),
         Err(error) => match &error {
             ureq::Error::Status(code, _) => match code {
@@ -108,7 +108,7 @@ fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
             ureq::Error::Transport(_) => OperationResult::Retry(error),
         },
     })
-    .map_err(|error| error.error)?)
+    .map_err(|error| Box::new(error.error))
 }
 
 struct DigestingReader<R: Read, H: sha2::Digest> {
