@@ -1,12 +1,15 @@
 use flate2::read::GzDecoder;
 use libherokubuildpack::inventory::artifact::Artifact;
+use retry::retry;
+use retry::{delay::Exponential, OperationResult};
 use sha2::{
     digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
 };
-use std::{fs, io::Read, path::StripPrefixError};
+use std::{fs, io::Read, path::StripPrefixError, time::Duration};
 use tar::Archive;
 use tracing::instrument;
+use ureq::Response;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -55,10 +58,7 @@ pub(crate) fn fetch_strip_filter_extract_verify<
     dest_dir: impl AsRef<std::path::Path> + std::fmt::Debug,
 ) -> Result<(), Error> {
     let destination = dest_dir.as_ref();
-    let body = ureq::get(artifact.url.as_ref())
-        .call()
-        .map_err(Box::new)?
-        .into_reader();
+    let body = download_result(&artifact.url)?.into_reader();
 
     let mut archive = Archive::new(GzDecoder::new(DigestingReader::new(body, D::new())));
     let filters: Vec<&str> = filter_prefixes.into_iter().collect();
@@ -89,6 +89,24 @@ pub(crate) fn fetch_strip_filter_extract_verify<
                 hex::encode(actual_digest),
             )
         })
+}
+
+const MAX_RETRIES: usize = 4;
+const INITIAL_DELAY: Duration = Duration::from_secs(1);
+
+fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
+    let retry_strategy = Exponential::from(INITIAL_DELAY) // using default exponential backoff factor of `2.0`
+        .take(MAX_RETRIES);
+
+    retry(retry_strategy, || match ureq::get(url).call() {
+        Ok(response) => OperationResult::Ok(response),
+        Err(error) => match &error {
+            ureq::Error::Status(408 | 429 | 500 | 502 | 503 | 504, _)
+            | ureq::Error::Transport(_) => OperationResult::Retry(error),
+            ureq::Error::Status(..) => OperationResult::Err(error),
+        },
+    })
+    .map_err(|error| Box::new(error.error))
 }
 
 struct DigestingReader<R: Read, H: sha2::Digest> {
