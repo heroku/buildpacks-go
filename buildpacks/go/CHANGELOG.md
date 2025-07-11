@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2025-07-11
+
 - The buildpack will now retry downloading Go up to 4 times ([#386](https://github.com/heroku/buildpacks-go/pull/386))
 
 ## [1.0.3] - 2025-07-09
@@ -288,7 +290,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs. ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v1.0.3...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/heroku/buildpacks-go/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/heroku/buildpacks-go/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/heroku/buildpacks-go/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/heroku/buildpacks-go/compare/v1.0.0...v1.0.1
