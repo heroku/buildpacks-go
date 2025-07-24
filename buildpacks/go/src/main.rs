@@ -26,7 +26,7 @@ use libcnb::{buildpack_main, Buildpack, Env};
 use libherokubuildpack::inventory::artifact::{Arch, Os};
 use libherokubuildpack::inventory::Inventory;
 use sha2::Sha256;
-use std::env::{self, consts};
+use std::env::consts;
 use std::path::Path;
 use std::time::Instant;
 
@@ -64,12 +64,7 @@ impl Buildpack for GoBuildpack {
         print::bullet("Reading build configuration");
 
         let started = Instant::now();
-        let mut go_env = Env::new();
-        env::vars()
-            .filter(|(k, _v)| k == "PATH")
-            .for_each(|(k, v)| {
-                go_env.insert(k, v);
-            });
+        let mut go_env = Env::from_current();
 
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
