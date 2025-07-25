@@ -211,3 +211,21 @@ fn test_go_binary_arch() {
         assert_not_contains!(ctx.pack_stderr, not_contain);
     });
 }
+
+#[test]
+#[ignore = "integration test"]
+fn test_environment_variables_passed_to_subprocesses() {
+    let build_config: BuildConfig = IntegrationTestConfig::new("worker_http_118").into();
+    TestRunner::default().build(build_config, |ctx| {
+        assert_not_contains!(ctx.pack_stderr, "internal/goarch");
+
+        // Rebuild with GOFLAGS="-v -n -a" to make Go commands verbose, print commands, and force rebuild
+        // Asserts that user provided env vars are passed to subprocesses
+        let mut rebuild_config = ctx.config.clone();
+        rebuild_config.env("GOFLAGS", "-v -n -a");
+
+        ctx.rebuild(rebuild_config, |ctx| {
+            assert_contains!(ctx.pack_stderr, "internal/goarch");
+        });
+    });
+}
