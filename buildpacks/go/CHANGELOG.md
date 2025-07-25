@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Changed: The buildpack now passes customer provided environment variables to subprocesses such as `go install` ([388](https://github.com/heroku/buildpacks-go/pull/388))
+### Changed
+
+- The buildpack now passes user-provided environment variables to subprocesses such as `go install`. ([#388](https://github.com/heroku/buildpacks-go/pull/388))
 
 ## [1.0.4] - 2025-07-11
 
