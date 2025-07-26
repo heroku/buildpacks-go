@@ -226,6 +226,7 @@ fn test_environment_variables_passed_to_subprocesses() {
 
         ctx.rebuild(rebuild_config, |ctx| {
             assert_contains!(ctx.pack_stderr, "internal/goarch");
+            assert_contains!(ctx.pack_stderr, "Found `GO` prefixed environment variables");
         });
     });
 }

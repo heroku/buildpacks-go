@@ -11,6 +11,7 @@ mod tgz;
 
 use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
+use indoc::formatdoc;
 use layers::build::{handle_build_layer, BuildLayerError};
 use layers::deps::{handle_deps_layer, DepsLayerError};
 use layers::dist::{handle_dist_layer, DistLayerError};
@@ -65,6 +66,22 @@ impl Buildpack for GoBuildpack {
 
         let started = Instant::now();
         let mut go_env = Env::from_current();
+        let go_prefixed_envs = go_env
+            .iter()
+            .map(|(key, _)| key.to_string_lossy())
+            .filter(|key| key.starts_with("GO"))
+            .map(bullet_stream::style::value)
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        if !go_prefixed_envs.is_empty() {
+            print::warning(formatdoc! {"
+                WARNING: Found `GO` prefixed environment variables not set by this buildpack.
+                These variables may impact build or runtime behavior in unexpected ways.
+
+                Environment variables: {go_prefixed_envs}
+            "});
+        }
 
         let inv: Inventory<GoVersion, Sha256, Option<()>> =
             toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
