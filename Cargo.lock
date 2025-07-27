@@ -499,6 +499,7 @@ dependencies = [
  "fun_run",
  "heroku-go-utils",
  "hex",
+ "indoc",
  "libcnb",
  "libcnb-test",
  "libherokubuildpack",

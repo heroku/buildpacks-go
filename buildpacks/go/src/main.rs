@@ -33,6 +33,9 @@ use std::time::Instant;
 #[cfg(test)]
 use libcnb_test as _;
 
+#[cfg(test)]
+use indoc as _;
+
 const INVENTORY: &str = include_str!("../inventory.toml");
 
 struct GoBuildpack;
