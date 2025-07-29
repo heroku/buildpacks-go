@@ -124,9 +124,8 @@ impl Buildpack for GoBuildpack {
         if Path::exists(&context.app_dir.join("Procfile")) {
             print::bullet("Skipping launch process registration (Procfile detected)");
         } else {
-            print::bullet("Registering launch processes");
+            print::bullet("Registering launch processes:");
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-            print::sub_bullet("Detected processes:");
             for proc in &procs {
                 print::sub_bullet(format!("{}: {}", proc.r#type, proc.command.join(" ")));
             }

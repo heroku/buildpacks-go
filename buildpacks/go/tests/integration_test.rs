@@ -121,7 +121,7 @@ fn test_worker_http_118() {
         &[
             "Detected Go version requirement: ~1.18.1",
             "Installing go1.18.",
-            "Detected processes:",
+            "Registering launch processes:",
             "Running `go install -tags heroku example.com/worker_http_118/cmd/web example.com/worker_http_118/cmd/worker`",
         ],
         &[],
@@ -150,7 +150,6 @@ fn test_procfile_http_123() {
         assert_contains!(ctx.pack_stderr, "Installing go1.23.");
         assert_contains!(ctx.pack_stderr, "Skipping launch process registration");
         assert_not_contains!(ctx.pack_stderr, "Registering launch processes");
-        assert_not_contains!(ctx.pack_stderr, "Detected processes:");
     });
 }
 
