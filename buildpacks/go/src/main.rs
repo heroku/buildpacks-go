@@ -10,6 +10,7 @@ mod proc;
 mod tgz;
 
 use bullet_stream::global::print;
+use bullet_stream::style;
 use heroku_go_utils::vrs::GoVersion;
 use layers::build::{handle_build_layer, BuildLayerError};
 use layers::deps::{handle_deps_layer, DepsLayerError};
@@ -124,11 +125,14 @@ impl Buildpack for GoBuildpack {
         if Path::exists(&context.app_dir.join("Procfile")) {
             print::bullet("Skipping launch process registration (Procfile detected)");
         } else {
-            print::bullet("Registering launch processes");
+            print::bullet("Registering launch processes:");
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
-            print::sub_bullet("Detected processes:");
             for proc in &procs {
-                print::sub_bullet(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
+                print::sub_bullet(format!(
+                    "{}: {}",
+                    proc.r#type,
+                    style::command(proc.command.join(" "))
+                ));
             }
         }
 
