@@ -128,7 +128,7 @@ impl Buildpack for GoBuildpack {
             procs = proc::build_procs(&packages).map_err(GoBuildpackError::Proc)?;
             print::sub_bullet("Detected processes:");
             for proc in &procs {
-                print::sub_bullet(format!("  - {}: {}", proc.r#type, proc.command.join(" ")));
+                print::sub_bullet(format!("{}: {}", proc.r#type, proc.command.join(" ")));
             }
         }
 
