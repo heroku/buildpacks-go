@@ -7,6 +7,7 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
+indoc = "2"
 heroku-go-utils = { path = "../../common/go-utils" }
 hex = "0.4.3"
 flate2 = { version = "1", default-features = false, features = ["zlib"] }

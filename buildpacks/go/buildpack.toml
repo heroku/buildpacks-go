@@ -7,7 +7,6 @@ name = "Heroku Go"
 homepage = "https://github.com/heroku/buildpacks-go"
 description = "Heroku's buildpack for Go applications."
 keywords = ["go", "golang", "heroku"]
-clear-env = true
 
 [[buildpack.licenses]]
 type = "BSD-3-Clause"
