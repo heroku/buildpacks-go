@@ -5,6 +5,7 @@ use std::io::{BufRead, BufReader};
 use std::path;
 
 /// Represents buildpack configuration found in a project's `go.mod`.
+#[derive(Debug)]
 pub(crate) struct GoModConfig {
     pub(crate) packages: Option<Vec<String>>,
     pub(crate) version: Option<semver::VersionReq>,
@@ -27,10 +28,13 @@ pub(crate) enum ReadGoModConfigError {
 pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
     gomod_path: P,
 ) -> Result<GoModConfig, ReadGoModConfigError> {
+    go_config_reader(fs::File::open(gomod_path)?)
+}
+
+fn go_config_reader(buf: impl std::io::Read) -> Result<GoModConfig, ReadGoModConfigError> {
     let mut version: Option<semver::VersionReq> = None;
     let mut packages: Option<Vec<String>> = None;
-    let file = fs::File::open(gomod_path)?;
-    for line_result in BufReader::new(file).lines() {
+    for line_result in BufReader::new(buf).lines() {
         let line = line_result?;
         let mut parts = line.split_whitespace().peekable();
         match (parts.next(), parts.next(), parts.next(), parts.peek()) {
@@ -49,4 +53,55 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
         }
     }
     Ok(GoModConfig { packages, version })
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use indoc::formatdoc;
+    use semver::VersionReq;
+
+    #[test]
+    fn config_file_does_not_exist() {
+        let result = read_gomod_config(path::Path::new(""));
+        assert!(result.is_err(), "Expected {result:?} to err but it did not");
+    }
+
+    #[test]
+    fn heroku_go_version_operator() {
+        let go_mod = formatdoc! {"
+            // +heroku goVersion =1.18.2
+            go 1.17
+        "};
+        let GoModConfig { packages, version } = go_config_reader(go_mod.as_bytes()).unwrap();
+        assert_eq!(None, packages);
+        assert_eq!(Some(VersionReq::parse("=1.18.2").unwrap()), version);
+    }
+
+    #[test]
+    fn go_version_without_heroku() {
+        let go_mod = formatdoc! {"
+            go 1.17
+        "};
+        let GoModConfig { packages, version } = go_config_reader(go_mod.as_bytes()).unwrap();
+        assert_eq!(None, packages);
+        assert_eq!(Some(VersionReq::parse("=1.17").unwrap()), version);
+    }
+
+    #[test]
+    fn empty_file() {
+        let go_mod = String::new();
+        let GoModConfig { packages, version } = go_config_reader(go_mod.as_bytes()).unwrap();
+        assert_eq!(packages, None);
+        assert_eq!(version, None);
+
+        let requirement = version.unwrap_or_default();
+        assert_eq!(
+            VersionReq {
+                comparators: Vec::new()
+            },
+            requirement
+        );
+        assert_eq!("*".to_string(), requirement.to_string());
+    }
 }
