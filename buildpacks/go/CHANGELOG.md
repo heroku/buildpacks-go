@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-08-04
+
 ### Changed
 
 - The buildpack now passes user-provided environment variables to subprocesses such as `go install`. ([#388](https://github.com/heroku/buildpacks-go/pull/388))
@@ -294,7 +296,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial implementation using libcnb.rs. ([#1](https://github.com/heroku/buildpacks-go/pull/1))
 
-[unreleased]: https://github.com/heroku/buildpacks-go/compare/v1.0.4...HEAD
+[unreleased]: https://github.com/heroku/buildpacks-go/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/heroku/buildpacks-go/compare/v1.0.4...v2.0.0
 [1.0.4]: https://github.com/heroku/buildpacks-go/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/heroku/buildpacks-go/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/heroku/buildpacks-go/compare/v1.0.1...v1.0.2
