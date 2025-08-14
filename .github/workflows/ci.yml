@@ -72,7 +72,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: ["amd64"]
-        builder: ["heroku/builder:20", "heroku/builder:22", "heroku/builder:24"]
+        builder: ["heroku/builder:22", "heroku/builder:24"]
         include:
           - arch: "arm64"
             builder: "heroku/builder:24"
