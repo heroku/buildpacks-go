@@ -146,10 +146,10 @@ fn test_basic_http_119() {
 fn test_procfile_http_123() {
     let build_config: BuildConfig = IntegrationTestConfig::new("procfile_http_123").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_contains!(ctx.pack_stderr, "Detected Go version requirement: =1.23");
-        assert_contains!(ctx.pack_stderr, "Installing go1.23.");
-        assert_contains!(ctx.pack_stderr, "Skipping launch process registration");
-        assert_not_contains!(ctx.pack_stderr, "Registering launch processes");
+        assert_contains!(ctx.pack_stdout, "Detected Go version requirement: =1.23");
+        assert_contains!(ctx.pack_stdout, "Installing go1.23.");
+        assert_contains!(ctx.pack_stdout, "Skipping launch process registration");
+        assert_not_contains!(ctx.pack_stdout, "Registering launch processes");
     });
 }
 
@@ -185,10 +185,10 @@ fn test_basic_http_122() {
 fn test_go_artifact_caching() {
     let build_config: BuildConfig = IntegrationTestConfig::new("basic_http_116").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_contains!(ctx.pack_stderr, "Installing go1.16.",);
+        assert_contains!(ctx.pack_stdout, "Installing go1.16.",);
         let config = ctx.config.clone();
         ctx.rebuild(config, |ctx| {
-            assert_contains!(ctx.pack_stderr, "Reusing go1.16.");
+            assert_contains!(ctx.pack_stdout, "Reusing go1.16.");
         });
     });
 }
@@ -205,9 +205,9 @@ fn test_go_binary_arch() {
     let build_config: BuildConfig = integration_config.into();
     TestRunner::default().build(build_config, |ctx| {
         for contain in contains {
-            assert_contains!(ctx.pack_stderr, contain);
+            assert_contains!(ctx.pack_stdout, contain);
         }
-        assert_not_contains!(ctx.pack_stderr, not_contain);
+        assert_not_contains!(ctx.pack_stdout, not_contain);
     });
 }
 
@@ -216,7 +216,7 @@ fn test_go_binary_arch() {
 fn test_environment_variables_passed_to_subprocesses() {
     let build_config: BuildConfig = IntegrationTestConfig::new("worker_http_118").into();
     TestRunner::default().build(build_config, |ctx| {
-        assert_not_contains!(ctx.pack_stderr, "internal/goarch");
+        assert_not_contains!(ctx.pack_stdout, "internal/goarch");
 
         // Rebuild with GOFLAGS="-v -n -a" to make Go commands verbose, print commands, and force rebuild
         // Asserts that user provided env vars are passed to subprocesses
@@ -224,8 +224,8 @@ fn test_environment_variables_passed_to_subprocesses() {
         rebuild_config.env("GOFLAGS", "-v -n -a");
 
         ctx.rebuild(rebuild_config, |ctx| {
-            assert_contains!(ctx.pack_stderr, "internal/goarch");
-            assert_contains!(ctx.pack_stderr, "Found `GO` prefixed environment variables");
+            assert_contains!(ctx.pack_stdout, "internal/goarch");
+            assert_contains!(ctx.pack_stdout, "Found `GO` prefixed environment variables");
         });
     });
 }
