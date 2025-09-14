@@ -1,7 +1,7 @@
 // Required due to: https://github.com/rust-lang/rust/issues/95513
 #![allow(unused_crate_dependencies)]
 
-use libcnb_test::{assert_contains, assert_not_contains, BuildConfig, ContainerConfig, TestRunner};
+use libcnb_test::{BuildConfig, ContainerConfig, TestRunner, assert_contains, assert_not_contains};
 use std::{env::consts, time::Duration};
 
 const DEFAULT_BUILDER: &str = "heroku/builder:24";

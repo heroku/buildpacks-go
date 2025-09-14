@@ -1,13 +1,13 @@
 use crate::{GoBuildpack, GoBuildpackError};
 use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
+use libcnb::Target;
 use libcnb::build::BuildContext;
 use libcnb::data::layer_name;
 use libcnb::layer::{
     CachedLayerDefinition, EmptyLayerCause, InvalidMetadataAction, LayerState, RestoredLayerAction,
 };
 use libcnb::layer_env::{LayerEnv, Scope};
-use libcnb::Target;
 use serde::{Deserialize, Serialize};
 use std::fs;
 

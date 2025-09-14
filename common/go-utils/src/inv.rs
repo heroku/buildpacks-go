@@ -73,8 +73,8 @@ pub enum ListUpstreamArtifactsError {
 ///
 /// HTTP issues connecting to the upstream releases endpoint, as well
 /// as json and Go version parsing issues, will return an error.
-pub fn list_upstream_artifacts(
-) -> Result<Vec<Artifact<GoVersion, Sha256, Option<()>>>, ListUpstreamArtifactsError> {
+pub fn list_upstream_artifacts()
+-> Result<Vec<Artifact<GoVersion, Sha256, Option<()>>>, ListUpstreamArtifactsError> {
     ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
@@ -112,8 +112,11 @@ mod tests {
     fn test_artifact_serialization() {
         let artifact = create_artifact();
         let serialized = toml::to_string(&artifact).unwrap();
-        assert!(serialized
-            .contains("sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"));
+        assert!(
+            serialized.contains(
+                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+            )
+        );
         assert_eq!(
             artifact,
             toml::from_str::<Artifact<GoVersion, Sha256, Option<()>>>(&serialized).unwrap()

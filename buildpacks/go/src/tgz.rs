@@ -1,10 +1,10 @@
 use flate2::read::GzDecoder;
 use libherokubuildpack::inventory::artifact::Artifact;
 use retry::retry;
-use retry::{delay::Exponential, OperationResult};
+use retry::{OperationResult, delay::Exponential};
 use sha2::{
-    digest::{generic_array::GenericArray, OutputSizeUser},
     Digest,
+    digest::{OutputSizeUser, generic_array::GenericArray},
 };
 use std::{fs, io::Read, path::StripPrefixError, time::Duration};
 use tar::Archive;

@@ -2,7 +2,7 @@
 #![allow(unused_crate_dependencies)]
 
 use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
-use libherokubuildpack::inventory::{artifact::Artifact, Inventory};
+use libherokubuildpack::inventory::{Inventory, artifact::Artifact};
 use sha2::Sha256;
 use std::{env, fs, process};
 
