@@ -3,8 +3,8 @@ resolver = "2"
 members = ["buildpacks/go", "common/go-utils"]
 
 [workspace.package]
-rust-version = "1.84"
-edition = "2021"
+rust-version = "1.89"
+edition = "2024"
 
 [workspace.lints.rust]
 unreachable_pub = "warn"

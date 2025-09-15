@@ -1,4 +1,4 @@
-use crate::{tgz, GoBuildpack, GoBuildpackError};
+use crate::{GoBuildpack, GoBuildpackError, tgz};
 use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
 use libcnb::build::BuildContext;
