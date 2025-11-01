@@ -26,7 +26,7 @@ strip = true
 
 [workspace.dependencies]
 libcnb = { version = "0.28", features = ["trace"] }
-libcnb-test = "0.28"
+libcnb-test = "0.29"
 libherokubuildpack = { version = "0.28", default-features = false, features = [
     "inventory",
     "log",
