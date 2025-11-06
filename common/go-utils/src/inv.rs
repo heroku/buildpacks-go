@@ -56,7 +56,7 @@ pub enum ListUpstreamArtifactsError {
     #[error("Invalid response fetching {0}")]
     InvalidResponse(Box<ureq::Error>),
     #[error(transparent)]
-    ParseJsonResponse(std::io::Error),
+    ParseJsonResponse(Box<ureq::Error>),
     #[error(transparent)]
     Conversion(#[from] GoFileConversionError),
 }
@@ -78,8 +78,9 @@ pub fn list_upstream_artifacts()
     ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
-        .into_json::<Vec<GoRelease>>()
-        .map_err(ListUpstreamArtifactsError::ParseJsonResponse)?
+        .body_mut()
+        .read_json::<Vec<GoRelease>>()
+        .map_err(|e| ListUpstreamArtifactsError::ParseJsonResponse(Box::new(e)))?
         .iter()
         .flat_map(|release| &release.files)
         .filter(|file| {

@@ -63,7 +63,8 @@ fn test_go_fixture(fixture: &str, expect_loglines: &[&str], refute_loglines: &[&
             let resp = ureq::get(&format!("http://{addr}"))
                 .call()
                 .expect("request to container failed")
-                .into_string()
+                .body_mut()
+                .read_to_string()
                 .expect("response read error");
 
             assert_contains!(resp, fixture);

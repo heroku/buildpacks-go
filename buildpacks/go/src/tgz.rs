@@ -9,7 +9,8 @@ use sha2::{
 use std::{fs, io::Read, path::StripPrefixError, time::Duration};
 use tar::Archive;
 use tracing::instrument;
-use ureq::Response;
+use ureq::Body;
+use ureq::http::Response;
 
 #[derive(thiserror::Error, Debug)]
 pub(crate) enum Error {
@@ -58,7 +59,8 @@ pub(crate) fn fetch_strip_filter_extract_verify<
     dest_dir: impl AsRef<std::path::Path> + std::fmt::Debug,
 ) -> Result<(), Error> {
     let destination = dest_dir.as_ref();
-    let body = download_result(&artifact.url)?.into_reader();
+    let mut res = download_result(&artifact.url)?;
+    let body = res.body_mut().as_reader();
 
     let mut archive = Archive::new(GzDecoder::new(DigestingReader::new(body, D::new())));
     let filters: Vec<&str> = filter_prefixes.into_iter().collect();
@@ -94,16 +96,18 @@ pub(crate) fn fetch_strip_filter_extract_verify<
 const MAX_RETRIES: usize = 4;
 const INITIAL_DELAY: Duration = Duration::from_secs(1);
 
-fn download_result(url: &str) -> Result<Response, Box<ureq::Error>> {
+fn download_result(url: &str) -> Result<Response<Body>, Box<ureq::Error>> {
     let retry_strategy = Exponential::from(INITIAL_DELAY) // using default exponential backoff factor of `2.0`
         .take(MAX_RETRIES);
 
     retry(retry_strategy, || match ureq::get(url).call() {
         Ok(response) => OperationResult::Ok(response),
         Err(error) => match &error {
-            ureq::Error::Status(408 | 429 | 500 | 502 | 503 | 504, _)
-            | ureq::Error::Transport(_) => OperationResult::Retry(error),
-            ureq::Error::Status(..) => OperationResult::Err(error),
+            ureq::Error::StatusCode(408 | 429 | 500 | 502 | 503 | 504) => {
+                OperationResult::Retry(error)
+            }
+            ureq::Error::StatusCode(_) => OperationResult::Err(error),
+            _ => OperationResult::Retry(error),
         },
     })
     .map_err(|error| Box::new(error.error))
