@@ -34,7 +34,7 @@ pub(crate) fn build_procs(pkgs: &[String]) -> Result<Vec<Process>, Error> {
         let proc_name = pkg
             .rsplit_once('/')
             .map(|(_path, name)| name)
-            .ok_or_else(|| Error::ImportPath(pkg.to_string()))?
+            .ok_or_else(|| Error::ImportPath(pkg.clone()))?
             .parse::<ProcessType>()?;
 
         procs.push(
