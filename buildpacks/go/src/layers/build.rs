@@ -28,9 +28,9 @@ impl BuildLayerMetadata {
     fn new(version: &GoVersion, target: &Target) -> Self {
         Self {
             go_major_version: version.major_release_version(),
-            target_arch: target.arch.to_string(),
-            target_distro_name: target.distro_name.to_string(),
-            target_distro_version: target.distro_version.to_string(),
+            target_arch: target.arch.clone(),
+            target_distro_name: target.distro_name.clone(),
+            target_distro_version: target.distro_version.clone(),
             cache_usage_count: 1.0,
         }
     }
