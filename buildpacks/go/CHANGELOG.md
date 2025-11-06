@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added go1.24.10 (linux-amd64), go1.24.10 (linux-arm64), go1.25.4 (linux-amd64), go1.25.4 (linux-arm64).
 ## [2.1.4] - 2025-10-14
 
 - Added go1.24.9 (linux-amd64), go1.24.9 (linux-arm64), go1.25.3 (linux-amd64), go1.25.3 (linux-arm64).
