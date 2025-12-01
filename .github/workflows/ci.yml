@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Update Rust toolchain
         run: rustup update
       - name: Rust Cache
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Update Rust toolchain
         run: rustup update
       - name: Rust Cache
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: Install nightly Rust toolchain
@@ -78,7 +78,7 @@ jobs:
             builder: "heroku/builder:24"
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       # The dpkg man-db trigger is excessively slow on GHA runners, see e.g.:
       # https://github.com/actions/runner-images/issues/10977
       # https://github.com/actions/runner/issues/4030
@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       # The dpkg man-db trigger is excessively slow on GHA runners, see e.g.:
       # https://github.com/actions/runner-images/issues/10977
       # https://github.com/actions/runner/issues/4030
@@ -139,7 +139,7 @@ jobs:
           docker pull "heroku/builder:24"
           docker pull "heroku/heroku:24"
       - name: Clone getting started guide
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: heroku/go-getting-started
           path: tmp/guide
