@@ -1,11 +1,10 @@
-use crate::vrs;
+use heroku_go_utils::vrs::{GoVersion, GoVersionParseError};
 use libherokubuildpack::inventory::{
     artifact::{Arch, Artifact, Os, UnsupportedArchError, UnsupportedOsError},
     checksum::{self, Checksum},
 };
 use serde::Deserialize;
 use sha2::Sha256;
-use vrs::{GoVersion, GoVersionParseError};
 
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://go.dev/dl";
@@ -25,7 +24,7 @@ struct GoFile {
 }
 
 #[derive(thiserror::Error, Debug)]
-pub enum GoFileConversionError {
+pub(crate) enum GoFileConversionError {
     #[error(transparent)]
     Version(#[from] GoVersionParseError),
     #[error(transparent)]
@@ -52,7 +51,7 @@ impl TryFrom<&GoFile> for Artifact<GoVersion, Sha256, Option<()>> {
 }
 
 #[derive(Debug, thiserror::Error)]
-pub enum ListUpstreamArtifactsError {
+pub(crate) enum ListUpstreamArtifactsError {
     #[error("Invalid response fetching {0}")]
     InvalidResponse(Box<ureq::Error>),
     #[error(transparent)]
@@ -65,15 +64,15 @@ pub enum ListUpstreamArtifactsError {
 ///
 /// # Example
 ///
-/// ```
-/// let versions = heroku_go_utils::inv::list_upstream_artifacts().unwrap();
+/// ```no_run
+/// let versions = inventory_updater::upstream::list_upstream_artifacts().unwrap();
 /// ```
 ///
 /// # Errors
 ///
 /// HTTP issues connecting to the upstream releases endpoint, as well
 /// as json and Go version parsing issues, will return an error.
-pub fn list_upstream_artifacts()
+pub(crate) fn list_upstream_artifacts()
 -> Result<Vec<Artifact<GoVersion, Sha256, Option<()>>>, ListUpstreamArtifactsError> {
     ureq::get(GO_RELEASES_URL)
         .call()
@@ -90,37 +89,4 @@ pub fn list_upstream_artifacts()
         })
         .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
         .collect::<Result<Vec<_>, _>>()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn create_artifact() -> Artifact<GoVersion, Sha256, Option<()>> {
-        Artifact {
-            version: GoVersion::try_from("1.7.2".to_string()).unwrap(),
-            os: Os::Linux,
-            arch: Arch::Amd64,
-            url: String::from("foo"),
-            checksum: "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-                .parse::<Checksum<Sha256>>()
-                .unwrap(),
-            metadata: None,
-        }
-    }
-
-    #[test]
-    fn test_artifact_serialization() {
-        let artifact = create_artifact();
-        let serialized = toml::to_string(&artifact).unwrap();
-        assert!(
-            serialized.contains(
-                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-            )
-        );
-        assert_eq!(
-            artifact,
-            toml::from_str::<Artifact<GoVersion, Sha256, Option<()>>>(&serialized).unwrap()
-        );
-    }
 }

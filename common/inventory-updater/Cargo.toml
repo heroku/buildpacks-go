@@ -1,0 +1,17 @@
+[package]
+name = "inventory-updater"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+heroku-go-utils = { path = "../go-utils" }
+keep_a_changelog_file = "0.1"
+libherokubuildpack = { workspace = true }
+serde = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+ureq = { workspace = true }
+
+[lints]
+workspace = true
