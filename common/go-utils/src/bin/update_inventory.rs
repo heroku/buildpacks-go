@@ -59,7 +59,7 @@ fn main() {
         }
 
         let mut versions: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
-        versions.sort();
+        versions.sort_unstable();
         versions.dedup();
         let versions_str = versions
             .iter()
