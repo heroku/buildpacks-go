@@ -31,11 +31,11 @@ fn main() {
         process::exit(4);
     });
 
-    let inventory = Inventory {
+    let updated_inventory = Inventory {
         artifacts: remote_artifacts,
     };
 
-    let toml = toml::to_string(&inventory).unwrap_or_else(|e| {
+    let toml = toml::to_string(&updated_inventory).unwrap_or_else(|e| {
         eprintln!("Error serializing inventory as toml: {e}");
         process::exit(6);
     });
@@ -48,11 +48,11 @@ fn main() {
     for (action, artifacts) in [
         (
             "Added",
-            difference(&inventory.artifacts, &inventory_artifacts),
+            difference(&updated_inventory.artifacts, &inventory_artifacts),
         ),
         (
             "Removed",
-            difference(&inventory_artifacts, &inventory.artifacts),
+            difference(&inventory_artifacts, &updated_inventory.artifacts),
         ),
     ] {
         if artifacts.is_empty() {
