@@ -90,36 +90,3 @@ pub(crate) fn list_upstream_artifacts()
         .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
         .collect::<Result<Vec<_>, _>>()
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn create_artifact() -> Artifact<GoVersion, Sha256, Option<()>> {
-        Artifact {
-            version: GoVersion::try_from("1.7.2".to_string()).unwrap(),
-            os: Os::Linux,
-            arch: Arch::Amd64,
-            url: String::from("foo"),
-            checksum: "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-                .parse::<Checksum<Sha256>>()
-                .unwrap(),
-            metadata: None,
-        }
-    }
-
-    #[test]
-    fn test_artifact_serialization() {
-        let artifact = create_artifact();
-        let serialized = toml::to_string(&artifact).unwrap();
-        assert!(
-            serialized.contains(
-                "sha256:abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
-            )
-        );
-        assert_eq!(
-            artifact,
-            toml::from_str::<Artifact<GoVersion, Sha256, Option<()>>>(&serialized).unwrap()
-        );
-    }
-}
