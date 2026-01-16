@@ -59,13 +59,14 @@ fn main() {
             continue;
         }
 
-        let mut list: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
-        list.sort();
-        list.dedup();
+        let mut versions: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
+        versions.sort();
+        versions.dedup();
         println!(
             "{} {}.",
             action,
-            list.iter()
+            versions
+                .iter()
                 .map(ToString::to_string)
                 .collect::<Vec<_>>()
                 .join(", ")
