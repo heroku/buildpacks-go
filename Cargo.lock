@@ -616,15 +616,11 @@ dependencies = [
 name = "heroku-go-utils"
 version = "0.0.0"
 dependencies = [
- "keep_a_changelog_file",
  "libherokubuildpack",
  "regex",
  "semver",
  "serde",
- "sha2",
  "thiserror 2.0.18",
- "toml",
- "ureq",
 ]
 
 [[package]]
@@ -837,6 +833,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "79cf5c93f93228cf8efb3ba362535fb11199ac548a09ce117c9b1adc3030d706"
 dependencies = [
  "rustversion",
+]
+
+[[package]]
+name = "inventory-updater"
+version = "0.1.0"
+dependencies = [
+ "heroku-go-utils",
+ "keep_a_changelog_file",
+ "libherokubuildpack",
+ "serde",
+ "sha2",
+ "thiserror 2.0.18",
+ "toml",
+ "ureq",
 ]
 
 [[package]]
