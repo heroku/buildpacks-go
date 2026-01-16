@@ -66,6 +66,7 @@ fn main() {
             .map(ToString::to_string)
             .collect::<Vec<_>>()
             .join(", ");
+
         println!("{action} {versions_str}.");
     }
 }
