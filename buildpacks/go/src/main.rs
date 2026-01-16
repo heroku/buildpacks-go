@@ -25,8 +25,8 @@ use libcnb::generic::GenericMetadata;
 use libcnb::generic::GenericPlatform;
 use libcnb::layer_env::Scope;
 use libcnb::{Buildpack, Env, buildpack_main};
-use libherokubuildpack::inventory::Inventory;
 use libherokubuildpack::inventory::artifact::{Arch, Os};
+use libherokubuildpack::inventory::{Inventory, ParseInventoryError};
 use sha2::Sha256;
 use std::env::consts;
 use std::path::Path;
@@ -84,8 +84,9 @@ impl Buildpack for GoBuildpack {
             "});
         }
 
-        let inv: Inventory<GoVersion, Sha256, Option<()>> =
-            toml::from_str(INVENTORY).map_err(GoBuildpackError::InventoryParse)?;
+        let inv = INVENTORY
+            .parse::<Inventory<GoVersion, Sha256, Option<()>>>()
+            .map_err(GoBuildpackError::InventoryParse)?;
 
         let config = cfg::read_gomod_config(context.app_dir.join("go.mod"))
             .map_err(GoBuildpackError::GoModConfig)?;
@@ -198,7 +199,7 @@ enum GoBuildpackError {
     #[error("{0}")]
     TargetLayer(#[from] TargetLayerError),
     #[error("Couldn't parse go artifact inventory: {0}")]
-    InventoryParse(toml::de::Error),
+    InventoryParse(ParseInventoryError),
     #[error("Couldn't resolve go version for: {0}")]
     VersionResolution(semver::VersionReq),
     #[error("Launch process error: {0}")]
