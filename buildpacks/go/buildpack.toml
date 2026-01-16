@@ -2,7 +2,7 @@ api = "0.10"
 
 [buildpack]
 id = "heroku/go"
-version = "2.1.7"
+version = "2.1.8"
 name = "Heroku Go"
 homepage = "https://github.com/heroku/buildpacks-go"
 description = "Heroku's buildpack for Go applications."
