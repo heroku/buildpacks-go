@@ -2,7 +2,7 @@
 #![allow(unused_crate_dependencies)]
 
 use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
-use libherokubuildpack::inventory::{Inventory, artifact::Artifact};
+use libherokubuildpack::inventory::Inventory;
 use sha2::Sha256;
 use std::{env, fs, process};
 
@@ -45,14 +45,14 @@ fn main() {
         process::exit(7);
     });
 
-    let remote_artifacts: Vec<Artifact<GoVersion, Sha256, Option<()>>> =
-        inventory.artifacts.into_iter().collect();
-
     for (action, artifacts) in [
-        ("Added", difference(&remote_artifacts, &inventory_artifacts)),
+        (
+            "Added",
+            difference(&inventory.artifacts, &inventory_artifacts),
+        ),
         (
             "Removed",
-            difference(&inventory_artifacts, &remote_artifacts),
+            difference(&inventory_artifacts, &inventory.artifacts),
         ),
     ] {
         if artifacts.is_empty() {
