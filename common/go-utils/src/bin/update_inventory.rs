@@ -13,7 +13,7 @@ fn main() {
         process::exit(2);
     });
 
-    let current_inventory = fs::read_to_string(&inventory_path)
+    let old_inventory = fs::read_to_string(&inventory_path)
         .unwrap_or_else(|e| {
             eprintln!("Error reading inventory at '{inventory_path}': {e}");
             std::process::exit(1);
@@ -30,11 +30,11 @@ fn main() {
         process::exit(4);
     });
 
-    let updated_inventory = Inventory {
+    let new_inventory = Inventory {
         artifacts: remote_artifacts,
     };
 
-    let toml = toml::to_string(&updated_inventory).unwrap_or_else(|e| {
+    let toml = toml::to_string(&new_inventory).unwrap_or_else(|e| {
         eprintln!("Error serializing inventory as toml: {e}");
         process::exit(6);
     });
@@ -47,11 +47,11 @@ fn main() {
     for (action, artifacts) in [
         (
             "Added",
-            difference(&updated_inventory.artifacts, &current_inventory.artifacts),
+            difference(&new_inventory.artifacts, &old_inventory.artifacts),
         ),
         (
             "Removed",
-            difference(&current_inventory.artifacts, &updated_inventory.artifacts),
+            difference(&old_inventory.artifacts, &new_inventory.artifacts),
         ),
     ] {
         if artifacts.is_empty() {
