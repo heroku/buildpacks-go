@@ -232,7 +232,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.21.8, go1.22.1, go1.9.2rc2, go1.6rc2, go1.6rc1, go1.6beta2. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+- Support for go1.21.8, go1.22.1.
+- Support for go1.9.2rc2, go1.6rc2, go1.6rc1, go1.6beta2. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
 
 ### Changed
 
