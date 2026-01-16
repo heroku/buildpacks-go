@@ -63,8 +63,7 @@ fn main() {
         versions.sort();
         versions.dedup();
         println!(
-            "{} {}.",
-            action,
+            "{action} {}.",
             versions
                 .iter()
                 .map(ToString::to_string)
