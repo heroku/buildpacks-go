@@ -58,13 +58,14 @@ fn main() {
     .iter()
     .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
     .for_each(|(action, artifacts)| {
-        let mut list: Vec<_> = artifacts.iter().collect();
-        list.sort_by_key(|a| &a.version);
+        let mut list: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
+        list.sort();
+        list.dedup();
         println!(
             "{} {}.",
             action,
             list.iter()
-                .map(|artifact| format!("{} ({}-{})", artifact.version, artifact.os, artifact.arch))
+                .map(ToString::to_string)
                 .collect::<Vec<_>>()
                 .join(", ")
         );
