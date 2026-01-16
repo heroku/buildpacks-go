@@ -28,13 +28,7 @@ jobs:
 
       - name: Rebuild Inventory
         id: rebuild-inventory
-        run: |
-          delimiter="$(openssl rand -hex 8)"
-          {
-            echo "msg<<${delimiter}"
-            cargo run --bin update_inventory buildpacks/go/inventory.toml buildpacks/go/CHANGELOG.md
-            echo "${delimiter}"
-          } >> $GITHUB_OUTPUT
+        run: cargo run --bin update_inventory buildpacks/go/inventory.toml buildpacks/go/CHANGELOG.md
 
       - name: Create Pull Request
         id: pr
@@ -42,11 +36,11 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
           title: "Update Go Inventory"
-          commit-message: "Update Inventory for heroku/go\n\n${{ steps.rebuild-inventory.outputs.msg }}"
+          commit-message: "Update Inventory for heroku/go"
           committer: ${{ vars.LINGUIST_GH_APP_USERNAME }} <${{ vars.LINGUIST_GH_APP_EMAIL }}>
           author: ${{ vars.LINGUIST_GH_APP_USERNAME }} <${{ vars.LINGUIST_GH_APP_EMAIL }}>
           branch: update-go-inventory
-          body: "Automated pull-request to update heroku/go inventory:\n\n${{ steps.rebuild-inventory.outputs.msg }}"
+          body: "Automated pull-request to update heroku/go inventory"
 
       - name: Configure PR
         if: steps.pr.outputs.pull-request-operation == 'created'

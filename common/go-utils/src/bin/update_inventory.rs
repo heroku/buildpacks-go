@@ -74,32 +74,6 @@ fn main() {
         eprintln!("Failed to write to changelog: {e}");
         process::exit(10);
     });
-
-    for (action, artifacts) in [
-        (
-            "Added",
-            difference(&new_inventory.artifacts, &old_inventory.artifacts),
-        ),
-        (
-            "Removed",
-            difference(&old_inventory.artifacts, &new_inventory.artifacts),
-        ),
-    ] {
-        if artifacts.is_empty() {
-            continue;
-        }
-
-        let mut versions: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
-        versions.sort_unstable();
-        versions.dedup();
-        let versions_str = versions
-            .iter()
-            .map(ToString::to_string)
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        println!("{action} {versions_str}.");
-    }
 }
 
 /// Finds the difference between two slices.
