@@ -61,14 +61,12 @@ fn main() {
         let mut versions: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
         versions.sort();
         versions.dedup();
-        println!(
-            "{action} {}.",
-            versions
-                .iter()
-                .map(ToString::to_string)
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
+        let versions_str = versions
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join(", ");
+        println!("{action} {versions_str}.",);
     }
 }
 
