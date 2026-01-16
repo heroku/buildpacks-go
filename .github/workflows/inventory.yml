@@ -26,6 +26,9 @@ jobs:
       - name: Update Rust toolchain
         run: rustup update
 
+      - name: Rust cache
+        uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+
       - name: Rebuild Inventory
         id: rebuild-inventory
         run: cargo run --bin update_inventory buildpacks/go/inventory.toml buildpacks/go/CHANGELOG.md
