@@ -48,16 +48,17 @@ fn main() {
     let remote_artifacts: Vec<Artifact<GoVersion, Sha256, Option<()>>> =
         inventory.artifacts.into_iter().collect();
 
-    [
+    for (action, artifacts) in [
         ("Added", difference(&remote_artifacts, &inventory_artifacts)),
         (
             "Removed",
             difference(&inventory_artifacts, &remote_artifacts),
         ),
-    ]
-    .iter()
-    .filter(|(_, artifact_diff)| !artifact_diff.is_empty())
-    .for_each(|(action, artifacts)| {
+    ] {
+        if artifacts.is_empty() {
+            continue;
+        }
+
         let mut list: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
         list.sort();
         list.dedup();
@@ -69,7 +70,7 @@ fn main() {
                 .collect::<Vec<_>>()
                 .join(", ")
         );
-    });
+    }
 }
 
 /// Finds the difference between two slices.
