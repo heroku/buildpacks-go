@@ -13,7 +13,7 @@ fn main() {
         process::exit(2);
     });
 
-    let inventory_artifacts = fs::read_to_string(&inventory_path)
+    let current_inventory = fs::read_to_string(&inventory_path)
         .unwrap_or_else(|e| {
             eprintln!("Error reading inventory at '{inventory_path}': {e}");
             std::process::exit(1);
@@ -22,8 +22,7 @@ fn main() {
         .unwrap_or_else(|e| {
             eprintln!("Error parsing inventory file at '{inventory_path}': {e}");
             process::exit(1);
-        })
-        .artifacts;
+        });
 
     // List available upstream release versions.
     let remote_artifacts = list_upstream_artifacts().unwrap_or_else(|e| {
@@ -48,11 +47,11 @@ fn main() {
     for (action, artifacts) in [
         (
             "Added",
-            difference(&updated_inventory.artifacts, &inventory_artifacts),
+            difference(&updated_inventory.artifacts, &current_inventory.artifacts),
         ),
         (
             "Removed",
-            difference(&inventory_artifacts, &updated_inventory.artifacts),
+            difference(&current_inventory.artifacts, &updated_inventory.artifacts),
         ),
     ] {
         if artifacts.is_empty() {
