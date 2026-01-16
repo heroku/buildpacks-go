@@ -32,12 +32,9 @@ jobs:
           delimiter="$(openssl rand -hex 8)"
           {
             echo "msg<<${delimiter}"
-            cargo run --bin update_inventory buildpacks/go/inventory.toml
+            cargo run --bin update_inventory buildpacks/go/inventory.toml buildpacks/go/CHANGELOG.md
             echo "${delimiter}"
           } >> $GITHUB_OUTPUT
-
-      - name: Update Changelog
-        run: echo "${{ steps.rebuild-inventory.outputs.msg }}" | xargs -r -I '{}' perl -i -p -e 's/\[Unreleased\]\s+/[Unreleased]\n\n- {}/' buildpacks/go/CHANGELOG.md
 
       - name: Create Pull Request
         id: pr

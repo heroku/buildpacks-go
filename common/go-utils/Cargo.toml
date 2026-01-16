@@ -8,6 +8,7 @@ workspace = true
 
 [dependencies]
 libherokubuildpack = { workspace = true }
+keep_a_changelog_file = "0.1"
 regex = "1"
 semver = { workspace = true }
 serde = { workspace = true }
