@@ -31,7 +31,7 @@ jobs:
 
       - name: Rebuild Inventory
         id: rebuild-inventory
-        run: cargo run --bin update_inventory buildpacks/go/inventory.toml buildpacks/go/CHANGELOG.md
+        run: cargo run --package inventory-updater buildpacks/go/inventory.toml buildpacks/go/CHANGELOG.md
 
       - name: Create Pull Request
         id: pr
