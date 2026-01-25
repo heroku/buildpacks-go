@@ -5,12 +5,14 @@
 
 mod cfg;
 mod cmd;
+mod exec_env;
 mod layers;
 mod proc;
 mod tgz;
 
 use bullet_stream::global::print;
 use bullet_stream::style;
+use exec_env::{ExecutionEnvironment, ExecutionEnvironmentError};
 use heroku_go_utils::vrs::GoVersion;
 use indoc::formatdoc;
 use layers::build::{BuildLayerError, handle_build_layer};
@@ -66,7 +68,11 @@ impl Buildpack for GoBuildpack {
         print::bullet("Reading build configuration");
 
         let started = Instant::now();
-        let mut go_env = Env::from_current();
+        let go_env = Env::from_current();
+        let exec_env =
+            ExecutionEnvironment::from_env(&go_env).map_err(GoBuildpackError::ExecutionEnv)?;
+
+        let mut go_env = go_env;
         let go_prefixed_envs = go_env
             .iter()
             .map(|(key, _)| key.to_string_lossy())
@@ -105,7 +111,7 @@ impl Buildpack for GoBuildpack {
         ));
 
         print::bullet("Installing Go distribution");
-        go_env = handle_dist_layer(&context, artifact)?
+        go_env = handle_dist_layer(&context, artifact, exec_env)?
             .read_env()?
             .apply(Scope::Build, &go_env);
 
@@ -149,6 +155,10 @@ impl Buildpack for GoBuildpack {
             }
         }
 
+        if matches!(exec_env, ExecutionEnvironment::Test) {
+            print::bullet("Go toolchain available at runtime");
+        }
+
         print::all_done(&Some(started));
         BuildResultBuilder::new()
             .launch(LaunchBuilder::new().processes(procs).build())
@@ -163,6 +173,7 @@ impl Buildpack for GoBuildpack {
                     GoBuildpackError::BuildLayer(_) => "build layer",
                     GoBuildpackError::DepsLayer(_) => "dependency layer",
                     GoBuildpackError::DistLayer(_) => "distribution layer",
+                    GoBuildpackError::ExecutionEnv(_) => "execution environment",
                     GoBuildpackError::TargetLayer(_) => "target layer",
                     GoBuildpackError::GoModConfig(_) => "go.mod",
                     GoBuildpackError::InventoryParse(_) => "inventory parse",
@@ -186,6 +197,8 @@ impl Buildpack for GoBuildpack {
 enum GoBuildpackError {
     #[error("{0}")]
     BuildLayer(#[from] BuildLayerError),
+    #[error("{0}")]
+    ExecutionEnv(#[from] ExecutionEnvironmentError),
     #[error("Couldn't run `go build`: {0}")]
     GoBuild(cmd::Error),
     #[error("Couldn't run `go list`: {0}")]
