@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added support for `CNB_EXEC_ENV=test` environment variable to enable test execution mode. When set, the Go distribution is available at runtime. This enables Heroku CI support for the classic buildpack wrapper.
+
 ## [2.1.8] - 2026-01-16
 
 - Added go1.24.12 (linux-amd64), go1.24.12 (linux-arm64), go1.25.6 (linux-amd64), go1.25.6 (linux-arm64), go1.26rc2 (linux-amd64), go1.26rc2 (linux-arm64).

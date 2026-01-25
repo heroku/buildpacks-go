@@ -1,3 +1,4 @@
+use crate::exec_env::ExecutionEnvironment;
 use crate::{GoBuildpack, GoBuildpackError, tgz};
 use bullet_stream::global::print;
 use heroku_go_utils::vrs::GoVersion;
@@ -22,16 +23,18 @@ pub(crate) enum DistLayerError {
     Tgz(tgz::Error),
 }
 
-/// Downloads and installs the Go distribution / toolchain.
 pub(crate) fn handle_dist_layer(
     context: &BuildContext<GoBuildpack>,
     artifact: &Artifact<GoVersion, Sha256, Option<()>>,
+    exec_env: ExecutionEnvironment,
 ) -> libcnb::Result<LayerRef<GoBuildpack, (), ()>, GoBuildpackError> {
+    let launch = matches!(exec_env, ExecutionEnvironment::Test);
+
     let layer_ref = context.cached_layer(
         layer_name!("go_dist"),
         CachedLayerDefinition {
             build: true,
-            launch: false,
+            launch,
             invalid_metadata_action: &|_| InvalidMetadataAction::DeleteLayer,
             restored_layer_action: &|restored_metadata: &DistLayerMetadata, _| {
                 if artifact == &restored_metadata.artifact {
@@ -68,13 +71,13 @@ pub(crate) fn handle_dist_layer(
             layer_ref.write_env(
                 LayerEnv::new()
                     .chainable_insert(
-                        Scope::Build,
+                        if launch { Scope::All } else { Scope::Build },
                         ModificationBehavior::Override,
                         "GOROOT",
                         layer_ref.path(),
                     )
                     .chainable_insert(
-                        Scope::Build,
+                        if launch { Scope::All } else { Scope::Build },
                         ModificationBehavior::Override,
                         "GO111MODULE",
                         "on",

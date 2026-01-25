@@ -230,3 +230,18 @@ fn test_environment_variables_passed_to_subprocesses() {
         });
     });
 }
+
+#[test]
+#[ignore = "integration test"]
+fn test_cnb_exec_env_test() {
+    let mut build_config: BuildConfig = IntegrationTestConfig::new("basic_http_122").into();
+    build_config.env("CNB_EXEC_ENV", "test");
+
+    TestRunner::default().build(build_config, |ctx| {
+        let logs = format!("{}\n{}", ctx.pack_stdout, ctx.pack_stderr);
+        assert_contains!(logs, "Go toolchain available at runtime");
+
+        let output = ctx.run_shell_command("go version").stdout;
+        assert_contains!(output, "go version go1.22.");
+    });
+}
