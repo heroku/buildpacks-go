@@ -13,7 +13,7 @@ hex = "0.4.3"
 flate2 = { version = "1", default-features = false, features = ["zlib"] }
 libcnb = { workspace = true }
 libherokubuildpack = { workspace = true }
-retry = { version = "2.1.0", default-features = false }
+retry = { version = "2.2.0", default-features = false }
 semver = { workspace = true }
 serde = { workspace = true }
 sha2 = { workspace = true }
