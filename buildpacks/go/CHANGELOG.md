@@ -11,13 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.24.13, go1.25.7, go1.26rc3.
+- Support for go1.24.13.
+- Support for go1.25.7.
+- Support for go1.26rc3.
 
 ## [2.1.8] - 2026-01-16
 
 ### Added
 
-- Support for go1.24.12, go1.25.6, go1.26rc2.
+- Support for go1.24.12.
+- Support for go1.25.6.
+- Support for go1.26rc2.
 
 ## [2.1.7] - 2026-01-08
 
@@ -29,31 +33,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.24.11, go1.25.5.
+- Support for go1.24.11.
+- Support for go1.25.5.
 
 ## [2.1.5] - 2025-11-06
 
 ### Added
 
-- Support for go1.24.10, go1.25.4.
+- Support for go1.24.10.
+- Support for go1.25.4.
 
 ## [2.1.4] - 2025-10-14
 
 ### Added
 
-- Support for go1.24.9, go1.25.3.
+- Support for go1.24.9.
+- Support for go1.25.3.
 
 ## [2.1.3] - 2025-10-07
 
 ### Added
 
-- Support for go1.24.8, go1.25.2.
+- Support for go1.24.8.
+- Support for go1.25.2.
 
 ## [2.1.2] - 2025-09-08
 
 ### Added
 
-- Support for go1.24.7, go1.25.1.
+- Support for go1.24.7.
+- Support for go1.25.1.
 
 ## [2.1.1] - 2025-08-14
 
@@ -65,7 +74,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.23.12, go1.24.6, go1.25rc3.
+- Support for go1.23.12.
+- Support for go1.24.6.
+- Support for go1.25rc3.
 
 ## [2.0.0] - 2025-08-04
 
@@ -83,19 +94,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.23.11, go1.24.5, go1.25rc2.
+- Support for go1.23.11.
+- Support for go1.24.5.
+- Support for go1.25rc2.
 
 ## [1.0.2] - 2025-06-13
 
 ### Added
 
-- Support for go1.23.10, go1.24.4, go1.25rc1.
+- Support for go1.23.10.
+- Support for go1.24.4.
+- Support for go1.25rc1.
 
 ## [1.0.1] - 2025-05-14
 
 ### Added
 
-- Support for go1.23.9, go1.24.3.
+- Support for go1.23.9.
+- Support for go1.24.3.
 
 ## [1.0.0] - 2025-04-24
 
@@ -107,7 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.23.8, go1.24.2.
+- Support for go1.23.8.
+- Support for go1.24.2.
 
 ## [0.5.7] - 2025-03-26
 
@@ -115,7 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.23.7, go1.24.1.
+- Support for go1.23.7.
+- Support for go1.24.1.
 
 ## [0.5.5] - 2025-03-03
 
@@ -133,13 +151,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.22.12, go1.23.6, go1.24rc3.
+- Support for go1.22.12.
+- Support for go1.23.6.
+- Support for go1.24rc3.
 
 ## [0.5.2] - 2025-01-21
 
 ### Added
 
-- Support for go1.22.11, go1.23.5, go1.24rc2.
+- Support for go1.22.11.
+- Support for go1.23.5.
+- Support for go1.24rc2.
 
 ## [0.5.1] - 2025-01-06
 
@@ -157,25 +179,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.22.10, go1.23.4.
+- Support for go1.22.10.
+- Support for go1.23.4.
 
 ## [0.4.6] - 2024-11-12
 
 ### Added
 
-- Support for go1.22.9, go1.23.3.
+- Support for go1.22.9.
+- Support for go1.23.3.
 
 ## [0.4.5] - 2024-10-01
 
 ### Added
 
-- Support for go1.22.8, go1.23.2.
+- Support for go1.22.8.
+- Support for go1.23.2.
 
 ## [0.4.4] - 2024-09-05
 
 ### Added
 
-- Support for go1.22.7, go1.23.1.
+- Support for go1.22.7.
+- Support for go1.23.1.
 
 ## [0.4.3] - 2024-08-13
 
@@ -187,19 +213,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.21.13, go1.22.6, go1.23rc2.
+- Support for go1.21.13.
+- Support for go1.22.6.
+- Support for go1.23rc2.
 
 ## [0.4.1] - 2024-07-15
 
 ### Added
 
-- Support for go1.21.12, go1.22.5, go1.23rc1.
+- Support for go1.21.12.
+- Support for go1.22.5.
+- Support for go1.23rc1.
 
 ## [0.4.0] - 2024-06-04
 
 ### Added
 
-- Support for go1.21.11, go1.22.4.
+- Support for go1.21.11.
+- Support for go1.22.4.
 
 ### Changed
 
@@ -210,7 +241,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.21.10, go1.22.3.
+- Support for go1.21.10.
+- Support for go1.22.3.
 
 ## [0.3.0] - 2024-05-02
 
@@ -222,7 +254,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.21.9, go1.22.2.
+- Support for go1.21.9.
+- Support for go1.22.2.
 - Added linux aarch64 artifacts for >= go1.8.5. ([#230](https://github.com/heroku/buildpacks-go/pull/230))
 - Added linux/arm64 buildpack target. ([#233](https://github.com/heroku/buildpacks-go/pull/233))
 
@@ -234,7 +267,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.21.8, go1.22.1.
+- Support for go1.21.8.
+- Support for go1.22.1.
 - Support for go1.9.2rc2, go1.6rc2, go1.6rc1, go1.6beta2. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
 
 ### Changed
@@ -250,7 +284,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.20.14, go1.21.7, go1.22.0.
+- Support for go1.20.14.
+- Support for go1.21.7.
+- Support for go1.22.0.
 
 ## [0.1.15] - 2024-02-06
 
@@ -262,7 +298,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.20.13, go1.21.6.
+- Support for go1.20.13.
+- Support for go1.21.6.
 
 ### Changed
 
