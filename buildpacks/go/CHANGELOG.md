@@ -316,7 +316,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for go1.20.11 and go1.21.4. ([#168](https://github.com/heroku/buildpacks-go/pull/184))
+- Support for go1.20.11 and go1.21.4. ([#184](https://github.com/heroku/buildpacks-go/pull/184))
 
 ## [0.1.11] - 2023-10-24
 
