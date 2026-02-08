@@ -61,12 +61,12 @@ fn main() {
 
     update_changelog(
         &mut changelog,
-        ChangeGroup::Added,
+        &ChangeGroup::Added,
         &difference(&new_inventory.artifacts, &old_inventory.artifacts),
     );
     update_changelog(
         &mut changelog,
-        ChangeGroup::Removed,
+        &ChangeGroup::Removed,
         &difference(&old_inventory.artifacts, &new_inventory.artifacts),
     );
 
@@ -84,21 +84,17 @@ fn difference<'a, T: Eq>(a: &'a [T], b: &'a [T]) -> Vec<&'a T> {
 /// Helper function to update the changelog.
 fn update_changelog(
     changelog: &mut Changelog,
-    change_group: ChangeGroup,
+    change_group: &ChangeGroup,
     artifacts: &[&Artifact<GoVersion, Sha256, Option<()>>],
 ) {
     if !artifacts.is_empty() {
         let mut versions: Vec<_> = artifacts.iter().map(|artifact| &artifact.version).collect();
         versions.sort_unstable();
         versions.dedup();
-        let versions_str = versions
-            .iter()
-            .map(ToString::to_string)
-            .collect::<Vec<_>>()
-            .join(", ");
-
-        changelog
-            .unreleased
-            .add(change_group, format!("Support for {versions_str}."));
+        for version in versions {
+            changelog
+                .unreleased
+                .add(change_group.clone(), format!("Support for {version}."));
+        }
     }
 }
