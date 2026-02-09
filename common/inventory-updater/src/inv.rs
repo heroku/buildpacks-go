@@ -89,13 +89,17 @@ pub(crate) fn list_upstream_artifacts()
     let min_arm_version = GoVersion::try_from("go1.8.5".to_string())
         .expect("Minimum supported ARM version should always be parseable");
 
+    // Note: `go1.5.3`` (the earliest supported version) and up include checksums for all files,
+    // with the notable exception of `go1.6beta1`.
+    // TODO: Drop this if/when we remove support for <go1.6.0
+    let excluded_versions = [GoVersion::try_from("go1.6beta1".to_string())
+        .expect("Excluded version should always be parseable")];
+
     releases
         .into_iter()
-        .filter(|release| release.version >= min_version)
-        // Ensure checksums exist; skip releases with files that have empty sha256.
-        // Note: `go1.5.3`` (the earliest supported version) and up include checksums for all files,
-        // with the notable exception of `go1.6beta1`.
-        .filter(|release| release.files.iter().all(|file| !file.sha256.is_empty()))
+        .filter(|release| {
+            release.version >= min_version && !excluded_versions.contains(&release.version)
+        })
         .flat_map(|release| {
             let required_archs = if release.version >= min_arm_version {
                 vec!["amd64", "arm64"]
