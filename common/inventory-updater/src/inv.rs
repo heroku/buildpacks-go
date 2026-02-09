@@ -11,6 +11,7 @@ const GO_HOST_URL: &str = "https://go.dev/dl";
 
 #[derive(Debug, Deserialize)]
 struct GoRelease {
+    version: GoVersion,
     files: Vec<GoFile>,
 }
 
@@ -58,6 +59,8 @@ pub(crate) enum ListUpstreamArtifactsError {
     ParseJsonResponse(Box<ureq::Error>),
     #[error(transparent)]
     Conversion(#[from] GoFileConversionError),
+    #[error("Go version {version} is missing the linux/{arch} artifact")]
+    MissingArtifact { version: GoVersion, arch: String }, // New variant
 }
 
 /// List known go artifacts from releases on go.dev.
@@ -74,19 +77,43 @@ pub(crate) enum ListUpstreamArtifactsError {
 /// as json and Go version parsing issues, will return an error.
 pub(crate) fn list_upstream_artifacts()
 -> Result<Vec<Artifact<GoVersion, Sha256, Option<()>>>, ListUpstreamArtifactsError> {
-    ureq::get(GO_RELEASES_URL)
+    let releases: Vec<GoRelease> = ureq::get(GO_RELEASES_URL)
         .call()
         .map_err(|e| ListUpstreamArtifactsError::InvalidResponse(Box::new(e)))?
         .body_mut()
-        .read_json::<Vec<GoRelease>>()
-        .map_err(|e| ListUpstreamArtifactsError::ParseJsonResponse(Box::new(e)))?
-        .iter()
-        .flat_map(|release| &release.files)
-        .filter(|file| {
-            !file.sha256.is_empty()
-                && file.os == "linux"
-                && (file.arch == "amd64" || file.arch == "arm64")
+        .read_json()
+        .map_err(|e| ListUpstreamArtifactsError::ParseJsonResponse(Box::new(e)))?;
+
+    let min_version = GoVersion::try_from("go1.5.3".to_string())
+        .expect("Minimum supported version should always be parseable");
+    let min_arm_version = GoVersion::try_from("go1.8.5".to_string())
+        .expect("Minimum supported ARM version should always be parseable");
+
+    releases
+        .into_iter()
+        .filter(|release| release.version >= min_version)
+        // Ensure checksums exist; skip releases with files that have empty sha256.
+        // Note: `go1.5.3`` (the earliest supported version) and up include checksums for all files,
+        // with the notable exception of `go1.6beta1`.
+        .filter(|release| release.files.iter().all(|file| !file.sha256.is_empty()))
+        .flat_map(|release| {
+            let required_archs = if release.version >= min_arm_version {
+                vec!["amd64", "arm64"]
+            } else {
+                vec!["amd64"]
+            };
+
+            required_archs.into_iter().map(move |arch| {
+                release
+                    .files
+                    .iter()
+                    .find(|file| file.os == "linux" && file.arch == arch)
+                    .ok_or_else(|| ListUpstreamArtifactsError::MissingArtifact {
+                        version: release.version.clone(),
+                        arch: arch.to_string(),
+                    })
+                    .and_then(|file| Ok(Artifact::try_from(file)?))
+            })
         })
-        .map(|file| Artifact::try_from(file).map_err(ListUpstreamArtifactsError::Conversion))
-        .collect::<Result<Vec<_>, _>>()
+        .collect()
 }
