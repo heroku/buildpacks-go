@@ -63,6 +63,8 @@ pub(crate) enum ListUpstreamArtifactsError {
     MissingArtifact { version: GoVersion, arch: String }, // New variant
 }
 
+const REQUIRED_ARCHS: &[&str] = &["amd64", "arm64"];
+
 /// List known go artifacts from releases on go.dev.
 ///
 /// # Example
@@ -84,26 +86,18 @@ pub(crate) fn list_upstream_artifacts()
         .read_json()
         .map_err(|e| ListUpstreamArtifactsError::ParseJsonResponse(Box::new(e)))?;
 
-    let min_version = GoVersion::try_from("go1.6".to_string())
+    let min_version = GoVersion::try_from("go1.8.5".to_string())
         .expect("Minimum supported version should always be parseable");
-    let min_arm_version = GoVersion::try_from("go1.8.5".to_string())
-        .expect("Minimum supported ARM version should always be parseable");
 
     releases
         .into_iter()
         .filter(|release| release.version >= min_version)
         .flat_map(|release| {
-            let required_archs = if release.version >= min_arm_version {
-                vec!["amd64", "arm64"]
-            } else {
-                vec!["amd64"]
-            };
-
-            required_archs.into_iter().map(move |arch| {
+            REQUIRED_ARCHS.iter().map(move |arch| {
                 release
                     .files
                     .iter()
-                    .find(|file| file.os == "linux" && file.arch == arch)
+                    .find(|file| file.os == "linux" && file.arch == *arch)
                     .ok_or_else(|| ListUpstreamArtifactsError::MissingArtifact {
                         version: release.version.clone(),
                         arch: arch.to_string(),
