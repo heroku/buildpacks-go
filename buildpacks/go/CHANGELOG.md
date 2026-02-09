@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Support for < go1.6.
+- Support for < go1.8.5.
 
 ## [2.1.10] - 2026-02-10
 
