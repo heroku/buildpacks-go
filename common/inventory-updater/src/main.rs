@@ -1,7 +1,7 @@
-// Required due to: https://github.com/rust-lang/rust/issues/95513
-#![allow(unused_crate_dependencies)]
+mod inv;
 
-use heroku_go_utils::{inv::list_upstream_artifacts, vrs::GoVersion};
+use crate::inv::list_upstream_artifacts;
+use heroku_go_utils::vrs::GoVersion;
 use keep_a_changelog_file::{ChangeGroup, Changelog};
 use libherokubuildpack::inventory::{Inventory, artifact::Artifact};
 use sha2::Sha256;
@@ -12,7 +12,7 @@ fn main() {
     let (inventory_path, changelog_path) = {
         let args: Vec<String> = env::args().collect();
         if args.len() != 3 {
-            eprintln!("Usage: update_inventory <path/to/inventory.toml> <path/to/CHANGELOG.md>");
+            eprintln!("Usage: inventory-updater <path/to/inventory.toml> <path/to/CHANGELOG.md>");
             process::exit(2);
         }
         (args[1].clone(), args[2].clone())
@@ -39,12 +39,7 @@ fn main() {
         artifacts: remote_artifacts,
     };
 
-    let toml = toml::to_string(&new_inventory).unwrap_or_else(|e| {
-        eprintln!("Error serializing inventory as toml: {e}");
-        process::exit(6);
-    });
-
-    fs::write(&inventory_path, toml).unwrap_or_else(|e| {
+    fs::write(&inventory_path, new_inventory.to_string()).unwrap_or_else(|e| {
         eprintln!("Error writing inventory to file: {e}");
         process::exit(7);
     });
