@@ -9,43 +9,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.9] - 2026-02-04
 
-- Added go1.24.13 (linux-amd64), go1.24.13 (linux-arm64), go1.25.7 (linux-amd64), go1.25.7 (linux-arm64), go1.26rc3 (linux-amd64), go1.26rc3 (linux-arm64).
+### Added
+
+- Support for go1.24.13.
+- Support for go1.25.7.
+- Support for go1.26rc3.
 
 ## [2.1.8] - 2026-01-16
 
-- Added go1.24.12 (linux-amd64), go1.24.12 (linux-arm64), go1.25.6 (linux-amd64), go1.25.6 (linux-arm64), go1.26rc2 (linux-amd64), go1.26rc2 (linux-arm64).
+### Added
+
+- Support for go1.24.12.
+- Support for go1.25.6.
+- Support for go1.26rc2.
 
 ## [2.1.7] - 2026-01-08
 
-- Added go1.26rc1 (linux-amd64), go1.26rc1 (linux-arm64).
+### Added
+
+- Support for go1.26rc1.
 
 ## [2.1.6] - 2025-12-04
 
-- Added go1.24.11 (linux-amd64), go1.24.11 (linux-arm64), go1.25.5 (linux-amd64), go1.25.5 (linux-arm64).
+### Added
+
+- Support for go1.24.11.
+- Support for go1.25.5.
 
 ## [2.1.5] - 2025-11-06
 
-- Added go1.24.10 (linux-amd64), go1.24.10 (linux-arm64), go1.25.4 (linux-amd64), go1.25.4 (linux-arm64).
+### Added
+
+- Support for go1.24.10.
+- Support for go1.25.4.
 
 ## [2.1.4] - 2025-10-14
 
-- Added go1.24.9 (linux-amd64), go1.24.9 (linux-arm64), go1.25.3 (linux-amd64), go1.25.3 (linux-arm64).
+### Added
+
+- Support for go1.24.9.
+- Support for go1.25.3.
 
 ## [2.1.3] - 2025-10-07
 
-- Added go1.24.8 (linux-amd64), go1.24.8 (linux-arm64), go1.25.2 (linux-amd64), go1.25.2 (linux-arm64).
+### Added
+
+- Support for go1.24.8.
+- Support for go1.25.2.
 
 ## [2.1.2] - 2025-09-08
 
-- Added go1.24.7 (linux-amd64), go1.24.7 (linux-arm64), go1.25.1 (linux-amd64), go1.25.1 (linux-arm64).
+### Added
+
+- Support for go1.24.7.
+- Support for go1.25.1.
 
 ## [2.1.1] - 2025-08-14
 
-- Added go1.25.0 (linux-amd64), go1.25.0 (linux-arm64).
+### Added
+
+- Support for go1.25.0.
 
 ## [2.1.0] - 2025-08-08
 
-- Added go1.23.12 (linux-amd64), go1.23.12 (linux-arm64), go1.24.6 (linux-amd64), go1.24.6 (linux-arm64), go1.25rc3 (linux-amd64), go1.25rc3 (linux-arm64).
+### Added
+
+- Support for go1.23.12.
+- Support for go1.24.6.
+- Support for go1.25rc3.
 
 ## [2.0.0] - 2025-08-04
 
@@ -55,19 +86,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.4] - 2025-07-11
 
+### Changed
+
 - The buildpack will now retry downloading Go up to 4 times ([#386](https://github.com/heroku/buildpacks-go/pull/386))
 
 ## [1.0.3] - 2025-07-09
 
-- Added go1.23.11 (linux-amd64), go1.23.11 (linux-arm64), go1.24.5 (linux-amd64), go1.24.5 (linux-arm64), go1.25rc2 (linux-amd64), go1.25rc2 (linux-arm64).
+### Added
+
+- Support for go1.23.11.
+- Support for go1.24.5.
+- Support for go1.25rc2.
 
 ## [1.0.2] - 2025-06-13
 
-- Added go1.23.10 (linux-amd64), go1.23.10 (linux-arm64), go1.24.4 (linux-amd64), go1.24.4 (linux-arm64), go1.25rc1 (linux-amd64), go1.25rc1 (linux-arm64).
+### Added
+
+- Support for go1.23.10.
+- Support for go1.24.4.
+- Support for go1.25rc1.
 
 ## [1.0.1] - 2025-05-14
 
-- Added go1.23.9 (linux-amd64), go1.23.9 (linux-arm64), go1.24.3 (linux-amd64), go1.24.3 (linux-arm64).
+### Added
+
+- Support for go1.23.9.
+- Support for go1.24.3.
 
 ## [1.0.0] - 2025-04-24
 
@@ -77,15 +121,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.8] - 2025-04-02
 
-- Added go1.23.8 (linux-amd64), go1.23.8 (linux-arm64), go1.24.2 (linux-amd64), go1.24.2 (linux-arm64).
+### Added
+
+- Support for go1.23.8.
+- Support for go1.24.2.
 
 ## [0.5.7] - 2025-03-26
 
-- No changes.
-
 ## [0.5.6] - 2025-03-04
 
-- Added go1.23.7 (linux-amd64), go1.23.7 (linux-arm64), go1.24.1 (linux-amd64), go1.24.1 (linux-arm64).
+### Added
+
+- Support for go1.23.7.
+- Support for go1.24.1.
 
 ## [0.5.5] - 2025-03-03
 
@@ -97,25 +145,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.24.0 (linux-amd64), go1.24.0 (linux-arm64).
+- Support for go1.24.0.
 
 ## [0.5.3] - 2025-02-06
 
 ### Added
 
-- Added go1.22.12 (linux-amd64), go1.22.12 (linux-arm64), go1.23.6 (linux-amd64), go1.23.6 (linux-arm64), go1.24rc3 (linux-amd64), go1.24rc3 (linux-arm64).
+- Support for go1.22.12.
+- Support for go1.23.6.
+- Support for go1.24rc3.
 
 ## [0.5.2] - 2025-01-21
 
 ### Added
 
-- Added go1.22.11 (linux-amd64), go1.22.11 (linux-arm64), go1.23.5 (linux-amd64), go1.23.5 (linux-arm64), go1.24rc2 (linux-amd64), go1.24rc2 (linux-arm64).
+- Support for go1.22.11.
+- Support for go1.23.5.
+- Support for go1.24rc2.
 
 ## [0.5.1] - 2025-01-06
 
 ### Added
 
-- Added go1.24rc1 (linux-amd64), go1.24rc1 (linux-arm64).
+- Support for go1.24rc1.
 
 ## [0.5.0] - 2024-12-13
 
@@ -127,51 +179,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.22.10 (linux-amd64), go1.22.10 (linux-arm64), go1.23.4 (linux-amd64), go1.23.4 (linux-arm64).
+- Support for go1.22.10.
+- Support for go1.23.4.
 
 ## [0.4.6] - 2024-11-12
 
 ### Added
 
-- Added go1.22.9 (linux-amd64), go1.22.9 (linux-arm64), go1.23.3 (linux-amd64), go1.23.3 (linux-arm64).
+- Support for go1.22.9.
+- Support for go1.23.3.
 
 ## [0.4.5] - 2024-10-01
 
 ### Added
 
-- Added go1.22.8 (linux-amd64), go1.22.8 (linux-arm64), go1.23.2 (linux-amd64), go1.23.2 (linux-arm64).
+- Support for go1.22.8.
+- Support for go1.23.2.
 
 ## [0.4.4] - 2024-09-05
 
 ### Added
 
-- Added go1.22.7 (linux-amd64), go1.22.7 (linux-arm64), go1.23.1 (linux-amd64), go1.23.1 (linux-arm64).
+- Support for go1.22.7.
+- Support for go1.23.1.
 
 ## [0.4.3] - 2024-08-13
 
 ### Added
 
-- Added go1.23.0 (linux-amd64), go1.23.0 (linux-arm64).
+- Support for go1.23.0.
 
 ## [0.4.2] - 2024-08-07
 
 ### Added
 
-- Added go1.21.13 (linux-arm64), go1.21.13 (linux-amd64), go1.22.6 (linux-amd64), go1.22.6 (linux-arm64).
-- Added go1.23rc2 (linux-arm64), go1.23rc2 (linux-amd64).
+- Support for go1.21.13.
+- Support for go1.22.6.
+- Support for go1.23rc2.
 
 ## [0.4.1] - 2024-07-15
 
 ### Added
 
-- Added go1.21.12 (linux-amd64), go1.21.12 (linux-arm64), go1.22.5 (linux-amd64), go1.22.5 (linux-arm64), go1.23rc1 (linux-arm64), go1.23rc1 (linux-amd64).
+- Support for go1.21.12.
+- Support for go1.22.5.
+- Support for go1.23rc1.
 
 ## [0.4.0] - 2024-06-04
 
 ### Added
 
-- Added go1.21.11 (linux-amd64), go1.21.11 (linux-arm64).
-- Added go1.22.4 (linux-arm64), go1.22.4 (linux-amd64).
+- Support for go1.21.11.
+- Support for go1.22.4.
 
 ### Changed
 
@@ -182,7 +241,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.21.10 (linux-amd64), go1.21.10 (linux-arm64), go1.22.3 (linux-amd64), go1.22.3 (linux-arm64).
+- Support for go1.21.10.
+- Support for go1.22.3.
 
 ## [0.3.0] - 2024-05-02
 
@@ -194,7 +254,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.21.9 (linux-aarch64), go1.21.9 (linux-x86_64), go1.22.2 (linux-aarch64), go1.22.2 (linux-x86_64).
+- Support for go1.21.9.
+- Support for go1.22.2.
 - Added linux aarch64 artifacts for >= go1.8.5. ([#230](https://github.com/heroku/buildpacks-go/pull/230))
 - Added linux/arm64 buildpack target. ([#233](https://github.com/heroku/buildpacks-go/pull/233))
 
@@ -206,8 +267,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.21.8, go1.22.1.
-- Added go1.9.2rc2, go1.6rc2, go1.6rc1, go1.6beta2. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+- Support for go1.21.8.
+- Support for go1.22.1.
+- Support for go1.9.2rc2, go1.6rc2, go1.6rc1, go1.6beta2. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
 
 ### Changed
 
@@ -216,25 +278,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed go1.21rc1, go1.8.5rc4, go1.7.2, go1.5.2, go1.5.1, go1.5, go1.4.3, go1.4.2, go1.4.1, go1.4, go1.3.3, go1.3.2, go1.3.1, go1.3, go1.2.2, go1.2.1, go1.2, go1.1.2, go1.1.1, go1.1, go1.0.3, go1.0.2, go1.0.1. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
+- Support for go1.21rc1, go1.8.5rc4, go1.7.2, go1.5.2, go1.5.1, go1.5, go1.4.3, go1.4.2, go1.4.1, go1.4, go1.3.3, go1.3.2, go1.3.1, go1.3, go1.2.2, go1.2.1, go1.2, go1.1.2, go1.1.1, go1.1, go1.0.3, go1.0.2, go1.0.1. ([#216](https://github.com/heroku/buildpacks-go/pull/216))
 
 ## [0.1.16] - 2024-02-08
 
 ### Added
 
-- Added go1.20.14, go1.21.7, go1.22.0.
+- Support for go1.20.14.
+- Support for go1.21.7.
+- Support for go1.22.0.
 
 ## [0.1.15] - 2024-02-06
 
 ### Added
 
-- Added go1.22rc2.
+- Support for go1.22rc2.
 
 ## [0.1.14] - 2024-01-16
 
 ### Added
 
-- Added go1.20.13, go1.21.6.
+- Support for go1.20.13.
+- Support for go1.21.6.
 
 ### Changed
 
@@ -245,37 +310,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enabled tracing/telemetry via libcnb `trace` flag. ([#198](https://github.com/heroku/buildpacks-go/pull/198))
-- Added go1.20.12, go1.21.5, and go1.22rc1. ([#196](https://github.com/heroku/buildpacks-go/pull/196))
+- Support for go1.20.12, go1.21.5, and go1.22rc1. ([#196](https://github.com/heroku/buildpacks-go/pull/196))
 
 ## [0.1.12] - 2023-11-13
 
 ### Added
 
-- Added go1.20.11 and go1.21.4. ([#168](https://github.com/heroku/buildpacks-go/pull/184))
+- Support for go1.20.11 and go1.21.4. ([#184](https://github.com/heroku/buildpacks-go/pull/184))
 
 ## [0.1.11] - 2023-10-24
 
 ### Added
 
-- Added buildpack description to metadata used by CNB registry. ([#178](https://github.com/heroku/buildpack-go/pull/178))
+- Support for buildpack description to metadata used by CNB registry. ([#178](https://github.com/heroku/buildpack-go/pull/178))
 
 ## [0.1.10] - 2023-10-12
 
 ### Added
 
-- Added go1.20.10, go1.20.9, go1.21.2, go1.21.3. ([#168](https://github.com/heroku/buildpacks-go/pull/168))
+- Support for go1.20.10, go1.20.9, go1.21.2, go1.21.3. ([#168](https://github.com/heroku/buildpacks-go/pull/168))
 
 ## [0.1.9] - 2023-09-18
 
 ### Added
 
-- Added go1.19.13, go1.20.8, go1.21.1. ([#154](https://github.com/heroku/buildpacks-go/pull/154))
+- Support for go1.19.13, go1.20.8, go1.21.1. ([#154](https://github.com/heroku/buildpacks-go/pull/154))
 
 ## [0.1.8] - 2023-08-15
 
 ### Added
 
-- Added go1.21.0. ([#136](https://github.com/heroku/buildpacks-go/pull/136))
+- Support for go1.21.0. ([#136](https://github.com/heroku/buildpacks-go/pull/136))
 
 ### Fixed
 
@@ -285,19 +350,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.19.12, go1.20.7, go1.21rc4. ([#132](https://github.com/heroku/buildpacks-go/pull/132))
+- Support for go1.19.12, go1.20.7, go1.21rc4. ([#132](https://github.com/heroku/buildpacks-go/pull/132))
 
 ## [0.1.6] - 2023-08-01
 
 ### Added
 
-- Added go1.19.11, go1.20.6, go1.21rc1, go1.21rc2, go1.21rc3. ([#105](https://github.com/heroku/buildpacks-go/pull/105))
+- Support for go1.19.11, go1.20.6, go1.21rc1, go1.21rc2, go1.21rc3. ([#105](https://github.com/heroku/buildpacks-go/pull/105))
 
 ## [0.1.5] - 2023-06-27
 
 ### Added
 
-- Added go1.19.10, go1.20.5. ([#102](https://github.com/heroku/buildpacks-go/pull/102))
+- Support for go1.19.10, go1.20.5. ([#102](https://github.com/heroku/buildpacks-go/pull/102))
 
 ### Changed
 
@@ -307,28 +372,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added go1.19.9, go1.20.4. ([#92](https://github.com/heroku/buildpacks-go/pull/92))
+- Support for go1.19.9, go1.20.4. ([#92](https://github.com/heroku/buildpacks-go/pull/92))
 
 ## [0.1.3] - 2023-04-11
 
 ### Added
 
-- Added go1.19.8, go1.20.3. ([#83](https://github.com/heroku/buildpacks-go/pull/83))
-- Added go1.19.6, go1.19.7, go1.20.1, go1.20.2. ([#75](https://github.com/heroku/buildpacks-go/pull/75))
+- Support for go1.19.8, go1.20.3. ([#83](https://github.com/heroku/buildpacks-go/pull/83))
+- Support for go1.19.6, go1.19.7, go1.20.1, go1.20.2. ([#75](https://github.com/heroku/buildpacks-go/pull/75))
 
 ## [0.1.2] - 2023-02-06
 
 ### Added
 
-- Added go1.20. ([#65](https://github.com/heroku/buildpacks-go/pull/65))
+- Support for go1.20. ([#65](https://github.com/heroku/buildpacks-go/pull/65))
 
 ## [0.1.1] - 2023-01-23
 
 ### Added
 
-- Added go1.19.5, go1.19.4, go1.19.3, go1.19.2, go1.19.1, go1.19. ([#57](https://github.com/heroku/buildpacks-go/pull/57))
-- Added go1.18.10, go1.18.9, go1.18.7, go1.18.6, go1.18.5, go1.18.4. ([#57](https://github.com/heroku/buildpacks-go/pull/57))
-- Added go1.17.13, go1.17.12. ([#57](https://github.com/heroku/buildpacks-go/pull/57))
+- Support for go1.19.5, go1.19.4, go1.19.3, go1.19.2, go1.19.1, go1.19. ([#57](https://github.com/heroku/buildpacks-go/pull/57))
+- Support for go1.18.10, go1.18.9, go1.18.7, go1.18.6, go1.18.5, go1.18.4. ([#57](https://github.com/heroku/buildpacks-go/pull/57))
+- Support for go1.17.13, go1.17.12. ([#57](https://github.com/heroku/buildpacks-go/pull/57))
 
 ## [0.1.0] - 2022-12-01
 
