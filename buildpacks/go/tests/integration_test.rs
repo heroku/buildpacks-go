@@ -234,7 +234,7 @@ fn test_environment_variables_passed_to_subprocesses() {
 #[test]
 #[ignore = "integration test"]
 fn test_cnb_exec_env_test() {
-    let mut build_config: BuildConfig = IntegrationTestConfig::new("basic_http_122").into();
+    let mut build_config: BuildConfig = IntegrationTestConfig::new("go_test_125").into();
     build_config.env("CNB_EXEC_ENV", "test");
 
     TestRunner::default().build(build_config, |ctx| {
@@ -242,6 +242,9 @@ fn test_cnb_exec_env_test() {
         assert_contains!(logs, "Go toolchain available at runtime");
 
         let output = ctx.run_shell_command("go version").stdout;
-        assert_contains!(output, "go version go1.22.");
+        assert_contains!(output, "go version go1.25.");
+
+        let test_output = ctx.run_shell_command("go test -tags heroku ./...").stdout;
+        assert_contains!(test_output, "PASS");
     });
 }
