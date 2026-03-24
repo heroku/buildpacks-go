@@ -1,3 +1,4 @@
+use crate::exec_env::ExecutionEnvironment;
 use crate::{GoBuildpack, GoBuildpackError};
 use bullet_stream::global::print;
 use libcnb::build::BuildContext;
@@ -28,12 +29,15 @@ pub(crate) enum DepsLayerError {
 /// Create or restore the layer for the go modules cache (non-vendored dependencies)
 pub(crate) fn handle_deps_layer(
     context: &BuildContext<GoBuildpack>,
+    exec_env: ExecutionEnvironment,
 ) -> libcnb::Result<LayerEnv, GoBuildpackError> {
+    let launch = matches!(exec_env, ExecutionEnvironment::Test);
+
     let layer_ref = context.cached_layer(
         layer_name!("go_deps"),
         CachedLayerDefinition {
             build: true,
-            launch: false,
+            launch,
             invalid_metadata_action: &|_| InvalidMetadataAction::DeleteLayer,
             restored_layer_action: &|restored_metadata: &DepsLayerMetadata, _| {
                 if restored_metadata.cache_usage_count >= MAX_CACHE_USAGE_COUNT {
@@ -71,7 +75,7 @@ pub(crate) fn handle_deps_layer(
             let cache_dir = layer_ref.path().join(CACHE_DIR);
             fs::create_dir(&cache_dir).map_err(DepsLayerError::Create)?;
             layer_ref.write_env(LayerEnv::new().chainable_insert(
-                Scope::Build,
+                if launch { Scope::All } else { Scope::Build },
                 libcnb::layer_env::ModificationBehavior::Override,
                 CACHE_ENV,
                 cache_dir,
