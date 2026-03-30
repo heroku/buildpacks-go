@@ -247,7 +247,7 @@ fn test_cnb_exec_env_test() {
         let gomodcache = ctx.run_shell_command("printenv GOMODCACHE").stdout;
         assert_contains!(gomodcache, "go_deps");
 
-        let test_output = ctx.run_shell_command("go test -v -tags heroku ./...").stdout;
-        assert_contains!(test_output, "PASS");
+        let test_output = ctx.run_shell_command("go test -tags heroku ./...").stdout;
+        assert_contains!(test_output, "ok");
     });
 }
