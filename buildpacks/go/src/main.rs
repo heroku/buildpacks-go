@@ -118,7 +118,7 @@ impl Buildpack for GoBuildpack {
         if Path::exists(&context.app_dir.join("vendor").join("modules.txt")) {
             print::sub_bullet("Using vendored Go modules");
         } else {
-            go_env = handle_deps_layer(&context)?.apply(Scope::Build, &go_env);
+            go_env = handle_deps_layer(&context, exec_env)?.apply(Scope::Build, &go_env);
         }
 
         go_env = handle_target_layer(&context)?.apply(Scope::Build, &go_env);
