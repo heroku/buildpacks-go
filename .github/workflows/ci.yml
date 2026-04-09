@@ -71,11 +71,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: ["amd64"]
-        builder: ["heroku/builder:22", "heroku/builder:24"]
-        include:
+        arch: ["amd64", "arm64"]
+        builder: ["heroku/builder:22", "heroku/builder:24", "heroku/builder:26"]
+        exclude:
           - arch: "arm64"
-            builder: "heroku/builder:24"
+            builder: "heroku/builder:22"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -136,8 +136,8 @@ jobs:
         uses: buildpacks/github-actions/setup-pack@06e250da5bb4ccb9a2103719a21d2a7f2252fe83 # v5.11.0
       - name: Pull builder and run images
         run: |
-          docker pull "heroku/builder:24"
-          docker pull "heroku/heroku:24"
+          docker pull "heroku/builder:26"
+          docker pull "heroku/heroku:26"
       - name: Clone getting started guide
         uses: actions/checkout@v6
         with:
@@ -152,7 +152,7 @@ jobs:
           set euo --pipefail
           echo "## Getting Started output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never \
+          pack build my-image --force-color --builder heroku/builder:26 --trust-builder --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never \
             |& tee >(sed -e 's/\x1b\[[0-9;]*m//g' >> $GITHUB_STEP_SUMMARY)
           echo '```' >> $GITHUB_STEP_SUMMARY
       - name: "PRINT: Cached getting started guide output"
@@ -160,6 +160,6 @@ jobs:
           set -euo pipefail
           echo "## Cached Output" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          pack build my-image --force-color --builder heroku/builder:24 --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never \
+          pack build my-image --force-color --builder heroku/builder:26 --trust-builder --trust-extra-buildpacks --buildpack packaged/x86_64-unknown-linux-musl/debug/heroku_go --path tmp/guide --pull-policy never \
             |& tee >(sed -e 's/\x1b\[[0-9;]*m//g' >> $GITHUB_STEP_SUMMARY)
           echo '```' >> $GITHUB_STEP_SUMMARY

@@ -4,7 +4,7 @@
 use libcnb_test::{BuildConfig, ContainerConfig, TestRunner, assert_contains, assert_not_contains};
 use std::{env::consts, time::Duration};
 
-const DEFAULT_BUILDER: &str = "heroku/builder:24";
+const DEFAULT_BUILDER: &str = "heroku/builder:26";
 
 struct IntegrationTestConfig {
     target: String,
@@ -19,7 +19,9 @@ impl IntegrationTestConfig {
         let target = match (builder.as_str(), consts::ARCH) {
             // Compile the buildpack for arm64 if the builder supports multi-arch and the host is ARM64.
             // This happens in CI and on developer machines with Apple silicon.
-            ("heroku/builder:24", "aarch64") => "aarch64-unknown-linux-musl".to_string(),
+            ("heroku/builder:24" | "heroku/builder:26", "aarch64") => {
+                "aarch64-unknown-linux-musl".to_string()
+            }
             // Compile the buildpack for arm64 if an arm64-specific builder is chosen.
             // Used to run cross-arch integration tests from machines with Intel silicon.
             (b, _) if b.ends_with("arm64") => "aarch64-unknown-linux-musl".to_string(),
