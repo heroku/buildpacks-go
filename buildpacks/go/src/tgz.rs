@@ -2,10 +2,7 @@ use flate2::read::GzDecoder;
 use libherokubuildpack::inventory::artifact::Artifact;
 use retry::retry;
 use retry::{OperationResult, delay::Exponential};
-use sha2::{
-    Digest,
-    digest::{OutputSizeUser, generic_array::GenericArray},
-};
+use sha2::Digest;
 use std::{fs, io::Read, path::StripPrefixError, time::Duration};
 use tar::Archive;
 use tracing::instrument;
@@ -125,7 +122,7 @@ impl<R: Read, H: sha2::Digest> DigestingReader<R, H> {
             h: hasher,
         }
     }
-    pub(crate) fn finalize(self) -> GenericArray<u8, <H as OutputSizeUser>::OutputSize> {
+    pub(crate) fn finalize(self) -> sha2::digest::Output<H> {
         self.h.finalize()
     }
 }
