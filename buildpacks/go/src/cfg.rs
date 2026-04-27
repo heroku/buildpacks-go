@@ -40,10 +40,8 @@ pub(crate) fn read_gomod_config<P: AsRef<path::Path>>(
             (Some("//"), Some("+heroku"), Some("goVersion"), Some(vrs)) => {
                 version = parse_go_version_requirement(vrs).map(Some)?;
             }
-            (Some("go"), Some(vrs), None, None) => {
-                if version.is_none() {
-                    version = parse_go_version_requirement(&format!("={vrs}")).map(Some)?;
-                }
+            (Some("go"), Some(vrs), None, None) if version.is_none() => {
+                version = parse_go_version_requirement(&format!("={vrs}")).map(Some)?;
             }
             _ => (),
         }
