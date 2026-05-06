@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added support for `CNB_EXEC_ENV=test` environment variable to enable test execution mode. When set, the Go distribution and module cache are available at runtime. This enables Heroku CI support for the classic buildpack wrapper.
+
 ## [2.2.2] - 2026-04-08
 
 ### Added
