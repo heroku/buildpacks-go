@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.5] - 2026-07-07
 
-- No changes.
+### Changed
+
+- Updated libcnb to 0.31.0, which includes OpenTelemetry crate upgrades. ([#491](https://github.com/heroku/buildpacks-go/pull/491))
 
 ## [2.2.4] - 2026-06-02
 
