@@ -54,6 +54,12 @@ impl GoVersion {
             semantic_version: go_major_release,
         }
     }
+
+    /// Whether this is a pre-release (e.g. an rc or beta), per its semver pre-release component.
+    #[must_use]
+    pub fn is_prerelease(&self) -> bool {
+        !self.semantic_version.pre.is_empty()
+    }
 }
 
 impl Display for GoVersion {
@@ -184,6 +190,26 @@ mod tests {
             assert_eq!(
                 expected_str, actual_str,
                 "Expected {input} to parse as {expected_str} but got {actual_str}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_is_prerelease() {
+        for version in ["go1.27rc2", "go1.9beta1", "go1.23.34alpha"] {
+            assert!(
+                GoVersion::try_from(version.to_string())
+                    .unwrap()
+                    .is_prerelease(),
+                "Expected {version} to be a pre-release"
+            );
+        }
+        for version in ["go1.27.0", "go1.26.5", "go1"] {
+            assert!(
+                !GoVersion::try_from(version.to_string())
+                    .unwrap()
+                    .is_prerelease(),
+                "Expected {version} to not be a pre-release"
             );
         }
     }

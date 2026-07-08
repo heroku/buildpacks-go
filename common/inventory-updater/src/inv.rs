@@ -91,7 +91,7 @@ pub(crate) fn list_upstream_artifacts()
 
     releases
         .into_iter()
-        .filter(|release| release.version >= min_version)
+        .filter(|release| release.version >= min_version && !release.version.is_prerelease())
         .flat_map(|release| {
             REQUIRED_ARCHS.iter().map(move |arch| {
                 release
