@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for go1.27rc1.
 - Support for go1.27rc2.
 
-## [2.2.5] - 2026-07-07
+## [2.2.5] - 2026-07-08
 
 ### Changed
 
