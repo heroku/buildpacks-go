@@ -50,11 +50,13 @@ the `// +heroku goVersion [{constraint}]{version}` build directive in `go.mod`,
 if required.
 
 For example, this will select the latest release in the `1.17` line.
+
 ```
 go 1.17
 ```
 
 While this would select go `1.18.2` exactly.
+
 ```
 // +heroku goVersion =1.18.2
 go 1.17
@@ -86,7 +88,6 @@ binaries.
 ## Contributing
 
 Issues and pull requests are welcome. See our [contributing guidelines](./CONTRIBUTING.md) if you would like to help.
-
 
 [ci-badge]: https://github.com/heroku/buildpacks-go/actions/workflows/ci.yml/badge.svg
 [ci-url]: https://github.com/heroku/buildpacks-go/actions/workflows/ci.yml
