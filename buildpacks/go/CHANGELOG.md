@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Support for < go1.11.
+- Support for < go1.11. ([#498](https://github.com/heroku/buildpacks-go/pull/498))
 
 ## [3.0.0] - 2026-07-08
 
