@@ -86,7 +86,10 @@ pub(crate) fn list_upstream_artifacts()
         .read_json()
         .map_err(|e| ListUpstreamArtifactsError::ParseJsonResponse(Box::new(e)))?;
 
-    let min_version = GoVersion::try_from("go1.8.5".to_string())
+    // Matches the classic Go buildpack's earliest supported version. Older
+    // releases predate Go modules (introduced in 1.11), and this buildpack
+    // only activates when a go.mod is present, so they are never resolvable.
+    let min_version = GoVersion::try_from("go1.11".to_string())
         .expect("Minimum supported version should always be parseable");
 
     releases
