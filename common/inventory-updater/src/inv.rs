@@ -9,6 +9,11 @@ use sha2::Sha256;
 const GO_RELEASES_URL: &str = "https://go.dev/dl/?mode=json&include=all";
 const GO_HOST_URL: &str = "https://go.dev/dl";
 
+// Matches the classic Go buildpack's earliest supported version. Older
+// releases predate Go modules (introduced in 1.11), and this buildpack
+// only activates when a go.mod is present, so they are never resolvable.
+const MIN_SUPPORTED_VERSION: &str = "go1.11";
+
 #[derive(Debug, Deserialize)]
 struct GoRelease {
     version: GoVersion,
@@ -86,10 +91,7 @@ pub(crate) fn list_upstream_artifacts()
         .read_json()
         .map_err(|e| ListUpstreamArtifactsError::ParseJsonResponse(Box::new(e)))?;
 
-    // Matches the classic Go buildpack's earliest supported version. Older
-    // releases predate Go modules (introduced in 1.11), and this buildpack
-    // only activates when a go.mod is present, so they are never resolvable.
-    let min_version = GoVersion::try_from("go1.11".to_string())
+    let min_version = GoVersion::try_from(MIN_SUPPORTED_VERSION.to_string())
         .expect("Minimum supported version should always be parseable");
 
     releases
