@@ -25,8 +25,8 @@ unwrap_used = "warn"
 strip = true
 
 [workspace.dependencies]
-libcnb = { version = "=0.31.0", features = ["trace"] }
-libcnb-test = "=0.31.0"
+libcnb = { version = "=0.31.1", features = ["trace"] }
+libcnb-test = "=0.31.1"
 libherokubuildpack = { version = "=0.31.1", default-features = false, features = [
     "inventory",
     "log",
