@@ -53,7 +53,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@742a3317eac7bd62f91cd888b4eead5e784ba833 # v2.87.1
+        uses: taiki-e/install-action@5bf6ce016fd2e72eefc647cbca1e4213f65955b8 # v2.87.5
         with:
           tool: cargo-llvm-cov
       - name: Run unit tests and generate coverage report
@@ -94,7 +94,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Install Pack CLI
-        uses: buildpacks/github-actions/setup-pack@36416a96be10a6cc7170e7c9c63656d4092f78b2 # v6.1.0
+        uses: buildpacks/github-actions/setup-pack@af8c06ccd592e27001cbf78083dcc9b47aa6652a # v6.1.1
       # The images are pulled up front to prevent duplicate pulls due to the tests being run concurrently.
       - name: Pull builder image
         run: docker pull ${{ matrix.builder }}
@@ -133,7 +133,7 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: Install Pack CLI
-        uses: buildpacks/github-actions/setup-pack@36416a96be10a6cc7170e7c9c63656d4092f78b2 # v6.1.0
+        uses: buildpacks/github-actions/setup-pack@af8c06ccd592e27001cbf78083dcc9b47aa6652a # v6.1.1
       - name: Pull builder and run images
         run: |
           docker pull "heroku/builder:26"
