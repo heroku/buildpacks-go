@@ -3,7 +3,7 @@ resolver = "2"
 members = ["buildpacks/go", "common/go-utils", "common/inventory-updater"]
 
 [workspace.package]
-rust-version = "1.98"
+rust-version = "1.99"
 edition = "2024"
 
 [workspace.lints.rust]
