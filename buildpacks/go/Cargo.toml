@@ -10,7 +10,10 @@ workspace = true
 indoc = "2"
 heroku-go-utils = { path = "../../common/go-utils" }
 hex = "0.4.3"
-flate2 = { version = "1", default-features = false, features = ["zlib"] }
+# We use the `zlib-rs` backend, since it's the fastest:
+# https://github.com/rust-lang/flate2-rs#backends
+# https://trifectatech.org/blog/zlib-rs-is-faster-than-c/
+flate2 = { version = "1", default-features = false, features = ["zlib-rs", "runtime_detection"] }
 libcnb = { workspace = true }
 libherokubuildpack = { workspace = true }
 retry = { version = "2.2.0", default-features = false }
