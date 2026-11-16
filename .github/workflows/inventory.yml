@@ -51,7 +51,7 @@ jobs:
           body: "Automated pull-request to update heroku/go inventory"
 
       - name: Configure PR
-        if: steps.pr.outputs.pull-request-operation == 'created'
+        if: contains(fromJSON('["created", "updated"]'), steps.pr.outputs.pull-request-operation)
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: gh pr merge --squash --auto "${{ steps.pr.outputs.pull-request-number }}"
